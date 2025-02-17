@@ -6,24 +6,28 @@ namespace GroupBoizDAL.Entities
     public class Category
     {
         [Key]
-        public short CategoryID { get; set; }
+        [Column("CategoryID")]
+        public short CategoryId { get; set; }
 
-        [Required]
         [StringLength(100)]
-        public string CategoryName { get; set; }
+        public string CategoryName { get; set; } = null!;
 
-        [Required]
         [StringLength(250)]
-        public string CategoryDesciption { get; set; }
+        public string CategoryDesciption { get; set; } = null!;
 
-        public short? ParentCategoryID { get; set; }
+        [Column("ParentCategoryID")]
+        public short? ParentCategoryId { get; set; }
 
         public bool? IsActive { get; set; }
 
-        [ForeignKey("ParentCategoryID")]
-        public virtual Category ParentCategory { get; set; }
+        [InverseProperty("ParentCategory")]
+        public virtual ICollection<Category> InverseParentCategory { get; set; } = new List<Category>();
 
-        public virtual ICollection<Category> SubCategories { get; set; } = new List<Category>();
+        [InverseProperty("Category")]
         public virtual ICollection<NewsArticle> NewsArticles { get; set; } = new List<NewsArticle>();
+
+        [ForeignKey("ParentCategoryId")]
+        [InverseProperty("InverseParentCategory")]
+        public virtual Category? ParentCategory { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 
+using GroupBoizDAL.Data;
 using GroupBoizMVC.Models;
 using Microsoft.EntityFrameworkCore;
 

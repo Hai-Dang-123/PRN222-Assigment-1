@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using GroupBoizDAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace GroupBoizMVC.Models;
+
+namespace GroupBoizDAL.Data;
 
 public partial class FUNewsManagementContext : DbContext
 {
@@ -24,19 +26,7 @@ public partial class FUNewsManagementContext : DbContext
 
     public virtual DbSet<Tag> Tags { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-        }
-    }
-
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
