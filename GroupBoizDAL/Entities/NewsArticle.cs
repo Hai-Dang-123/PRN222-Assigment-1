@@ -6,41 +6,49 @@ namespace GroupBoizDAL.Entities
     public class NewsArticle
     {
         [Key]
+        [Column("NewsArticleID")]
         [StringLength(20)]
-        public string NewsArticleID { get; set; }
+        public string NewsArticleId { get; set; } = null!;
 
         [StringLength(400)]
-        public string NewsTitle { get; set; }
+        public string? NewsTitle { get; set; }
 
-        [Required]
         [StringLength(150)]
-        public string Headline { get; set; }
+        public string Headline { get; set; } = null!;
 
+        [Column(TypeName = "datetime")]
         public DateTime? CreatedDate { get; set; }
 
         [StringLength(4000)]
-        public string NewsContent { get; set; }
+        public string? NewsContent { get; set; }
 
         [StringLength(400)]
-        public string NewsSource { get; set; }
+        public string? NewsSource { get; set; }
 
-        public short? CategoryID { get; set; }
+        [Column("CategoryID")]
+        public short? CategoryId { get; set; }
 
         public bool? NewsStatus { get; set; }
 
-        public short? CreatedByID { get; set; }
-        public short? UpdatedByID { get; set; }
+        [Column("CreatedByID")]
+        public short? CreatedById { get; set; }
+
+        [Column("UpdatedByID")]
+        public short? UpdatedById { get; set; }
+
+        [Column(TypeName = "datetime")]
         public DateTime? ModifiedDate { get; set; }
 
-        [ForeignKey("CategoryID")]
-        public virtual Category Category { get; set; }
+        [ForeignKey("CategoryId")]
+        [InverseProperty("NewsArticles")]
+        public virtual Category? Category { get; set; }
 
-        [ForeignKey("CreatedByID")]
-        public virtual SystemAccount CreatedBy { get; set; }
+        [ForeignKey("CreatedById")]
+        [InverseProperty("NewsArticles")]
+        public virtual SystemAccount? CreatedBy { get; set; }
 
-        [ForeignKey("UpdatedByID")]
-        public virtual SystemAccount UpdatedBy { get; set; }
-
-        public virtual ICollection<NewsTag> NewsTags { get; set; } = new List<NewsTag>();
+        [ForeignKey("NewsArticleId")]
+        [InverseProperty("NewsArticles")]
+        public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
     }
 }

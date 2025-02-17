@@ -1,18 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GroupBoizDAL.Entities
 {
     public class Tag
     {
         [Key]
-        public int TagID { get; set; }
+        [Column("TagID")]
+        public int TagId { get; set; }
 
         [StringLength(50)]
-        public string TagName { get; set; }
+        public string? TagName { get; set; }
 
         [StringLength(400)]
-        public string Note { get; set; }
+        public string? Note { get; set; }
 
-        public virtual ICollection<NewsTag> NewsTags { get; set; } = new List<NewsTag>();
+        [ForeignKey("TagId")]
+        [InverseProperty("Tags")]
+        public virtual ICollection<NewsArticle> NewsArticles { get; set; } = new List<NewsArticle>();
     }
 }

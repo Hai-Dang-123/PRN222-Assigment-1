@@ -1,24 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GroupBoizDAL.Entities
 {
     public class SystemAccount
     {
         [Key]
-        public short AccountID { get; set; }
+        [Column("AccountID")]
+        public short AccountId { get; set; }
 
         [StringLength(100)]
-        public string AccountName { get; set; }
+        public string? AccountName { get; set; }
 
         [StringLength(70)]
-        public string AccountEmail { get; set; }
+        public string? AccountEmail { get; set; }
 
         public int? AccountRole { get; set; }
 
         [StringLength(70)]
-        public string AccountPassword { get; set; }
+        public string? AccountPassword { get; set; }
 
-        public virtual ICollection<NewsArticle> CreatedNewsArticles { get; set; } = new List<NewsArticle>();
-        public virtual ICollection<NewsArticle> UpdatedNewsArticles { get; set; } = new List<NewsArticle>();
+        [InverseProperty("CreatedBy")]
+        public virtual ICollection<NewsArticle> NewsArticles { get; set; } = new List<NewsArticle>();
     }
 }
