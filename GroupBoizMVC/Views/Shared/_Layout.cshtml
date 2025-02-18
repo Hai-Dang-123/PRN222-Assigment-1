@@ -31,18 +31,35 @@
                                 <span class="sr-only">(current)</span>
                             </a>
                         </li>
+                        @* ------------------------------------------------ *@
                         <li class="nav-item">
-                            <a class="nav-link" href="about.html">About Us</a>
+                            <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="blog.html">Blog Entries</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="post-details.html">Post Details</a>
+                            <a class="nav-link" asp-controller="Account" asp-action="Index">Account Management</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="contact.html">Contact Us</a>
+                            <a class="nav-link" asp-controller="News" asp-action="Index">News Management</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Category" asp-action="Index">Category Management</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Tag" asp-action="Index">Tag Management</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Report" asp-action="Index">Reports</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="News" asp-action="Index">News History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+                        </li>
+                        @*------------------------------------------------ *@
                     </ul>
                 </div>
             </div>

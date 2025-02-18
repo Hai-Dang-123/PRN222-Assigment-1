@@ -1,0 +1,14 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace GroupBoizMVC.Controllers
+{
+    public class AccountController : Controller
+    {
+        public IActionResult AccountManagementPage()
+        {
+            return View();
+        }
+
+    }
+}
