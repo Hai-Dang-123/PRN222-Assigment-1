@@ -12,6 +12,7 @@ public interface IUnitOfWork : IDisposable
 {
     IAccountRepository AccountRepo { get; }
     ITokenRepository TokenRepo { get; }
+    INewsRepository NewsRepo { get; }
 
     Task<int> SaveAsync();
     Task<bool> SaveChangeAsync();

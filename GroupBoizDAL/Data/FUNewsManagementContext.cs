@@ -20,7 +20,7 @@ public partial class FUNewsManagementContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<NewsArticle> NewsArticles { get; set; }
+    public virtual DbSet<NewsArticle> NewsArticle { get; set; }
 
     public virtual DbSet<SystemAccount> SystemAccounts { get; set; }
 

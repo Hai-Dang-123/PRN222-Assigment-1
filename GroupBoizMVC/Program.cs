@@ -1,6 +1,7 @@
-
-using GroupBoizBLL.Services.Interface;
+﻿using GroupBoizBLL.Services.Interface;
 using GroupBoizDAL.Data;
+using GroupBoizDAL.Repository.Implement; // Thêm namespace Repository
+using GroupBoizDAL.Repository.Interface; // Thêm namespace Repository Interface
 using GroupBoizMVC.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-
-// Th�m DbContext v�o DI container
+// Thêm DbContext vào DI container
 builder.Services.AddDbContext<FUNewsManagementContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Thêm Repository vào DI container
+builder.Services.AddScoped<INewsRepository, NewsRepository>(); // ĐÃ THÊM DÒNG NÀY
 
 var app = builder.Build();
 
@@ -24,7 +27,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 app.UseMiddleware<GroupBoizCommon.Middleware.JWTMiddleware>();
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
