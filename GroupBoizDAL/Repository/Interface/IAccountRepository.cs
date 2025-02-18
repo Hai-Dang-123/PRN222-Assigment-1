@@ -9,7 +9,13 @@ namespace GroupBoizDAL.Repository.Interface
 {
     public interface IAccountRepository : IGenericRepository<SystemAccount>
     {
+        Task<SystemAccount> CreateAccountAsync(SystemAccount account);
         Task<SystemAccount> FindByEmailAsync(string email);
+        Task<SystemAccount> FindByIdAsync(short accountId);
         Task<short> GetMaxAccountIdAsync();
+        Task UpdateAccountAsync(SystemAccount existingAccount);
+
+        Task<IEnumerable<SystemAccount>> GetAllAsync();
+
     }
 }

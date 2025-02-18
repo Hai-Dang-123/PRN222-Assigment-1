@@ -22,7 +22,7 @@ public partial class FUNewsManagementContext : DbContext
 
     public virtual DbSet<NewsArticle> NewsArticles { get; set; }
 
-    public virtual DbSet<SystemAccount> SystemAccounts { get; set; }
+    public virtual DbSet<SystemAccount> SystemAccount { get; set; }
 
 
     public virtual DbSet<Tag> Tags { get; set; }

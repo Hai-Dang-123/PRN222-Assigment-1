@@ -1,0 +1,77 @@
+﻿@model IEnumerable<GroupBoizDAL.Entities.SystemAccount>
+
+@{
+    ViewData["Title"] = "Account Management Page";
+}
+
+<section class="account-management">
+    <div class="container">
+        <h2 class="tm-margin-b-30">Quản lý Tài Khoản</h2>
+
+        <!-- Bảng danh sách tài khoản -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Họ Tên</th>
+                    <th>Email</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.AccountId</td>
+                        <td>@user.AccountName</td>
+                        <td>@user.AccountEmail</td>
+                        <td>
+                            <a href="/account/details/@user.AccountId" class="btn btn-info btn-sm">Xem Chi Tiết</a>
+                            <a href="/account/edit/@user.AccountId" class="btn btn-warning btn-sm">Sửa</a>
+                            <a href="/account/delete/@user.AccountId" class="btn btn-danger btn-sm">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+@*         <div class="mb-3">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccountModal">Thêm Tài Khoản</button>
+        </div>
+    </div> *@
+</section>
+
+@* <!-- Modal tạo tài khoản -->
+<div class="modal fade" id="createAccountModal" tabindex="-1" aria-labelledby="createAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAccountModalLabel">Thêm Tài Khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" method="post">
+                    <div class="mb-3">
+                        <label for="accountName" class="form-label">Họ Tên</label>
+                        <input type="text" class="form-control" id="accountName" name="AccountName" value="@Model.FirstOrDefault()?.AccountName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="accountEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="accountEmail" name="AccountEmail" value="@Model.FirstOrDefault()?.AccountEmail" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="accountPassword" class="form-label">Mật khẩu</label>
+                        <input type="password" class="form-control" id="accountPassword" name="AccountPassword" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="accountRole" class="form-label">Vai trò</label>
+                        <select class="form-control" id="accountRole" name="AccountRole">
+                            <option value="Admin">Admin</option>
+                            <option value="User">User</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Tạo Tài Khoản</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> *@
