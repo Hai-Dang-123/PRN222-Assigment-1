@@ -24,9 +24,12 @@ public partial class FUNewsManagementContext : DbContext
 
     public virtual DbSet<SystemAccount> SystemAccounts { get; set; }
 
+
     public virtual DbSet<Tag> Tags { get; set; }
 
-    
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -78,6 +81,16 @@ public partial class FUNewsManagementContext : DbContext
 
             entity.Property(e => e.TagId).ValueGeneratedNever();
         });
+        //Token
+        modelBuilder.Entity<RefreshToken>()
+            .HasIndex(rt => rt.UserId);
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne<SystemAccount>()
+            .WithMany()
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        //User-role
 
         OnModelCreatingPartial(modelBuilder);
     }

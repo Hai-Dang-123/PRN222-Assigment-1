@@ -1,0 +1,81 @@
+﻿@page
+@model GroupBoizMVC.Views.CategoryManagementPageModel
+@{
+}
+<section class="category-management">
+    <div class="container">
+        <h2 class="tm-margin-b-30">Quản lý Danh Mục</h2>
+
+        <!-- Button to add a new category -->
+        <div class="mb-3">
+            <a href="/category/add" class="btn btn-primary">Thêm Danh Mục</a>
+        </div>
+
+        <!-- Category List Table -->
+        <table class="table table-striped" id="categoryTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên Danh Mục</th>
+                    <th>Ngày Tạo</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<script>
+    // Dữ liệu cứng cho các danh mục
+    const categoryData = [
+        { id: 1, name: "Công nghệ", createdDate: "2025-02-01" },
+        { id: 2, name: "Giải trí", createdDate: "2025-01-28" },
+        { id: 3, name: "Sức khỏe", createdDate: "2025-01-20" },
+        { id: 4, name: "Ẩm thực", createdDate: "2025-01-10" }
+    ];
+
+    // Hàm hiển thị danh sách danh mục
+    function loadCategoryData() {
+        const tableBody = document.querySelector("#categoryTable tbody");
+        tableBody.innerHTML = '';  // Clear any existing rows
+        
+        categoryData.forEach(category => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${category.id}</td>
+                <td>${category.name}</td>
+                <td>${category.createdDate}</td>
+                <td>
+                    <a href="/category/details/${category.id}" class="btn btn-info btn-sm">Xem Chi Tiết</a>
+                    <a href="/category/edit/${category.id}" class="btn btn-warning btn-sm">Sửa</a>
+                    <a href="javascript:void(0);" class="btn btn-danger btn-sm" onclick="deleteCategory(${category.id})">Xóa</a>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Hàm xóa danh mục
+    function deleteCategory(categoryId) {
+        if (confirm("Bạn chắc chắn muốn xóa danh mục này?")) {
+            alert(`Xóa danh mục với ID: ${categoryId}`);
+            // Call API delete here
+        }
+    }
+
+    // Gọi hàm khi trang được tải
+    window.onload = loadCategoryData;
+</script>
