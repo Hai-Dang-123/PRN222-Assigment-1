@@ -20,7 +20,7 @@ namespace GroupBoizDAL.Repository.Implement
         public async Task<RefreshToken> GetRefreshTokenByUserID(short userId)
         {
             // lấy token đúng id và chưa bị thu hồi
-            return await _context.RefreshTokens
+            return await _context.RefreshToken
                 .Where(rt => rt.UserId == userId && !rt.IsRevoked)
                 .FirstOrDefaultAsync();
         }
@@ -32,7 +32,7 @@ namespace GroupBoizDAL.Repository.Implement
             }
 
             // Thực hiện truy vấn để tìm RefreshToken theo RefreshTokenKey
-            var refreshTokenEntity = await _context.RefreshTokens
+            var refreshTokenEntity = await _context.RefreshToken
                 .FirstOrDefaultAsync(rt => rt.RefreshTokenKey == refreshTokenKey);
 
             return refreshTokenEntity;

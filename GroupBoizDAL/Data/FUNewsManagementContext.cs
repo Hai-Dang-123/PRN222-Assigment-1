@@ -18,16 +18,16 @@ public partial class FUNewsManagementContext : DbContext
     {
     }
 
-    public virtual DbSet<Category> Categories { get; set; }
+    public virtual DbSet<Category> Category { get; set; }
 
-    public virtual DbSet<NewsArticle> NewsArticles { get; set; }
+    public virtual DbSet<NewsArticle> NewsArticle { get; set; }
 
-    public virtual DbSet<SystemAccount> SystemAccounts { get; set; }
+    public virtual DbSet<SystemAccount> SystemAccount { get; set; }
 
 
-    public virtual DbSet<Tag> Tags { get; set; }
+    public virtual DbSet<Tag> Tag { get; set; }
 
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<RefreshToken> RefreshToken { get; set; }
 
 
 

@@ -20,12 +20,12 @@ namespace GroupBoizDAL.Repository.Implement
 
         public async Task<SystemAccount> FindByEmailAsync(string email)
         {
-            return await _context.SystemAccounts.FirstOrDefaultAsync(u => u.AccountEmail == email);
+            return await _context.SystemAccount.FirstOrDefaultAsync(u => u.AccountEmail == email);
         }
         public async Task<short> GetMaxAccountIdAsync()
         {
             // Lấy AccountID lớn nhất trong bảng SystemAccount
-            var maxAccountId = await _context.SystemAccounts
+            var maxAccountId = await _context.SystemAccount
                                               .OrderByDescending(sa => sa.AccountId)
                                               .Select(sa => sa.AccountId)
                                               .FirstOrDefaultAsync();

@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewData["Title"] = "Account Management Page";
+}
+
+
+
+
+<section class="account-management">
+    <div class="container">
+        <h2 class="tm-margin-b-30">Quản lý Tài Khoản</h2>
+
+        <!-- Button to add a new user -->
+        <div class="mb-3">
+            <a href="/account/add" class="btn btn-primary">Thêm Tài Khoản</a>
+        </div>
+
+        <!-- User List Table -->
+        <table class="table table-striped" id="userTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Họ Tên</th>
+                    <th>Email</th>
+                    <th>Ngày Tạo</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<script>
+    // Cứng dữ liệu mẫu
+    const sampleData = [
+        { id: 1, fullName: "Nguyễn Văn A", email: "nguyenvana@example.com", createdDate: "2025-02-01" },
+        { id: 2, fullName: "Trần Thị B", email: "tranthib@example.com", createdDate: "2025-01-28" },
+        { id: 3, fullName: "Lê Minh C", email: "leminhc@example.com", createdDate: "2025-01-15" },
+        { id: 4, fullName: "Phan Thi D", email: "phanthid@example.com", createdDate: "2025-01-10" }
+    ];
+
+    // Hàm để hiển thị danh sách người dùng
+    function loadUserData() {
+        const tableBody = document.querySelector("#userTable tbody");
+        tableBody.innerHTML = '';  // Clear any existing rows
+        
+        sampleData.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.fullName}</td>
+                <td>${user.email}</td>
+                <td>${user.createdDate}</td>
+                <td>
+                    <a href="/account/details/${user.id}" class="btn btn-info btn-sm">Xem Chi Tiết</a>
+                    <a href="/account/edit/${user.id}" class="btn btn-warning btn-sm">Sửa</a>
+                    <a href="javascript:void(0);" class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">Xóa</a>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Hàm xóa người dùng
+    function deleteUser(userId) {
+        if (confirm("Bạn chắc chắn muốn xóa người dùng này?")) {
+            alert(`Xóa người dùng với ID: ${userId}`);
+            // Call API delete here
+        }
+    }
+
+    // Gọi hàm khi trang được tải
+    window.onload = loadUserData;
+</script>

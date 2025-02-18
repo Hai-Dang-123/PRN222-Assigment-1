@@ -20,11 +20,15 @@ namespace GroupBoizDAL.UnitOfWork;
         
         AccountRepo = new AccountRepository(_context);
         TokenRepo = new TokenRepository(_context);
+        CategoryRepo = new CategoryRepository(_context);
+        TagRepo = new TagRepository(_context);
             
         }
         
         public IAccountRepository AccountRepo { get; set; }
         public ITokenRepository TokenRepo { get; set; }
+        public ICategoryRepository CategoryRepo { get; set; }
+        public ITagRepository TagRepo { get; set; }
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();
