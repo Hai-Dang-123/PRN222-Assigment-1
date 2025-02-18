@@ -5,10 +5,12 @@ namespace GroupBoizMVC.Controllers
 {
     public class AccountController : Controller
     {
-        public IActionResult AccountManagementPage()
+        public IActionResult Index()
         {
+
             return View();
         }
+        
 
     }
 }

@@ -5,8 +5,9 @@ namespace GroupBoizMVC.Controllers
 {
     public class NewsController : Controller
     {
-        public IActionResult NewsManagementPage()
+        public IActionResult Index()
         {
+            
             return View();
         }
     }
