@@ -1,0 +1,82 @@
+﻿@page
+@model GroupBoizMVC.Views.TagManagementPageModel
+@{
+}
+
+<section class="tag-management">
+    <div class="container">
+        <h2 class="tm-margin-b-30">Quản lý Thẻ</h2>
+
+        <!-- Button to add a new tag -->
+        <div class="mb-3">
+            <a href="/tag/add" class="btn btn-primary">Thêm Thẻ</a>
+        </div>
+
+        <!-- Tag List Table -->
+        <table class="table table-striped" id="tagTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên Thẻ</th>
+                    <th>Ngày Tạo</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<script>
+    // Dữ liệu cứng cho các thẻ
+    const tagData = [
+        { id: 1, name: "Công nghệ", createdDate: "2025-02-01" },
+        { id: 2, name: "Giải trí", createdDate: "2025-01-28" },
+        { id: 3, name: "Thể thao", createdDate: "2025-01-20" },
+        { id: 4, name: "Sức khỏe", createdDate: "2025-01-10" }
+    ];
+
+    // Hàm hiển thị danh sách thẻ
+    function loadTagData() {
+        const tableBody = document.querySelector("#tagTable tbody");
+        tableBody.innerHTML = '';  // Clear any existing rows
+        
+        tagData.forEach(tag => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${tag.id}</td>
+                <td>${tag.name}</td>
+                <td>${tag.createdDate}</td>
+                <td>
+                    <a href="/tag/details/${tag.id}" class="btn btn-info btn-sm">Xem Chi Tiết</a>
+                    <a href="/tag/edit/${tag.id}" class="btn btn-warning btn-sm">Sửa</a>
+                    <a href="javascript:void(0);" class="btn btn-danger btn-sm" onclick="deleteTag(${tag.id})">Xóa</a>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Hàm xóa thẻ
+    function deleteTag(tagId) {
+        if (confirm("Bạn chắc chắn muốn xóa thẻ này?")) {
+            alert(`Xóa thẻ với ID: ${tagId}`);
+            // Call API delete here
+        }
+    }
+
+    // Gọi hàm khi trang được tải
+    window.onload = loadTagData;
+</script>

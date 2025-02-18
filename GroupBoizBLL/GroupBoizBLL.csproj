@@ -11,9 +11,4 @@
     <ProjectReference Include="..\GroupBoizDAL\GroupBoizDAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Implement\" />
-    <Folder Include="Services\Interface\" />
-  </ItemGroup>
-
 </Project>
