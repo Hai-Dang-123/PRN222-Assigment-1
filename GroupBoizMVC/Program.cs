@@ -1,8 +1,12 @@
 
+﻿
 using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
 using GroupBoizDAL.Data;
-using GroupBoizDAL.UnitOfWork;
+using GroupBoizDAL.Repository.Implement;
+using GroupBoizDAL.Repository.Interface;
+
+
 using GroupBoizMVC.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +18,13 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddControllersWithViews();
 
 
-// Th�m DbContext v�o DI container
+// Thêm DbContext vào DI container
 builder.Services.AddDbContext<FUNewsManagementContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 var app = builder.Build();
 
@@ -36,9 +44,15 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers(); // Đảm bảo API hỗ trợ DELETE
+});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+

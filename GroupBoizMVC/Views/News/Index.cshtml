@@ -1,7 +1,11 @@
-﻿
+﻿@model IEnumerable<GroupBoizDAL.Entities.SystemAccount>
+
 @{
-    ViewData["Title"] = "News Management Page";
+    ViewData["Title"] = "Account Management Page";
 }
+
+
+<section class="account-management">
 
 <!-- Page Content -->
 <!-- Banner Starts Here -->
@@ -23,290 +27,62 @@
 <!-- Banner Ends Here -->
 
 <section class="call-to-action">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="main-content">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <span>Stand Blog HTML5 Template</span>
-                            <h4>Creative HTML Template For Bloggers!</h4>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="main-button">
-                                <a href="https://templatemo.com/tm-551-stand-blog" target="_parent">Download Now!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-
-<section class="blog-posts grid-system">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="all-blog-posts">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="blog-post">
-                                <div class="blog-thumb">
-                                    <img src="assets/images/blog-thumb-01.jpg" alt="">
-                                </div>
-                                <div class="down-content">
-                                    <span>Lifestyle</span>
-                                    <a href="post-details.html"><h4>Donec tincidunt leo</h4></a>
-                                    <ul class="post-info">
-                                        <li><a href="#">Admin</a></li>
-                                        <li><a href="#">May 31, 2020</a></li>
-                                        <li><a href="#">12 Comments</a></li>
-                                    </ul>
-                                    <p>Nullam nibh mi, tincidunt sed sapien ut, rutrum hendrerit velit. Integer auctor a mauris sit amet eleifend.</p>
-                                    <div class="post-options">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <ul class="post-tags">
-                                                    <li><i class="fa fa-tags"></i></li>
-                                                    <li><a href="#">Best Templates</a>,</li>
-                                                    <li><a href="#">TemplateMo</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="blog-post">
-                                <div class="blog-thumb">
-                                    <img src="assets/images/blog-thumb-02.jpg" alt="">
-                                </div>
-                                <div class="down-content">
-                                    <span>Lifestyle</span>
-                                    <a href="post-details.html"><h4>Suspendisse et metus</h4></a>
-                                    <ul class="post-info">
-                                        <li><a href="#">Admin</a></li>
-                                        <li><a href="#">May 22, 2020</a></li>
-                                        <li><a href="#">26 Comments</a></li>
-                                    </ul>
-                                    <p>Nullam nibh mi, tincidunt sed sapien ut, rutrum hendrerit velit. Integer auctor a mauris sit amet eleifend.</p>
-                                    <div class="post-options">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <ul class="post-tags">
-                                                    <li><i class="fa fa-tags"></i></li>
-                                                    <li><a href="#">Best Templates</a>,</li>
-                                                    <li><a href="#">TemplateMo</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="blog-post">
-                                <div class="blog-thumb">
-                                    <img src="assets/images/blog-thumb-03.jpg" alt="">
-                                </div>
-                                <div class="down-content">
-                                    <span>Lifestyle</span>
-                                    <a href="post-details.html"><h4>Donec tincidunt leo</h4></a>
-                                    <ul class="post-info">
-                                        <li><a href="#">Admin</a></li>
-                                        <li><a href="#">May 18, 2020</a></li>
-                                        <li><a href="#">42 Comments</a></li>
-                                    </ul>
-                                    <p>Nullam nibh mi, tincidunt sed sapien ut, rutrum hendrerit velit. Integer auctor a mauris sit amet eleifend.</p>
-                                    <div class="post-options">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <ul class="post-tags">
-                                                    <li><i class="fa fa-tags"></i></li>
-                                                    <li><a href="#">Best Templates</a>,</li>
-                                                    <li><a href="#">TemplateMo</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="blog-post">
-                                <div class="blog-thumb">
-                                    <img src="assets/images/blog-thumb-04.jpg" alt="">
-                                </div>
-                                <div class="down-content">
-                                    <span>Lifestyle</span>
-                                    <a href="post-details.html"><h4>Mauris ac dolor ornare</h4></a>
-                                    <ul class="post-info">
-                                        <li><a href="#">Admin</a></li>
-                                        <li><a href="#">May 16, 2020</a></li>
-                                        <li><a href="#">28 Comments</a></li>
-                                    </ul>
-                                    <p>Nullam nibh mi, tincidunt sed sapien ut, rutrum hendrerit velit. Integer auctor a mauris sit amet eleifend.</p>
-                                    <div class="post-options">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <ul class="post-tags">
-                                                    <li><i class="fa fa-tags"></i></li>
-                                                    <li><a href="#">Best Templates</a>,</li>
-                                                    <li><a href="#">TemplateMo</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="blog-post">
-                                <div class="blog-thumb">
-                                    <img src="assets/images/blog-thumb-05.jpg" alt="">
-                                </div>
-                                <div class="down-content">
-                                    <span>Lifestyle</span>
-                                    <a href="post-details.html"><h4>Donec tincidunt leo</h4></a>
-                                    <ul class="post-info">
-                                        <li><a href="#">Admin</a></li>
-                                        <li><a href="#">May 12, 2020</a></li>
-                                        <li><a href="#">16 Comments</a></li>
-                                    </ul>
-                                    <p>Nullam nibh mi, tincidunt sed sapien ut, rutrum hendrerit velit. Integer auctor a mauris sit amet eleifend.</p>
-                                    <div class="post-options">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <ul class="post-tags">
-                                                    <li><i class="fa fa-tags"></i></li>
-                                                    <li><a href="#">Best Templates</a>,</li>
-                                                    <li><a href="#">TemplateMo</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="blog-post">
-                                <div class="blog-thumb">
-                                    <img src="assets/images/blog-thumb-06.jpg" alt="">
-                                </div>
-                                <div class="down-content">
-                                    <span>Lifestyle</span>
-                                    <a href="post-details.html"><h4>Mauris ac dolor ornare</h4></a>
-                                    <ul class="post-info">
-                                        <li><a href="#">Admin</a></li>
-                                        <li><a href="#">May 10, 2020</a></li>
-                                        <li><a href="#">3 Comments</a></li>
-                                    </ul>
-                                    <p>Nullam nibh mi, tincidunt sed sapien ut, rutrum hendrerit velit. Integer auctor a mauris sit amet eleifend.</p>
-                                    <div class="post-options">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <ul class="post-tags">
-                                                    <li><i class="fa fa-tags"></i></li>
-                                                    <li><a href="#">Best Templates</a>,</li>
-                                                    <li><a href="#">TemplateMo</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <ul class="page-numbers">
-                                <li><a href="#">1</a></li>
-                                <li class="active"><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#"><i class="fa fa-angle-double-right"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
+        <h2 class="tm-margin-b-30">Quản lý Tài Khoản</h2>
+
+        <!-- Bảng danh sách tài khoản -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Họ Tên</th>
+                    <th>Email</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.AccountId</td>
+                        <td>@user.AccountName</td>
+                        <td>@user.AccountEmail</td>
+                        <td>
+                            <a href="/account/details/@user.AccountId" class="btn btn-info btn-sm">Xem Chi Tiết</a>
+                            <a href="/account/edit/@user.AccountId" class="btn btn-warning btn-sm">Sửa</a>
+                            <a href="/account/delete/@user.AccountId" class="btn btn-danger btn-sm">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Form thêm tài khoản -->
+        <div class="mb-3">
+            <h3>Thêm Tài Khoản</h3>
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label for="accountName" class="form-label">Họ Tên</label>
+                    <input type="text" class="form-control" id="accountName" name="AccountName" required />
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="sidebar">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="sidebar-item search">
-                                <form id="search_form" name="gs" method="GET" action="#">
-                                    <input type="text" name="q" class="searchText" placeholder="type to search..." autocomplete="on">
-                                </form>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="sidebar-item recent-posts">
-                                <div class="sidebar-heading">
-                                    <h2>Recent Posts</h2>
-                                </div>
-                                <div class="content">
-                                    <ul>
-                                        <li>
-                                            <a href="post-details.html">
-                                                <h5>Vestibulum id turpis porttitor sapien facilisis scelerisque</h5>
-                                                <span>May 31, 2020</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="post-details.html">
-                                                <h5>Suspendisse et metus nec libero ultrices varius eget in risus</h5>
-                                                <span>May 28, 2020</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="post-details.html">
-                                                <h5>Swag hella echo park leggings, shaman cornhole ethical coloring</h5>
-                                                <span>May 14, 2020</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="sidebar-item categories">
-                                <div class="sidebar-heading">
-                                    <h2>Categories</h2>
-                                </div>
-                                <div class="content">
-                                    <ul>
-                                        <li><a href="#">- Nature Lifestyle</a></li>
-                                        <li><a href="#">- Awesome Layouts</a></li>
-                                        <li><a href="#">- Creative Ideas</a></li>
-                                        <li><a href="#">- Responsive Templates</a></li>
-                                        <li><a href="#">- HTML5 / CSS3 Templates</a></li>
-                                        <li><a href="#">- Creative &amp; Unique</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="sidebar-item tags">
-                                <div class="sidebar-heading">
-                                    <h2>Tag Clouds</h2>
-                                </div>
-                                <div class="content">
-                                    <ul>
-                                        <li><a href="#">Lifestyle</a></li>
-                                        <li><a href="#">Creative</a></li>
-                                        <li><a href="#">HTML5</a></li>
-                                        <li><a href="#">Inspiration</a></li>
-                                        <li><a href="#">Motivation</a></li>
-                                        <li><a href="#">PSD</a></li>
-                                        <li><a href="#">Responsive</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mb-3">
+                    <label for="accountEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="accountEmail" name="AccountEmail" required />
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label for="accountPassword" class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" id="accountPassword" name="AccountPassword" required />
+                </div>
+                <div class="mb-3">
+                    <label for="accountRole" class="form-label">Vai trò</label>
+                    <select class="form-control" id="accountRole" name="AccountRole">
+                        <option value="Admin">Admin</option>
+                        <option value="User">User</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Tạo Tài Khoản</button>
+            </form>
         </div>
     </div>
 </section>
