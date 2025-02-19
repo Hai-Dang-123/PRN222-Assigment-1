@@ -1,4 +1,71 @@
 ﻿@page
 @model GroupBoizMVC.Views.ReportPageModel
 @{
+    ViewData["Title"] = "Dashboard Page";
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Quản lý người dùng</a></li>
+                <li><a href="#">Quản lý khóa học</a></li>
+                <li><a href="#">Cài đặt</a></li>
+                <li><a href="#">Đăng xuất</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header>
+                <h1>Admin Dashboard</h1>
+            </header>
+
+            <!-- Stats Section -->
+            <section class="stats">
+                <div class="stat-item">Người dùng: <span>100</span></div>
+                <div class="stat-item">Khóa học: <span>50</span></div>
+                <div class="stat-item">Đơn hàng: <span>200</span></div>
+            </section>
+
+            <!-- Data Table Placeholder -->
+            <section class="data-table">
+                <h2>Danh sách người dùng</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>a@example.com</td>
+                            <td>Active</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Trần Thị B</td>
+                            <td>b@example.com</td>
+                            <td>Inactive</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
