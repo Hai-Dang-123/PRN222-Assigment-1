@@ -14,5 +14,7 @@ namespace GroupBoizBLL.Services.Interface
         Task<ResponseDTO> GetNewsById(string NewsArticleId);
         Task<ResponseDTO> UpdateNewsArticle(NewsArticle updatedNews);
         Task<ResponseDTO> DeleteNews(string newsArticleId);
+
+        Task<ResponseDTO> GetNewsByPeriod(DateTime? startDate, DateTime? endDate);
     }
 }

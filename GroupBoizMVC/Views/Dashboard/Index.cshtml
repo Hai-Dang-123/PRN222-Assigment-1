@@ -1,0 +1,158 @@
+﻿@model List<GroupBoizDAL.Entities.NewsArticle>
+
+@{
+    ViewData["Title"] = "Báo cáo thống kê bài viết";
+    Layout = "_MinimalLayout";
+}
+
+<link href="~/vendor/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet">
+
+<!-- Additional CSS Files -->
+<link rel="stylesheet" href="~/assets/css/fontawesome.css" asp-append-version="true">
+<link rel="stylesheet" href="~/assets/css/templatemo-stand-blog.css" asp-append-version="true">
+<link rel="stylesheet" href="~/assets/css/owl.css" asp-append-version="true">
+
+@* <h2 class="mb-3">Báo cáo thống kê bài viết</h2> *@
+
+@* <!-- Form chọn khoảng thời gian --> *@
+@* <form method="get"> *@
+@*     <div class="row mb-3"> *@
+@*         <div class="col-md-4"> *@
+@*             <label for="startDate" class="form-label">Từ ngày:</label> *@
+@*             <input type="date" id="startDate" name="startDate" class="form-control" *@
+@*                    value="@ViewData["StartDate"]" required> *@
+@*         </div> *@
+@*         <div class="col-md-4"> *@
+@*             <label for="endDate" class="form-label">Đến ngày:</label> *@
+@*             <input type="date" id="endDate" name="endDate" class="form-control" *@
+@*                    value="@ViewData["EndDate"]" required> *@
+@*         </div> *@
+@*         <div class="col-md-4 d-flex align-items-end"> *@
+@*             <button type="submit" class="btn btn-primary">Xem báo cáo</button> *@
+@*         </div> *@
+@*     </div> *@
+@* </form> *@
+
+@* <!-- Bảng hiển thị danh sách bài viết --> *@
+@* @if (Model != null && Model.Any()) *@
+@* { *@
+@*     <table class="table table-bordered table-striped"> *@
+@*         <thead class="table-dark"> *@
+@*             <tr> *@
+@*                 <th>ID</th> *@
+@*                 <th>Tiêu đề</th> *@
+@*                 <th>Ngày tạo</th> *@
+@*                 <th>Nguồn</th> *@
+@*                 <th>Trạng thái</th> *@
+@*             </tr> *@
+@*         </thead> *@
+@*         <tbody> *@
+@*             @foreach (var news in Model) *@
+@*             { *@
+@*                 <tr> *@
+@*                     <td>@news.NewsArticleId</td> *@
+@*                     <td>@news.NewsTitle</td> *@
+@*                     <td>@(news.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td> *@
+@*                     <td>@news.NewsSource</td> *@
+@*                     <td>@(news.NewsStatus == true ? "Đã duyệt" : "Chưa duyệt")</td> *@
+@*                 </tr> *@
+@*             } *@
+@*         </tbody> *@
+@*     </table> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <p class="text-danger">Không có bài viết nào trong khoảng thời gian này.</p> *@
+@* } *@
+
+<h2 class="mb-4 text-center">Báo cáo thống kê bài viết</h2>
+
+<!-- Form chọn khoảng thời gian -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="startDate" class="form-label">Từ ngày:</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control"
+                           value="@ViewData["StartDate"]" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate" class="form-label">Đến ngày:</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control"
+                           value="@ViewData["EndDate"]" required>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-chart-line me-2"></i>Xem báo cáo
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bảng hiển thị danh sách bài viết -->
+@if (Model != null && Model.Any())
+{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tiêu đề</th>
+                        <th>Ngày tạo</th>
+                        <th>Nguồn</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var news in Model)
+                    {
+                        <tr>
+                            <td>@news.NewsArticleId</td>
+                            <td>@news.NewsTitle</td>
+                            <td>@(news.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                            <td>@news.NewsSource</td>
+                            <td>@(news.NewsStatus == true ? "Đã duyệt" : "Chưa duyệt")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning shadow-sm" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>Không có bài viết nào trong khoảng thời gian này.
+    </div>
+}
+
+<!-- Thêm Font Awesome cho icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.75em;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 0.25rem;
+    }
+
+    .btn-primary {
+        border-radius: 0.25rem;
+    }
+</style>
