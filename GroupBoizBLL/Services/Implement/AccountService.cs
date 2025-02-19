@@ -3,6 +3,7 @@ using GroupBoizDAL.Entities;
 using GroupBoizDAL.Repository.Implement;
 using GroupBoizDAL.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,22 +21,7 @@ namespace GroupBoizBLL.Services.Implement
             _accountRepository = accountRepository;
         }
 
-        public async Task<SystemAccount> CreateAccountAsync(SystemAccount account)
-        {
-            if (account == null)
-            {
-                throw new ArgumentNullException(nameof(account));
-            }
 
-            // Kiểm tra email đã tồn tại chưa
-            bool emailExists = await _accountRepository.FindByEmailAsync(account.AccountEmail) != null;
-            if (emailExists)
-            {
-                throw new InvalidOperationException("Email đã tồn tại.");
-            }
-
-            return await _accountRepository.CreateAccountAsync(account); // Lưu tài khoản vào cơ sở dữ liệu
-        }
 
 
         public async Task<SystemAccount> UpdateAccountAsync(short accountId, SystemAccount updatedAccount)
@@ -46,18 +32,36 @@ namespace GroupBoizBLL.Services.Implement
                 throw new KeyNotFoundException("Account not found.");
             }
 
-            existingAccount.AccountName = updatedAccount.AccountName;
-            existingAccount.AccountEmail = updatedAccount.AccountEmail;
-            existingAccount.AccountRole = updatedAccount.AccountRole;
-            existingAccount.AccountPassword = updatedAccount.AccountPassword;
+            if (!string.IsNullOrEmpty(updatedAccount.AccountName))
+                existingAccount.AccountName = updatedAccount.AccountName;
+
+            if (!string.IsNullOrEmpty(updatedAccount.AccountEmail))
+                existingAccount.AccountEmail = updatedAccount.AccountEmail;
+
+            if (!string.IsNullOrEmpty(updatedAccount.AccountPassword))
+                existingAccount.AccountPassword = updatedAccount.AccountPassword;
 
             await _accountRepository.UpdateAccountAsync(existingAccount);
+            await _accountRepository.SaveChangesAsync();  // Đảm bảo thay đổi được lưu
+
             return existingAccount;
         }
+
+
         public async Task<IEnumerable<SystemAccount>> GetAllAccountsAsync()
         {
             return await _accountRepository.GetAllAsync();
         }
+
+        public Task<SystemAccount> CreateAccountAsync(SystemAccount account)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<bool> DeleteAccountAsync(short accountId)
+        {
+            return await _accountRepository.DeleteAccountAsync(accountId);
+        }
+
 
     }
 }

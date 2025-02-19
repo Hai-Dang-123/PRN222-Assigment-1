@@ -16,6 +16,8 @@ namespace GroupBoizDAL.Repository.Interface
         Task UpdateAccountAsync(SystemAccount existingAccount);
 
         Task<IEnumerable<SystemAccount>> GetAllAsync();
+        Task<int> SaveChangesAsync();
+        Task<bool> DeleteAccountAsync(short accountId);
 
     }
 }

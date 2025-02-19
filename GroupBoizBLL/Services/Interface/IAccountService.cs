@@ -12,5 +12,7 @@ namespace GroupBoizBLL.Services.Interface
         Task<SystemAccount> CreateAccountAsync(SystemAccount account);
         Task<SystemAccount> UpdateAccountAsync(short accountId, SystemAccount updatedAccount);
         Task<IEnumerable<SystemAccount>> GetAllAccountsAsync();
+        //Task<bool> DeleteAccountAsync(short id);
+        Task<bool> DeleteAccountAsync(short accountId);
     }
 }

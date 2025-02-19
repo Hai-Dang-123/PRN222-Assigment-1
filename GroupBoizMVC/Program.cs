@@ -1,4 +1,4 @@
-
+﻿
 using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
 using GroupBoizDAL.Data;
@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 
-// Th�m DbContext v�o DI container
+// Thêm DbContext vào DI container
 builder.Services.AddDbContext<FUNewsManagementContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -39,6 +39,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers(); // Đảm bảo API hỗ trợ DELETE
+});
 
 app.MapControllerRoute(
     name: "default",
