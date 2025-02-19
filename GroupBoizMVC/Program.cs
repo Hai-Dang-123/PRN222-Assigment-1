@@ -1,51 +1,89 @@
-﻿
-using GroupBoizBLL.Services.Implement;
+﻿using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
+using GroupBoizBLL.Utilities;
+using GroupBoizCommon.Setting;
 using GroupBoizDAL.Data;
 using GroupBoizDAL.UnitOfWork;
-using GroupBoizMVC.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-// Đăng ký ICategoryService với CategoryService
+// 🟢 Đăng ký các dịch vụ
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITagService, TagService>();
-//
+builder.Services.AddScoped<INewsArticleService, NewsArticleService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<UserUtility>();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// Đăng ký IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
-
-
-
-// Thêm DbContext vào DI container
+// 🟢 Đăng ký DbContext
 builder.Services.AddDbContext<FUNewsManagementContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var app = builder.Build();
+// 🟢 Đăng ký Authentication (JWT)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = JWTSettingModel.Issuer,
+            ValidAudience = JWTSettingModel.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSettingModel.SecretKey)),
+            RoleClaimType = ClaimTypes.Role
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                {
+                    context.Response.Headers.Add("Token-Expired", "true");
+                }
+                return Task.CompletedTask;
+            }
+        };
+    });
 
-// Configure the HTTP request pipeline.
+// 🟢 Đăng ký Authorization
+builder.Services.AddAuthorization();
+
+// 🟢 Thêm Controllers với Views
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build(); // ✅ Chỉ gọi Build 1 lần!
+
+// 🟢 Middleware phải đăng ký sau app.Build()
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseMiddleware<GroupBoizCommon.Middleware.JWTMiddleware>();
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication(); // ✅ Phải đặt trước Authorization
 app.UseAuthorization();
 
+// 🟢 Map routes
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 
-app.Run();
+app.Run(); // ✅ Chỉ gọi Run 1 lần!

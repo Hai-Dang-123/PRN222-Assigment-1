@@ -1,0 +1,116 @@
+﻿@model List<GroupBoizDAL.Entities.Tag>
+
+@{
+    ViewData["Title"] = "Tag Management";
+}
+
+<h2>Tag Management</h2>
+
+<!-- Button mở modal thêm Tag -->
+<button class="btn btn-primary" onclick="openCreateModal()">Add Tag</button>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Note</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tag in Model)
+        {
+            <tr>
+                <td>@tag.TagId</td>
+                <td>@tag.TagName</td>
+                <td>@tag.Note</td>
+                <td>
+                    <button class="btn btn-warning" onclick="openEditModal(@tag.TagId, '@tag.TagName', '@tag.Note')">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteTag(@tag.TagId)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal thêm/sửa Tag -->
+<div id="tagModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tag</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="tagId">
+                <div class="mb-3">
+                    <label>Name</label>
+                    <input type="text" id="tagName" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Note</label>
+                    <input type="text" id="tagNote" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="saveTag">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCreateModal() {
+        document.getElementById('tagId').value = "";
+        document.getElementById('tagName').value = "";
+        document.getElementById('tagNote').value = "";
+        new bootstrap.Modal(document.getElementById('tagModal')).show();
+    }
+
+    function openEditModal(id, name, note) {
+        document.getElementById('tagId').value = id;
+        document.getElementById('tagName').value = name;
+        document.getElementById('tagNote').value = note;
+        new bootstrap.Modal(document.getElementById('tagModal')).show();
+    }
+
+    document.getElementById('saveTag').addEventListener('click', function () {
+        const tag = {
+            TagId: document.getElementById('tagId').value || 0,
+            TagName: document.getElementById('tagName').value,
+            Note: document.getElementById('tagNote').value
+        };
+
+        const url = tag.TagId == 0 ? "/Tag/Create" : "/Tag/Update";
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tag)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(error => alert('Error saving tag!'));
+    });
+
+    function deleteTag(tagId) {
+        if (confirm('Are you sure you want to delete this tag?')) {
+            fetch('/Tag/Delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tagId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+            .catch(error => alert('Error deleting tag!'));
+        }
+    }
+</script>

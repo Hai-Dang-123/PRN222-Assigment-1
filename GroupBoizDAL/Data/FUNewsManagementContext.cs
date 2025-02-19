@@ -26,6 +26,7 @@ public partial class FUNewsManagementContext : DbContext
 
 
     public virtual DbSet<Tag> Tag { get; set; }
+    //public virtual DbSet<NewsTag> NewsTag { get; set; }
 
     public DbSet<RefreshToken> RefreshToken { get; set; }
 
@@ -83,14 +84,18 @@ public partial class FUNewsManagementContext : DbContext
         });
         //Token
         modelBuilder.Entity<RefreshToken>()
-            .HasIndex(rt => rt.UserId);
+            .HasIndex(rt => rt.AccountId);
 
         modelBuilder.Entity<RefreshToken>()
             .HasOne<SystemAccount>()
             .WithMany()
-            .HasForeignKey(rt => rt.UserId)
+            .HasForeignKey(rt => rt.AccountId)
             .OnDelete(DeleteBehavior.Cascade);
         //User-role
+
+        
+
+       
 
         OnModelCreatingPartial(modelBuilder);
     }

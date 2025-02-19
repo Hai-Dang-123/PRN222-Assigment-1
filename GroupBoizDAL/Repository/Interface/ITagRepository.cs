@@ -9,5 +9,6 @@ namespace GroupBoizDAL.Repository.Interface
 {
     public interface ITagRepository : IGenericRepository<Tag>
     {
+        Task<Tag?> GetByIdAsync(int tagId);
     }
 }

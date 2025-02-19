@@ -16,6 +16,10 @@ namespace GroupBoizDAL.Repository.Implement
         {
             _context = context;
         }
-    
+        public async Task<Tag?> GetByIdAsync(int tagId)
+        {
+            return await _context.Tag.FindAsync(tagId);
+        }
+
     }
 }

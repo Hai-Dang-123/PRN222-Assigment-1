@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GroupBoizBLL.Services.Interface;
 using GroupBoizCommon.DTO;
+using GroupBoizDAL.Entities;
 using GroupBoizDAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,25 +19,93 @@ namespace GroupBoizBLL.Services.Implement
             _unitOfWork = unitOfWork;
         }
 
-    public async Task<ResponseDTO> GetAll()
+        // Lấy danh sách Category
+        public async Task<ResponseDTO> GetAll()
         {
             try
             {
-                var newsList = await _unitOfWork.CategoryRepo.ToListAsync();  // Lấy danh sách tin tức từ database
+                var categoryList = await _unitOfWork.CategoryRepo.GetAll().ToListAsync();
 
-                if (newsList == null || !newsList.Any())
+                if (!categoryList.Any())
                 {
-                    return new ResponseDTO("No news found", 404, false); // Nếu không có tin tức, trả về thông báo và mã 404
+                    return new ResponseDTO("No categories found", 404, false);
                 }
-                Console.WriteLine(newsList);
 
-                return new ResponseDTO("News found successfully", 200, true, newsList); // Trả về thành công, mã 200 và dữ liệu tin tức
+                return new ResponseDTO("Categories retrieved successfully", 200, true, categoryList);
             }
             catch (Exception ex)
             {
-                return new ResponseDTO($"Error: {ex.Message}", 500, false); // Nếu có lỗi, trả về thông báo lỗi và mã 500
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
+
+        // Thêm Category
+        public async Task<ResponseDTO> Create(Category category)
+        {
+            try
+            {
+                if (category == null)
+                {
+                    return new ResponseDTO("Invalid category data", 400, false);
+                }
+
+                await _unitOfWork.CategoryRepo.AddAsync(category);
+                await _unitOfWork.SaveAsync();
+
+                return new ResponseDTO("Category created successfully", 201, true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
+
+        public async Task<ResponseDTO> UpdateCategory(Category category)
+        {
+            try
+            {
+                var existingCategory = await _unitOfWork.CategoryRepo.GetByIdAsync(category.CategoryId);
+                if (existingCategory == null)
+                    return new ResponseDTO("Category not found", 404, false);
+
+                // Cập nhật thông tin từ category nhận vào
+                existingCategory.CategoryName = category.CategoryName;
+                existingCategory.CategoryDesciption = category.CategoryDesciption;
+                existingCategory.IsActive = category.IsActive;
+
+                _unitOfWork.CategoryRepo.Update(existingCategory);
+                await _unitOfWork.SaveAsync();
+
+                return new ResponseDTO("Category updated successfully", 200, true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
+
+
+
+        // Xóa Category
+        public async Task<ResponseDTO> Delete(short categoryId)
+        {
+            try
+            {
+                var category = await _unitOfWork.CategoryRepo.GetByIdAsync(categoryId);
+                if (category == null)
+                {
+                    return new ResponseDTO("Category not found", 404, false);
+                }
+
+                _unitOfWork.CategoryRepo.Delete(category);
+                await _unitOfWork.SaveAsync();
+
+                return new ResponseDTO("Category deleted successfully", 200, true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
     }
-    
 }

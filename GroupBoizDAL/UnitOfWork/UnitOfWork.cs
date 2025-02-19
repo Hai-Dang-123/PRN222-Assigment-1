@@ -22,6 +22,7 @@ namespace GroupBoizDAL.UnitOfWork;
         TokenRepo = new TokenRepository(_context);
         CategoryRepo = new CategoryRepository(_context);
         TagRepo = new TagRepository(_context);
+        NewsArticleRepo = new NewsArticleRepository(_context);
             
         }
         
@@ -29,6 +30,7 @@ namespace GroupBoizDAL.UnitOfWork;
         public ITokenRepository TokenRepo { get; set; }
         public ICategoryRepository CategoryRepo { get; set; }
         public ITagRepository TagRepo { get; set; }
+    public INewsArticleRepository NewsArticleRepo { get; set; }
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();

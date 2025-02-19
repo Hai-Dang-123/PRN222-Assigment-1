@@ -29,6 +29,7 @@ namespace GroupBoizDAL.Entities
         public short? CategoryId { get; set; }
 
         public bool? NewsStatus { get; set; }
+      
 
         [Column("CreatedByID")]
         public short? CreatedById { get; set; }
@@ -38,6 +39,9 @@ namespace GroupBoizDAL.Entities
 
         [Column(TypeName = "datetime")]
         public DateTime? ModifiedDate { get; set; }
+        [StringLength(500)]
+        public string? ImageUrl { get; set; }
+
 
         [ForeignKey("CategoryId")]
         [InverseProperty("NewsArticles")]
@@ -50,5 +54,6 @@ namespace GroupBoizDAL.Entities
         [ForeignKey("NewsArticleId")]
         [InverseProperty("NewsArticles")]
         public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
+
     }
 }

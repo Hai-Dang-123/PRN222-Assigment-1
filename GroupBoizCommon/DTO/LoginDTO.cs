@@ -10,5 +10,6 @@ namespace GroupBoizCommon.DTO
     {
         public string AccountEmail { get; set; }
         public string AccountPassword { get; set; }
+        public string? Message { get; set; }
     }
 }

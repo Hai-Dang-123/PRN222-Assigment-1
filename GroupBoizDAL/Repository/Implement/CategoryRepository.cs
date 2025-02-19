@@ -16,6 +16,15 @@ namespace GroupBoizDAL.Repository.Implement
         {
             _context = context;
         }
-    
+        // 🔥 Hàm mới để lấy Category bằng short ID
+        public async Task<Category?> GetByIdAsync(short categoryId)
+        {
+            return await _context.Category.FindAsync(categoryId);
+        }
+        public void Update(Category category)
+        {
+            _context.Category.Update(category);
+        }
+
     }
 }

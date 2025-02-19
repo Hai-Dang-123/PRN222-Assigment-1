@@ -147,19 +147,32 @@ namespace GroupBoizDAL.Repository.Implement
         // Lấy Max ID kiểu short
         public async Task<short?> GetMaxIdByShort(string idColumnName)
         {
+            if (!await _dbSet.AnyAsync())
+            {
+                return 0;
+            }
             return await _dbSet.MaxAsync(e => EF.Property<short>(e, idColumnName));
         }
 
         // Lấy Max ID kiểu int
         public async Task<int?> GetMaxIdByInt(string idColumnName)
         {
+            if (!await _dbSet.AnyAsync())
+            {
+                return null;
+            }
             return await _dbSet.MaxAsync(e => EF.Property<int>(e, idColumnName));
         }
 
         // Lấy Max ID kiểu string
         public async Task<string> GetMaxIdByString(string idColumnName)
         {
+            if (!await _dbSet.AnyAsync())
+            {
+                return null;
+            }
             return await _dbSet.MaxAsync(e => EF.Property<string>(e, idColumnName));
         }
+
     }
 }

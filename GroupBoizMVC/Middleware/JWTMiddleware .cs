@@ -36,13 +36,16 @@ namespace GroupBoizCommon.Middleware
                 catch (SecurityTokenExpiredException)
                 {
                     context.Response.StatusCode = 401;
+                    Console.WriteLine("hết hạn rồi");
                     await context.Response.WriteAsync("Token expired.");
+                    context.Response.Redirect("/Home/Error");
                     return;
                 }
                 catch (Exception ex)
                 {
                     context.Response.StatusCode = 401;
                     await context.Response.WriteAsync($"Error: {ex.Message}");
+                    context.Response.Redirect("/Home/Error");
                     return;
                 }
             }

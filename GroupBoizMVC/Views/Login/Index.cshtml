@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Login";
-    Layout = "_MinimalLayout"; 
+    Layout = "_MinimalLayout";
 }
 
 <link rel="stylesheet" href="~/assets/css/sign-In-Up.css" />
@@ -13,22 +13,25 @@
     <div class="container">
         <div class="signin-content">
             <div class="signin-image">
-                <figure><img src="~/images/signin-image.jpg" alt="sign in image" /></figure>
+                <figure><img src="~/assets/images/signin-image.jpg" alt="sign in image" /></figure>
                 <a href="/Register" class="signup-image-link">Create an account</a>
             </div>
 
             <div class="signin-form">
                 <h2 class="form-title">Sign In</h2>
 
-                @if (!string.IsNullOrEmpty(Model.Message))
+                <!-- Hiển thị thông báo lỗi nếu có -->
+                @if (!string.IsNullOrEmpty(ViewBag.Message))
                 {
-                    <div class="alert alert-danger mt-2">@Model.Message</div>
+                    <div class="alert alert-danger mt-2">@ViewBag.Message</div>
                 }
 
+                <!-- Form đăng nhập -->
                 <form method="post" class="register-form" id="login-form">
                     <div class="form-group">
                         <label for="Email"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                        <input type="email" name="AccountEmail" id="Email" placeholder="Your Email" value="@Model.AccountEmail" />
+                        <input type="email" name="AccountEmail" id="Email" placeholder="Your Email"
+                               value="@(Model != null ? Model.AccountEmail : "")" />
                     </div>
                     <div class="form-group">
                         <label for="Password"><i class="zmdi zmdi-lock"></i></label>
@@ -38,6 +41,9 @@
                         <input type="submit" name="signin" id="signin" class="form-submit" value="log in" />
                     </div>
                 </form>
+
+
+                <!-- Login with social media -->
                 <div class="social-login">
                     <span class="social-label">Or login with</span>
                     <ul class="socials">

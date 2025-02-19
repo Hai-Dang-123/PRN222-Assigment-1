@@ -16,12 +16,12 @@ namespace GroupBoizCommon.Setting
         /// <summary>
         /// The expire days of the jwt to generate access token.
         /// </summary>
-        public static int ExpireDayAccessToken { get; set; } = 1;
+        public static int ExpireDayAccessToken { get; set; } = 15;
 
         /// <summary>
         /// The expire days of the jwt to generate refresh token.
         /// </summary>
-        public static int ExpireDayRefreshToken { get; set; } = 30;
+        public static int ExpireDayRefreshToken { get; set; } = 7;
 
         /// <summary>
         /// The issuer of the token.

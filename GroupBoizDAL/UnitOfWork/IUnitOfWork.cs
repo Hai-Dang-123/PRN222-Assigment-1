@@ -15,6 +15,7 @@ public interface IUnitOfWork : IDisposable
 
     ICategoryRepository CategoryRepo { get; }
     ITagRepository TagRepo { get; }
+    INewsArticleRepository NewsArticleRepo { get; }
     Task<int> SaveAsync();
     Task<bool> SaveChangeAsync();
 }

@@ -21,7 +21,7 @@ namespace GroupBoizBLL.Services.Implement
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(JWTSettingModel.ExpireDayAccessToken),
+                Expires = DateTime.UtcNow.AddMinutes(JWTSettingModel.ExpireDayAccessToken),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = JWTSettingModel.Issuer, // Thêm Issuer
                 Audience = JWTSettingModel.Audience // Thêm Audience

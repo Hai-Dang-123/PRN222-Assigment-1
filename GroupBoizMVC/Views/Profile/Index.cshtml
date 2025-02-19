@@ -1,0 +1,59 @@
+﻿@model GroupBoizDAL.Entities.SystemAccount
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h2>Profile</h2>
+
+<div class="card">
+    <div class="card-body">
+        <input type="hidden" id="accountId" value="@Model.AccountId">
+
+        <div class="mb-3">
+            <label>Account Name</label>
+            <input type="text" id="accountName" class="form-control" value="@Model.AccountName">
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" id="accountEmail" class="form-control" value="@Model.AccountEmail">
+        </div>
+
+        <div class="mb-3">
+            <label>Role</label>
+            <input type="number" id="accountRole" class="form-control" value="@Model.AccountRole">
+        </div>
+
+        <div class="mb-3">
+            <label>Password</label>
+            <input type="password" id="accountPassword" class="form-control" value="@Model.AccountPassword">
+        </div>
+
+        <button class="btn btn-success" id="saveProfile">Save</button>
+    </div>
+</div>
+
+<script>
+document.getElementById('saveProfile').addEventListener('click', function () {
+    const account = {
+        AccountId: document.getElementById('accountId').value,
+        AccountName: document.getElementById('accountName').value,
+        AccountEmail: document.getElementById('accountEmail').value,
+        AccountRole: document.getElementById('accountRole').value,
+        AccountPassword: document.getElementById('accountPassword').value
+    };
+
+    fetch("/Profile/Update", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(account)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    })
+    .catch(error => alert('Error updating profile!'));
+});
+</script>

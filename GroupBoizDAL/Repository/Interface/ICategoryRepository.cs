@@ -9,5 +9,7 @@ namespace GroupBoizDAL.Repository.Interface
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
+        Task<Category?> GetByIdAsync(short categoryId);
+        void Update(Category category);
     }
 }

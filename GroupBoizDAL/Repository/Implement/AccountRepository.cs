@@ -32,6 +32,10 @@ namespace GroupBoizDAL.Repository.Implement
 
             return maxAccountId;
         }
+        public async Task<SystemAccount> GetByShortIdAsync(short id)
+        {
+            return await _context.SystemAccount.FirstOrDefaultAsync(a => a.AccountId == id);
+        }
 
     }
 }

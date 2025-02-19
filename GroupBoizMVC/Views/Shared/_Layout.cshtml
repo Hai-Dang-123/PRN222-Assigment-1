@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@inject GroupBoizBLL.Utilities.UserUtility UserUtility
+
+@{
+    var userRole = UserUtility.GetRoleFromToken();
+    var userName = UserUtility.GetFullNameFromToken();
+}
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,20 +15,22 @@
     <title>@(ViewData["Title"])  - GroupBoizMVC</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet">
 
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="~/assets/css/fontawesome.css">
-    <link rel="stylesheet" href="~/assets/css/templatemo-stand-blog.css">
-    <link rel="stylesheet" href="~/assets/css/owl.css">
+    <link rel="stylesheet" href="~/assets/css/fontawesome.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/assets/css/templatemo-stand-blog.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/assets/css/owl.css" asp-append-version="true">
 </head>
 <body>
+    <base href="/" />
     <!-- Header -->
     <header class="">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand" href="index.html"><h2>Stand Blog<em>.</em></h2></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
@@ -31,40 +41,72 @@
                                 <span class="sr-only">(current)</span>
                             </a>
                         </li>
-                        @* ------------------------------------------------ *@
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Index">Account Management</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="News" asp-action="Index">News Management</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Category" asp-action="Index">Category Management</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Tag" asp-action="Index">Tag Management</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Report" asp-action="Index">Reports</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="News" asp-action="Index">News History</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
-                        </li>
-                        @*------------------------------------------------ *@
+
+                        @if (string.IsNullOrEmpty(userRole)) // Chưa đăng nhập
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
+                            </li>
+
+                            @if (userRole == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Account" asp-action="Index">Account Management</a>
+                                </li>
+                               
+                            }
+
+                            @if (userRole == "Admin" || userRole == "Staff")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="News" asp-action="Index">News Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Category" asp-action="Index">Category Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Tag" asp-action="Index">Tag Management</a>
+                                </li>
+                            }
+
+                            @if (userRole == "Admin" || userRole == "Staff")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="News" asp-action="History">News History</a>
+                                </li>
+                            }
+                            @if (userRole == "Lecturer") // 🟢 Thêm mục cho Lecturer
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="News" asp-action="Index">View News</a>
+                                </li>
+                            }
+
+                            <!-- Dropdown User -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                                   aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-user"></i> @userName
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout">Logout</a>
+                                </div>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -96,15 +138,15 @@
     </footer>
 
     <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Additional Scripts -->
-    <script src="assets/js/custom.js"></script>
-    <script src="assets/js/owl.js"></script>
-    <script src="assets/js/slick.js"></script>
-    <script src="assets/js/isotope.js"></script>
-    <script src="assets/js/accordions.js"></script>
+    <script src="~/assets/js/custom.js"></script>
+    <script src="~/assets/js/owl.js"></script>
+    <script src="~/assets/js/slick.js"></script>
+    <script src="~/assets/js/isotope.js"></script>
+    <script src="~/assets/js/accordions.js"></script>
 
     <script>
         let cleared = [0, 0, 0]; // Initialize cleared array
@@ -116,6 +158,37 @@
             }
         }
     </script>
+    <script>
+        let lastActivity = Date.now();
+
+        document.addEventListener("mousemove", () => lastActivity = Date.now());
+        document.addEventListener("keydown", () => lastActivity = Date.now());
+
+        async function checkToken() {
+            try {
+                const response = await fetch('/Auth/CheckToken', {
+                    method: 'GET',
+                    credentials: 'include' // Gửi cookie cùng request
+                });
+
+                if (response.status === 401) {
+                    // console.log("⚠️ Token hết hạn, chuyển hướng...");
+                    window.location.href = "/Auth/Login";
+                }
+            } catch (error) {
+                // console.error("❌ Lỗi khi kiểm tra token:", error);
+                window.location.href = "/Auth/Login";
+            }
+        }
+
+        setInterval(() => {
+            if (Date.now() - lastActivity < 60000) { // Nếu có hoạt động trong 60s qua
+                checkToken();
+            }
+        }, 60000);
+    </script>
+
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

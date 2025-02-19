@@ -8,7 +8,7 @@ public class RefreshToken
     public short RefreshTokenId { get; set; } // Khóa chính cho RefreshToken
 
     [Required(ErrorMessage = "UserId is required")]
-    public short UserId { get; set; } // Khóa ngoại liên kết đến người dùng
+    public short AccountId { get; set; } // Khóa ngoại liên kết đến người dùng
 
     [Required(ErrorMessage = "RefreshTokenId is required")]
     public string RefreshTokenKey { get; set; } // Giá trị refresh token

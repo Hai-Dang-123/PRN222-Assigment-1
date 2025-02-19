@@ -21,7 +21,7 @@ namespace GroupBoizDAL.Repository.Implement
         {
             // lấy token đúng id và chưa bị thu hồi
             return await _context.RefreshToken
-                .Where(rt => rt.UserId == userId && !rt.IsRevoked)
+                .Where(rt => rt.AccountId == userId && !rt.IsRevoked)
                 .FirstOrDefaultAsync();
         }
         public async Task<RefreshToken?> GetRefreshTokenByKey(string refreshTokenKey)
