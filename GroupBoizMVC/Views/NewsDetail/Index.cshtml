@@ -69,22 +69,31 @@
 
                                     <div class="down-content">
                                         <span id="news-category">@(ViewBag.News.Category?.CategoryName ?? "No Category")</span>
-                                        <a href="#"><h4 id="news-title">@(ViewBag.News.NewsTitle ?? "No Title Available")</h4></a>
+                                        <h4 id="news-title">@(ViewBag.News.NewsTitle ?? "No Title Available")</h4>
                                         <ul class="post-info">
-                                            <li><a href="#" id="news-category-name">@(ViewBag.News.Category?.CategoryName ?? "Unknown Category")</a></li>
-                                            <li><a href="#" id="news-date">@(ViewBag.News.CreatedDate?.ToString("yyyy-MM-dd") ?? "Unknown Date")</a></li>
+                                            <li><span id="news-category-name">@(ViewBag.News.Category?.CategoryName ?? "Unknown Category")</span></li>
+                                            <li><span id="news-date">@(ViewBag.News.CreatedDate?.ToString("yyyy-MM-dd") ?? "Unknown Date")</span></li>
+
                                         </ul>
                                         <p id="news-content">@(ViewBag.News.NewsContent ?? "No Content Available")</p>
 
                                         <div class="post-options">
                                             <div class="row">
                                                 <div class="col-6">
-                                                    <button class="btn btn-warning" id="edit-button">Edit</button>
-                                                    <button class="btn btn-danger" id="delete-button">Delete</button>
+                                                    @if (ViewBag.Role != null && ViewBag.AccountId != null && ViewBag.News?.CreateById != null)
+                                                    {
+                                                        if (ViewBag.Role != "Lecturer" && ViewBag.Role != "User" && ViewBag.AccountId == ViewBag.News.CreateById)
+                                                        {
+                                                            <button class="btn btn-warning" id="edit-button">Edit</button>
+                                                            <button class="btn btn-danger" id="delete-button">Delete</button>
+                                                        }
+                                                    }
                                                     <button class="btn btn-success d-none" id="save-button">Save</button>
                                                 </div>
                                             </div>
                                         </div>
+
+
                                     </div>
                                 }
                                 else
@@ -140,8 +149,9 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="sidebar-item search">
-                                <form id="search_form" name="gs" method="GET" action="#">
-                                    <input type="text" name="q" class="searchText" placeholder="type to search..." autocomplete="on">
+                                <form id="search_form" method="GET" action="/Search">
+                                    <input type="text" name="q" class="searchText" placeholder="Type to search..." autocomplete="on">
+                                    <button type="submit" class="btn btn-primary">Search</button>
                                 </form>
                             </div>
                         </div>

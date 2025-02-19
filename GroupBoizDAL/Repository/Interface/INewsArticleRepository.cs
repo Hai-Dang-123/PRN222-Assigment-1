@@ -13,6 +13,8 @@ namespace GroupBoizDAL.Repository.Interface
         Task<NewsArticle?> GetNewArticleByIdWithTagAsync(string id);
         Task DeleteNewsAsync(NewsArticle newsArticle);
 
-
+        Task<List<NewsArticle>> SearchByTitleAsync(string title);
+        Task<List<NewsArticle>> GetByCategoryAsync(int categoryId);
+        Task<List<NewsArticle>> GetByTagAsync(int tagId);
     }
 }

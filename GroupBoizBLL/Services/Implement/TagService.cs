@@ -52,19 +52,14 @@ namespace GroupBoizBLL.Services.Implement
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
-        public async Task<ResponseDTO> Create(Tag tag)
+        public async Task<int> GetMaxTagIdAsync()
         {
-            try
-            {
-                await _unitOfWork.TagRepo.AddAsync(tag);
-                await _unitOfWork.SaveAsync();
+            return await _unitOfWork.TagRepo.GetMaxTagIdAsync();
+        }
 
-                return new ResponseDTO("Tag created successfully", 201, true);
-            }
-            catch (Exception ex)
-            {
-                return new ResponseDTO($"Error: {ex.Message}", 500, false);
-            }
+        public async Task<bool> CreateAsync(Tag tag)
+        {
+            return await _unitOfWork.TagRepo.CreateAsync(tag);
         }
         public async Task<ResponseDTO> UpdateTag(Tag tag)
         {

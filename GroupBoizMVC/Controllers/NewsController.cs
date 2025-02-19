@@ -42,7 +42,29 @@ namespace GroupBoizMVC.Controllers
                 return View();
             }
         }
-        
+        public async Task<IActionResult> ByCategory(int id)
+        {
+            var articles = await _newsArticleService.GetByCategoryAsync(id);
+            var categoryResponse = await _categoryService.GetAll();
+            var tagResponse = await _tagService.GetAllTags();
+            ViewBag.News = articles;
+            ViewBag.Category = categoryResponse.Result;  // Truyền categories vào view
+            ViewBag.Tag = tagResponse.Result;  // Truyền tags vào view
+            return View("Index");
+        }
+
+        public async Task<IActionResult> ByTag(int id)
+        {
+            var articles = await _newsArticleService.GetByTagAsync(id);
+            var categoryResponse = await _categoryService.GetAll();
+            var tagResponse = await _tagService.GetAllTags();
+            ViewBag.News = articles;
+            ViewBag.Category = categoryResponse.Result;  // Truyền categories vào view
+            ViewBag.Tag = tagResponse.Result;  // Truyền tags vào view
+            return View("Index");
+        }
+
+
 
     }
 }

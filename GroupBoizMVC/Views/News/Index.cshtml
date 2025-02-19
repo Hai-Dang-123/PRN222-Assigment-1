@@ -100,10 +100,12 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="sidebar-item search">
-                                <form id="search_form" name="gs" method="GET" action="#">
-                                    <input type="text" name="q" class="searchText" placeholder="type to search..." autocomplete="on">
+                                <form id="search_form" method="GET" action="/Search">
+                                    <input type="text" name="q" class="searchText" placeholder="Type to search..." autocomplete="on">
+                                    <button type="submit" class="btn btn-primary">Search</button>
                                 </form>
                             </div>
+
                         </div>
                         @* <div class="col-lg-12"> *@
                         @*     <div class="sidebar-item recent-posts"> *@
@@ -145,7 +147,11 @@
                                         {
                                             foreach (var category in ViewBag.Category as List<GroupBoizDAL.Entities.Category>)
                                             {
-                                                <li><a href="#">- @category.CategoryName</a></li>
+                                                <li>
+                                                    <a href="/News/ByCategory/@category.CategoryId">
+                                                        - @category.CategoryName 
+                                                    </a>
+                                                </li>
                                             }
                                         }
                                         else
@@ -168,7 +174,11 @@
                                         {
                                             foreach (var tag in ViewBag.Tag as List<GroupBoizDAL.Entities.Tag>)
                                             {
-                                                <li><a href="#">@tag.TagName</a></li>
+                                                <li>
+                                                    <a href="/News/ByTag/@tag.TagId">
+                                                        @tag.TagName 
+                                                    </a>
+                                                </li>
                                             }
                                         }
                                         else
@@ -179,6 +189,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

@@ -3,6 +3,7 @@ using GroupBoizBLL.Services.Interface;
 using GroupBoizDAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GroupBoizMVC.Controllers
@@ -70,22 +71,15 @@ namespace GroupBoizMVC.Controllers
 
         // Xóa category
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] dynamic data)
+        public async Task<IActionResult> Delete([FromBody] int categoryId) // 🔹 Nhận trực tiếp số nguyên
         {
-            if (data == null || data.categoryId == null)
-            {
-                return Json(new { success = false, message = "Invalid request!" });
-            }
+            var response = await _categoryService.Delete((short)categoryId);
 
-            short categoryId = (short)data.categoryId;
-            var response = await _categoryService.Delete(categoryId);
-
-            if (response.IsSuccess)
-            {
-                return Json(new { success = true, message = "Category deleted successfully!" });
-            }
-
-            return Json(new { success = false, message = response.Message });
+            return Json(new { success = response.IsSuccess, message = response.IsSuccess ? "Category deleted successfully!" : response.Message });
         }
+
+
+
+
     }
 }

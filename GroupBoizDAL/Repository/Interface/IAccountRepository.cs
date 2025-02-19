@@ -12,5 +12,11 @@ namespace GroupBoizDAL.Repository.Interface
         Task<SystemAccount> FindByEmailAsync(string email);
         Task<short> GetMaxAccountIdAsync();
         Task<SystemAccount> GetByShortIdAsync(short id);
+        Task UpdateAccountAsync(SystemAccount existingAccount);
+
+        Task<IEnumerable<SystemAccount>> GetAllAsync();
+        Task<int> SaveChangesAsync();
+        Task<bool> DeleteAccountAsync(short accountId);
+        Task<SystemAccount> FindByIdAsync(short accountId);
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GroupBoizDAL.Data;
 using GroupBoizDAL.Entities;
 using GroupBoizDAL.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupBoizDAL.Repository.Implement
 {
@@ -19,6 +20,17 @@ namespace GroupBoizDAL.Repository.Implement
         public async Task<Tag?> GetByIdAsync(int tagId)
         {
             return await _context.Tag.FindAsync(tagId);
+        }
+        public async Task<int> GetMaxTagIdAsync()
+        {
+            return await _context.Tag.MaxAsync(t => (int?)t.TagId) ?? 0;
+        }
+
+        public async Task<bool> CreateAsync(Tag tag)
+        {
+            await _context.Tag.AddAsync(tag);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
     }

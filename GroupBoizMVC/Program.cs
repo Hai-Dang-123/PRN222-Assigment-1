@@ -81,6 +81,11 @@ app.UseRouting();
 app.UseAuthentication(); // ✅ Phải đặt trước Authorization
 app.UseAuthorization();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers(); // Đảm bảo API hỗ trợ DELETE
+});
+
 // 🟢 Map routes
 app.MapControllerRoute(
     name: "default",

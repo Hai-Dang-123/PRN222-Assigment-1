@@ -1,83 +1,101 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GroupBoizBLL.Services.Interface;
+using GroupBoizDAL.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroupBoizMVC.Controllers
 {
     public class DashboardController : Controller
     {
+        private readonly INewsArticleService _newsArticleService;
+
+        public DashboardController(INewsArticleService newsArticleService)
+        {
+            _newsArticleService = newsArticleService;
+        }
+
+
         // GET: DashboardController
-        public ActionResult Index()
+        public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
-            return View();
-        }
+            var response = await _newsArticleService.GetNewsByPeriod(startDate, endDate);
 
-        // GET: DashboardController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: DashboardController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: DashboardController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            if (!response.IsSuccess)
             {
-                return RedirectToAction(nameof(Index));
+                ViewData["ErrorMessage"] = response.Message;
+                return View(new List<NewsArticle>()); // Trả về danh sách trống
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(response.Result);
         }
 
-        // GET: DashboardController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        //// GET: DashboardController/Details/5
+        //public ActionResult Details(int id)
+        //{
+        //    return View();
+        //}
 
-        // POST: DashboardController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //// GET: DashboardController/Create
+        //public ActionResult Create()
+        //{
+        //    return View();
+        //}
 
-        // GET: DashboardController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+        //// POST: DashboardController/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create(IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
 
-        // POST: DashboardController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //// GET: DashboardController/Edit/5
+        //public ActionResult Edit(int id)
+        //{
+        //    return View();
+        //}
+
+        //// POST: DashboardController/Edit/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit(int id, IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
+
+        //// GET: DashboardController/Delete/5
+        //public ActionResult Delete(int id)
+        //{
+        //    return View();
+        //}
+
+        //// POST: DashboardController/Delete/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Delete(int id, IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }

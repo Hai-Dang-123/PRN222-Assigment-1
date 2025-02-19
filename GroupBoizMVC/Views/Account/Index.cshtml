@@ -1,87 +1,153 @@
-﻿
+﻿﻿
+@model IEnumerable<GroupBoizDAL.Entities.SystemAccount>
+
 @{
     ViewData["Title"] = "Account Management Page";
 }
-
-
-
 
 <section class="account-management">
     <div class="container">
         <h2 class="tm-margin-b-30">Quản lý Tài Khoản</h2>
 
-        <!-- Button to add a new user -->
-        <div class="mb-3">
-            <a href="/account/add" class="btn btn-primary">Thêm Tài Khoản</a>
-        </div>
-
-        <!-- User List Table -->
-        <table class="table table-striped" id="userTable">
+        <!-- Bảng danh sách tài khoản -->
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>Họ Tên</th>
                     <th>Email</th>
-                    <th>Ngày Tạo</th>
-                    <th>Hành Động</th>
+                    <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Data will be inserted here by JavaScript -->
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.AccountId</td>
+                        <td>@user.AccountName</td>
+                        <td>@user.AccountEmail</td>
+                        <td>
+                            <a href="/account/details/@user.AccountId" class="btn btn-info btn-sm">Xem Chi Tiết</a>
+                            <button class="btn btn-warning btn-sm" onclick="openEditModal(@user.AccountId, '@user.AccountName', '@user.AccountEmail')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteAccount(@user.AccountId)">Xóa</button>
+
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
-
-        <!-- Pagination -->
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <li class="page-item"><a class="page-link" href="#">Trước</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-            </ul>
-        </nav>
     </div>
 </section>
 
-<script>
-    // Cứng dữ liệu mẫu
-    const sampleData = [
-        { id: 1, fullName: "Nguyễn Văn A", email: "nguyenvana@example.com", createdDate: "2025-02-01" },
-        { id: 2, fullName: "Trần Thị B", email: "tranthib@example.com", createdDate: "2025-01-28" },
-        { id: 3, fullName: "Lê Minh C", email: "leminhc@example.com", createdDate: "2025-01-15" },
-        { id: 4, fullName: "Phan Thi D", email: "phanthid@example.com", createdDate: "2025-01-10" }
-    ];
+<!-- Modal cập nhật tài khoản -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAccountModalLabel">Chỉnh sửa tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editAccountForm">
+                    <input type="hidden" id="editAccountId" name="AccountId" />
 
-    // Hàm để hiển thị danh sách người dùng
-    function loadUserData() {
-        const tableBody = document.querySelector("#userTable tbody");
-        tableBody.innerHTML = '';  // Clear any existing rows
-        
-        sampleData.forEach(user => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.fullName}</td>
-                <td>${user.email}</td>
-                <td>${user.createdDate}</td>
-                <td>
-                    <a href="/account/details/${user.id}" class="btn btn-info btn-sm">Xem Chi Tiết</a>
-                    <a href="/account/edit/${user.id}" class="btn btn-warning btn-sm">Sửa</a>
-                    <a href="javascript:void(0);" class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">Xóa</a>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
+                    <div class="mb-3">
+                        <label for="editAccountName" class="form-label">Họ Tên</label>
+                        <input type="text" id="editAccountName" name="AccountName" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editAccountEmail" class="form-label">Email</label>
+                        <input type="email" id="editAccountEmail" name="AccountEmail" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAccountPassword" class="form-label">Mật khẩu</label>
+                        <input type="password" id="editAccountPassword" name="AccountPassword" class="form-control" />
+                    </div>
+
+
+                    <button type="button" class="btn btn-primary" onclick="submitEditForm()">Cập nhật</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openEditModal(id, name, email) {
+        document.getElementById("editAccountId").value = id;
+        document.getElementById("editAccountName").value = name;
+        document.getElementById("editAccountEmail").value = email;
+        var myModal = new bootstrap.Modal(document.getElementById("editAccountModal"));
+        myModal.show();
     }
 
-    // Hàm xóa người dùng
-    function deleteUser(userId) {
-        if (confirm("Bạn chắc chắn muốn xóa người dùng này?")) {
-            alert(`Xóa người dùng với ID: ${userId}`);
-            // Call API delete here
+    async function submitEditForm() {
+        const accountId = document.getElementById("editAccountId").value;
+        const accountName = document.getElementById("editAccountName").value;
+        const accountEmail = document.getElementById("editAccountEmail").value;
+        const accountPassword = document.getElementById("editAccountPassword")?.value || "";
+
+        const requestData = {
+            AccountName: accountName,
+            AccountEmail: accountEmail,
+            AccountPassword: accountPassword
+        };
+
+        try {
+            const response = await fetch(`/account/edit?id=${accountId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            });
+
+
+            if (response.ok) {
+                alert("Cập nhật thành công!");
+                location.reload();
+            } else {
+                const errorMsg = await response.text();
+                alert("Cập nhật thất bại: " + errorMsg);
+            }
+        } catch (error) {
+            alert("Lỗi hệ thống: " + error.message);
         }
     }
 
-    // Gọi hàm khi trang được tải
-    window.onload = loadUserData;
+
+
+</script>
+<script>
+    async function deleteAccount(accountId) {
+        // if (!confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
+        //     return;
+        // }
+
+        try {
+            // Gửi yêu cầu DELETE đến API với đúng URL
+            const response = await fetch(`/account/deleteaccount/${accountId}`, {
+                method: "DELETE",  // Phương thức DELETE
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json(); // Nhận dữ liệu trả về từ server
+                alert(data.message);  // Hiển thị thông báo từ server
+                location.reload();    // Tải lại trang để cập nhật danh sách tài khoản
+            } else {
+                const errorMsg = await response.text();
+                alert("Xóa thất bại: " + errorMsg);
+            }
+        } catch (error) {
+            alert("Lỗi hệ thống: " + error.message);
+        }
+    }
+
+
+
 </script>

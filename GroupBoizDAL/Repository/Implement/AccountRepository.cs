@@ -36,6 +36,52 @@ namespace GroupBoizDAL.Repository.Implement
         {
             return await _context.SystemAccount.FirstOrDefaultAsync(a => a.AccountId == id);
         }
+        public async Task<SystemAccount> FindByIdAsync(short accountId)
+        {
+            return await _context.SystemAccount.FindAsync(accountId);
+        }
 
+
+
+        public async Task<IEnumerable<SystemAccount>> GetAllAsync()
+        {
+            return await _context.SystemAccount.ToListAsync();
+        }
+        public async Task UpdateAccountAsync(SystemAccount existingAccount)
+        {
+            if (existingAccount == null)
+            {
+                throw new ArgumentNullException(nameof(existingAccount));
+            }
+
+            _context.SystemAccount.Update(existingAccount);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> SaveChangesAsync()  // ⚠️ Thêm SaveChangesAsync vào Repository
+        {
+            return await _context.SaveChangesAsync();
+        }
+        public async Task<bool> DeleteAccountAsync(short accountId)
+        {
+            try
+            {
+                var account = await _context.SystemAccount.FindAsync(accountId);
+                if (account == null)
+                {
+                    return false;
+                }
+
+                _context.SystemAccount.Remove(account);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi không xác định khi xóa tài khoản {accountId}: {ex.Message}");
+                return false;
+            }
+
+        }
     }
 }

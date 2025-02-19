@@ -57,5 +57,40 @@ namespace GroupBoizBLL.Services.Implement
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
+        public async Task<IEnumerable<SystemAccount>> GetAllAccountsAsync()
+        {
+            return await _unitOfWork.AccountRepo.GetAllAsync();
+        }
+
+        public Task<SystemAccount> CreateAccountAsync(SystemAccount account)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<bool> DeleteAccountAsync(short accountId)
+        {
+            return await _unitOfWork.AccountRepo.DeleteAccountAsync(accountId);
+        }
+        public async Task<SystemAccount> UpdateAccountAsync(short accountId, SystemAccount updatedAccount)
+        {
+            var existingAccount = await _unitOfWork.AccountRepo.FindByIdAsync(accountId);
+            if (existingAccount == null)
+            {
+                throw new KeyNotFoundException("Account not found.");
+            }
+
+            if (!string.IsNullOrEmpty(updatedAccount.AccountName))
+                existingAccount.AccountName = updatedAccount.AccountName;
+
+            if (!string.IsNullOrEmpty(updatedAccount.AccountEmail))
+                existingAccount.AccountEmail = updatedAccount.AccountEmail;
+
+            if (!string.IsNullOrEmpty(updatedAccount.AccountPassword))
+                existingAccount.AccountPassword = updatedAccount.AccountPassword;
+
+            await _unitOfWork.AccountRepo.UpdateAccountAsync(existingAccount);
+            await _unitOfWork.AccountRepo.SaveChangesAsync();  // Đảm bảo thay đổi được lưu
+
+            return existingAccount;
+        }
     }
 }

@@ -57,6 +57,31 @@ namespace GroupBoizBLL.Utilities
                 return ""; // Nếu lỗi, trả về mặc định
             }
 
+
         }
+        public short GetUserIDFromToken()
+        {
+            try
+            {
+                var token = _httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"];
+                if (string.IsNullOrEmpty(token))
+                    return -1; // Trả về -1 nếu không có token
+
+                var claims = JWTProvide.DecodeToken(token);
+                var userIdClaim = claims.FirstOrDefault(c => c.Type == "UserId" || c.Type == "sub");
+
+                if (userIdClaim != null && short.TryParse(userIdClaim.Value, out short userId))
+                {
+                    return userId;
+                }
+
+                return -1; // Trả về -1 nếu không lấy được UserId
+            }
+            catch
+            {
+                return -1; // Trả về -1 nếu có lỗi
+            }
+        }
+
     }
 }

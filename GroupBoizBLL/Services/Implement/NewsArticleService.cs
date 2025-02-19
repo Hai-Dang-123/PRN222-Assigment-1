@@ -159,6 +159,61 @@ namespace GroupBoizBLL.Services.Implement
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
+        public async Task<List<NewsArticle>> SearchNewsByTitle(string title)
+        {
+            return await _unitOfWork.NewsArticleRepo.SearchByTitleAsync(title);
+        }
+        public async Task<List<NewsArticle>> GetByCategoryAsync(int categoryId)
+        {
+            return await _unitOfWork.NewsArticleRepo.GetByCategoryAsync(categoryId);
+        }
+
+        public async Task<List<NewsArticle>> GetByTagAsync(int tagId)
+        {
+            return await _unitOfWork.NewsArticleRepo.GetByTagAsync(tagId);
+        }
+
+        public async Task<ResponseDTO> GetNewsByPeriod(DateTime? startDate, DateTime? endDate)
+        {
+            try
+            {
+                // Lấy danh sách tin tức từ cơ sở dữ liệu
+                var newsList = await _unitOfWork.NewsArticleRepo.GetAllWithTagAsync();
+
+                // Kiểm tra nếu không có tin tức nào
+                if (newsList == null || !newsList.Any())
+                {
+                    return new ResponseDTO("No news found", 404, false);
+                }
+
+                // Lọc theo khoảng thời gian
+                var filteredNews = new List<NewsArticle>();
+                foreach (var news in newsList)
+                {
+                    if ((!startDate.HasValue || news.CreatedDate >= startDate.Value) &&
+                        (!endDate.HasValue || news.CreatedDate <= endDate.Value))
+                    {
+                        filteredNews.Add(news);
+                    }
+                }
+
+                // Sắp xếp theo CreatedDate giảm dần
+                filteredNews.Sort((a, b) => (b.CreatedDate ?? DateTime.MinValue)
+                            .CompareTo(a.CreatedDate ?? DateTime.MinValue));
+
+                // Kiểm tra nếu danh sách sau lọc trống
+                if (!filteredNews.Any())
+                {
+                    return new ResponseDTO("No news found in the given period", 404, false);
+                }
+
+                return new ResponseDTO("News found successfully", 200, true, filteredNews);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
 
 
     }

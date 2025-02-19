@@ -1,6 +1,8 @@
 ﻿using GroupBoizBLL.Services.Interface;
+using GroupBoizBLL.Utilities;
 using GroupBoizDAL.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
 namespace GroupBoizMVC.Controllers
@@ -10,12 +12,14 @@ namespace GroupBoizMVC.Controllers
         private readonly ICategoryService _categoryService;
         private readonly ITagService _tagService;
         private readonly INewsArticleService _newsArticleService;
+        private readonly UserUtility _userUtility;
 
-        public NewsDetailController(ICategoryService categoryService, ITagService tagService, INewsArticleService newsArticleService)
+        public NewsDetailController(ICategoryService categoryService, ITagService tagService, INewsArticleService newsArticleService, UserUtility userUtility)
         {
             _categoryService = categoryService;
             _tagService = tagService;
             _newsArticleService = newsArticleService;
+            _userUtility = userUtility;
         }
 
         public async Task<IActionResult> Index(string id)
@@ -23,6 +27,8 @@ namespace GroupBoizMVC.Controllers
             var response = await _newsArticleService.GetNewsById(id);
             var categoryResponse = await _categoryService.GetAll();
             var tagResponse = await _tagService.GetAllTags();
+            var role =  _userUtility.GetRoleFromToken();
+            var accountId = _userUtility.GetUserIDFromToken();
 
             if (!response.IsSuccess)
             {
@@ -32,6 +38,8 @@ namespace GroupBoizMVC.Controllers
             ViewBag.News = response.Result;
             ViewBag.Tag = tagResponse.Result;
             ViewBag.Category = categoryResponse.Result;
+            ViewBag.Role = role;
+            ViewBag.AccountId = accountId;
 
             return View();
         }

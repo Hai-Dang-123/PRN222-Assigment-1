@@ -7,7 +7,7 @@
 <h2>Tag Management</h2>
 
 <!-- Button mở modal thêm Tag -->
-<button class="btn btn-primary" onclick="openCreateModal()">Add Tag</button>
+<button class="btn btn-primary" onclick="openTagModal()">Add Tag</button>
 
 <table class="table table-bordered mt-3">
     <thead>
@@ -26,7 +26,7 @@
                 <td>@tag.TagName</td>
                 <td>@tag.Note</td>
                 <td>
-                    <button class="btn btn-warning" onclick="openEditModal(@tag.TagId, '@tag.TagName', '@tag.Note')">Edit</button>
+                    <button class="btn btn-warning" onclick="openTagModal(@tag.TagId, '@tag.TagName', '@tag.Note')">Edit</button>
                     <button class="btn btn-danger" onclick="deleteTag(@tag.TagId)">Delete</button>
                 </td>
             </tr>
@@ -39,7 +39,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tag</h5>
+                <h5 class="modal-title" id="tagModalTitle">Add Tag</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -62,28 +62,27 @@
 </div>
 
 <script>
-    function openCreateModal() {
-        document.getElementById('tagId').value = "";
-        document.getElementById('tagName').value = "";
-        document.getElementById('tagNote').value = "";
-        new bootstrap.Modal(document.getElementById('tagModal')).show();
-    }
-
-    function openEditModal(id, name, note) {
+    function openTagModal(id = 0, name = '', note = '') {
         document.getElementById('tagId').value = id;
         document.getElementById('tagName').value = name;
         document.getElementById('tagNote').value = note;
+        document.getElementById('tagModalTitle').innerText = id ? 'Edit Tag' : 'Add Tag';
         new bootstrap.Modal(document.getElementById('tagModal')).show();
     }
 
     document.getElementById('saveTag').addEventListener('click', function () {
         const tag = {
-            TagId: document.getElementById('tagId').value || 0,
-            TagName: document.getElementById('tagName').value,
-            Note: document.getElementById('tagNote').value
+            TagId: parseInt(document.getElementById('tagId').value) || 0,
+            TagName: document.getElementById('tagName').value.trim(),
+            Note: document.getElementById('tagNote').value.trim()
         };
 
-        const url = tag.TagId == 0 ? "/Tag/Create" : "/Tag/Update";
+        if (!tag.TagName) {
+            alert("Tag name cannot be empty!");
+            return;
+        }
+
+        const url = tag.TagId === 0 ? "/Tag/Create" : "/Tag/Update";
 
         fetch(url, {
             method: 'POST',

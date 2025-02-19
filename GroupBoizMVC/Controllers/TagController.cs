@@ -1,4 +1,5 @@
-﻿using GroupBoizBLL.Services.Interface;
+﻿using GroupBoizBLL.Services.Implement;
+using GroupBoizBLL.Services.Interface;
 using GroupBoizDAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -29,32 +30,49 @@ namespace GroupBoizMVC.Controllers
             return View(new List<Tag>());
         }
 
-        // Thêm mới Tag
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Tag tag)
         {
-            if (tag == null)
+            if (tag == null || string.IsNullOrWhiteSpace(tag.TagName))
             {
-                return Json(new { success = false, message = "Invalid data!" });
+                return Json(new { success = false, message = "Tag name cannot be empty!" });
             }
 
-            var response = await _tagService.Create(tag);
+            // 🔹 Gọi Service để lấy TagID lớn nhất rồi +1
+            int maxId = await _tagService.GetMaxTagIdAsync();
+            tag.TagId = maxId + 1; // Gán ID mới
 
-            if (response.IsSuccess)
+            try
             {
-                return Json(new { success = true, message = "Tag created successfully!" });
-            }
+                bool isCreated = await _tagService.CreateAsync(tag);
 
-            return Json(new { success = false, message = response.Message });
+                if (isCreated)
+                {
+                    return Json(new { success = true, message = "Tag created successfully!" });
+                }
+
+                return Json(new { success = false, message = "Failed to create tag!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message, details = ex.InnerException?.Message });
+            }
         }
 
-        // Cập nhật Tag
+
         [HttpPost]
         public async Task<IActionResult> Update([FromBody] Tag tag)
         {
-            if (tag == null || tag.TagId == 0)
+            if (tag == null || tag.TagId <= 0)  // Sửa TagId -> TagID
             {
                 return Json(new { success = false, message = "Invalid data!" });
+            }
+
+            // Kiểm tra xem Tag có tồn tại không
+            var existingTag = await _tagService.GetById(tag.TagId);
+            if (existingTag == null)
+            {
+                return Json(new { success = false, message = "Tag not found!" });
             }
 
             var response = await _tagService.UpdateTag(tag);
@@ -67,24 +85,13 @@ namespace GroupBoizMVC.Controllers
             return Json(new { success = false, message = response.Message });
         }
 
-        // Xóa Tag
+        // Xóa category
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] dynamic data)
+        public async Task<IActionResult> Delete([FromBody] int tagId) // 🔹 Nhận trực tiếp số nguyên
         {
-            if (data == null || data.tagId == null)
-            {
-                return Json(new { success = false, message = "Invalid request!" });
-            }
+            var response = await _tagService.Delete((int)tagId);
 
-            int tagId = (int)data.tagId;
-            var response = await _tagService.Delete(tagId);
-
-            if (response.IsSuccess)
-            {
-                return Json(new { success = true, message = "Tag deleted successfully!" });
-            }
-
-            return Json(new { success = false, message = response.Message });
+            return Json(new { success = response.IsSuccess, message = response.IsSuccess ? "Category deleted successfully!" : response.Message });
         }
     }
 }

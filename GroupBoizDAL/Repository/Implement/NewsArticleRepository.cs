@@ -44,6 +44,36 @@ namespace GroupBoizDAL.Repository.Implement
         }
 
 
+        public async Task<List<NewsArticle>> SearchByTitleAsync(string title)
+        {
+            return await _context.NewsArticle
+                .Include(n => n.Category) // Load category của bài viết
+                .Include(n => n.Tags) // Load tags của bài viết
+                .Include(n => n.CreatedBy) // Load thông tin người tạo bài viết
+                .Where(n => n.NewsTitle.Contains(title))
+                .ToListAsync();
+        }
+        public async Task<List<NewsArticle>> GetByCategoryAsync(int categoryId)
+        {
+            return await _context.NewsArticle
+                .Include(n => n.Category)
+                .Include(n => n.Tags)
+                .Include(n => n.CreatedBy)
+                .Where(n => n.CategoryId == categoryId)
+                .ToListAsync();
+        }
+
+        public async Task<List<NewsArticle>> GetByTagAsync(int tagId)
+        {
+            return await _context.NewsArticle
+                .Include(n => n.Category)
+                .Include(n => n.Tags)
+                .Include(n => n.CreatedBy)
+                .Where(n => n.Tags.Any(t => t.TagId == tagId))
+                .ToListAsync();
+        }
+
+
 
     }
 }
