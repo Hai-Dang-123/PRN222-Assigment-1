@@ -1,5 +1,6 @@
 ﻿using GroupBoizBLL.Services.Interface;
 using GroupBoizBLL.Utilities;
+using GroupBoizCommon.DTO;
 using GroupBoizDAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -35,14 +36,14 @@ namespace GroupBoizMVC.Controllers
 
         // Cập nhật thông tin profile
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody] SystemAccount account)
+        public async Task<IActionResult> Update([FromBody] SystemAccountDTO account)
         {
             if (account == null || account.AccountId == 0)
             {
                 return Json(new { success = false, message = "Invalid data!" });
             }
 
-            var response = await _accountService.UpdateAccount(account);
+            var response = await _accountService.UpdateAccountAsync(account);
 
             if (response.IsSuccess)
             {

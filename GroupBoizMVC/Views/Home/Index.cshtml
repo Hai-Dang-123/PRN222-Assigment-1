@@ -1,8 +1,7 @@
-﻿@{
+﻿@using GroupBoizCommon.DTO
+@{
     ViewData["Title"] = "Home Page";
-
 }
-
 
 <!-- Page Content -->
 <!-- Banner Starts Here -->
@@ -11,56 +10,36 @@
         <div class="owl-banner owl-carousel">
             @if (ViewBag.News != null)
             {
-                @foreach (var news in (ViewBag.News as List<GroupBoizDAL.Entities.NewsArticle>).Take(5)) // Lấy 5 bài viết gần nhất
+                var newsList = ViewBag.News as List<NewsArticleDTO>; // Ép kiểu trước khi sử dụng
+                if (newsList != null)
                 {
-                    <div class="item">
-                        <img src="@news.ImageUrl" alt="@news.NewsTitle">
-                        <div class="item-content">
-                            <div class="main-content">
-                                <div class="meta-category">
-                                    <span>@(news.Category?.CategoryName ?? "Uncategorized")</span>
+                    foreach (var news in newsList.Take(5))
+                    {
+                        <div class="item">
+                            <img src="@news.ImageUrl" alt="@news.NewsTitle">
+                            <div class="item-content">
+                                <div class="main-content">
+                                    <div class="meta-category">
+                                        <span>@(news.CategoryName ?? "Uncategorized")</span>
+                                    </div>
+                                    <a href="@Url.Action("Index", "NewsDetail", new { id = news.NewsArticleId })">
+                                        <h4>@news.NewsTitle</h4>
+                                    </a>
+                                    <ul class="post-info">
+                                        <li><a href="#">@(news.CreateBy ?? "Admin")</a></li>
+                                        <li><a href="#">@news.CreatedDate?.ToString("MMMM dd, yyyy")</a></li>
+                                    </ul>
                                 </div>
-                                <a href="post-details.html?id=@news.NewsArticleId">
-                                    <h4>@news.NewsTitle</h4>
-                                </a>
-                                <ul class="post-info">
-                                    <li><a href="#">@(news.CreatedBy?.AccountName ?? "Admin")</a></li>
-                                    <li><a href="#">@news.CreatedDate?.ToString("MMMM dd, yyyy")</a></li>
-                                    
-                                </ul>
                             </div>
                         </div>
-                    </div>
+                    }
                 }
             }
+
         </div>
     </div>
 </div>
-
 <!-- Banner Ends Here -->
-
-<section class="call-to-action">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="main-content">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <span>Stand Blog HTML5 Template</span>
-                            <h4>Creative HTML Template For Bloggers!</h4>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="main-button">
-                                <a rel="nofollow" href="https://templatemo.com/tm-551-stand-blog" target="_parent">Download Now!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 
 <section class="blog-posts">
     <div class="container">
@@ -69,58 +48,59 @@
                 <div class="all-blog-posts">
                     <div class="row">
                         @if (ViewBag.News != null)
-            {
-                        <!-- Loop through the first 2 news articles -->
-                        @foreach (var news in (ViewBag.News as List<GroupBoizDAL.Entities.NewsArticle>).Take(2))
                         {
-                            <div class="col-lg-12">
-                                <div class="blog-post">
-                                    <div class="blog-thumb">
-                                        <!-- Display the image for the news article -->
-                                        <img src="@news.ImageUrl" alt="Blog image">
-                                    </div>
-                                    <div class="down-content">
-                                        <span>@news.Category</span>
-                                        <!-- Link to the post detail page -->
-                                            <a href="@Url.Action("Details", "News", new { id = news.NewsArticleId })">
-                                                <h4>@news.NewsTitle</h4>
-                                            </a>
-
-                                        <ul class="post-info">
-                                            <li><a href="#">@news.CreatedBy.AccountName</a></li>
-                                            <li><a href="#">@news.CreatedDate</a></li>
-                                        </ul>
-                                        <p>@news.NewsContent</p>
-                                        <div class="post-options">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <ul class="post-tags">
-                                                        <li><i class="fa fa-tags"></i></li>
-                                                        @foreach (var tag in news.Tags)
-                                                        {
-                                                            <li><a href="#">@tag.TagName</a>,</li>
-                                                        }
-                                                    </ul>
-                                                </div>
-                                                <div class="col-6">
-                                                    <ul class="post-share">
-                                                        <li><i class="fa fa-share-alt"></i></li>
-                                                        <li><a href="#">Facebook</a>,</li>
-                                                        <li><a href="#">Twitter</a></li>
-                                                    </ul>
+                            var newsList = ViewBag.News as List<NewsArticleDTO>; // Ép kiểu đúng
+                            if (newsList != null && newsList.Count > 0) // Kiểm tra danh sách không rỗng
+                            {
+                                <!-- Loop through the first 2 news articles -->
+                                @foreach (var news in newsList.Take(2))
+                                {
+                                    <div class="col-lg-12">
+                                        <div class="blog-post">
+                                            <div class="blog-thumb">
+                                                <img src="@news.ImageUrl" alt="Blog image">
+                                            </div>
+                                            <div class="down-content">
+                                                <span>@(news.CategoryName ?? "Uncategorized")</span> <!-- ✅ Sửa lỗi -->
+                                                <a href="@Url.Action("Index", "NewsDetail", new { id = news.NewsArticleId })">
+                                                    <h4>@news.NewsTitle</h4>
+                                                </a>
+                                                <ul class="post-info">
+                                                    <li><a href="#">@(news.CreateBy ?? "Admin")</a></li> <!-- ✅ Fix lỗi -->
+                                                    <li><a href="#">@news.CreatedDate?.ToString("MMMM dd, yyyy")</a></li>
+                                                </ul>
+                                                <p>@news.NewsContent</p>
+                                                <div class="post-options">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <ul class="post-tags">
+                                                                <li><i class="fa fa-tags"></i></li>
+                                                                @foreach (var tag in news.Tag)
+                                                                {
+                                                                    <li><a href="#">@tag</a>,</li>
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <ul class="post-share">
+                                                                <li><i class="fa fa-share-alt"></i></li>
+                                                                <li><a href="#">Facebook</a>,</li>
+                                                                <li><a href="#">Twitter</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                }
+                            }
                         }
-                        }
+
 
                         <!-- Button to view all posts -->
                         <div class="col-lg-12">
                             <div class="main-button">
-                                <!-- Link to NewsManagementPage -->
                                 <a class="nav-link" asp-controller="News" asp-action="Index">View All Posts</a>
                             </div>
                         </div>
@@ -128,9 +108,11 @@
                 </div>
             </div>
 
+            <!-- Sidebar -->
             <div class="col-lg-4">
                 <div class="sidebar">
                     <div class="row">
+                        <!-- Search -->
                         <div class="col-lg-12">
                             <div class="sidebar-item search">
                                 <form id="search_form" method="GET" action="/Search">
@@ -139,35 +121,8 @@
                                 </form>
                             </div>
                         </div>
-                        @* <div class="col-lg-12"> *@
-                        @*     <div class="sidebar-item recent-posts"> *@
-                        @*         <div class="sidebar-heading"> *@
-                        @*             <h2>Recent Posts</h2> *@
-                        @*         </div> *@
-                        @*         <div class="content"> *@
-                        @*             <ul> *@
-                        @*                 <li> *@
-                        @*                     <a href="post-details.html"> *@
-                        @*                         <h5>Vestibulum id turpis porttitor sapien facilisis scelerisque</h5> *@
-                        @*                         <span>May 31, 2020</span> *@
-                        @*                     </a> *@
-                        @*                 </li> *@
-                        @*                 <li> *@
-                        @*                     <a href="post-details.html"> *@
-                        @*                         <h5>Suspendisse et metus nec libero ultrices varius eget in risus</h5> *@
-                        @*                         <span>May 28, 2020</span> *@
-                        @*                     </a> *@
-                        @*                 </li> *@
-                        @*                 <li> *@
-                        @*                     <a href="post-details.html"> *@
-                        @*                         <h5>Swag hella echo park leggings, shaman cornhole ethical coloring</h5> *@
-                        @*                         <span>May 14, 2020</span> *@
-                        @*                     </a> *@
-                        @*                 </li> *@
-                        @*             </ul> *@
-                        @*         </div> *@
-                        @*     </div> *@
-                        @* </div> *@
+
+                        <!-- Categories -->
                         <div class="col-lg-12">
                             <div class="sidebar-item categories">
                                 <div class="sidebar-heading">
@@ -177,20 +132,26 @@
                                     <ul>
                                         @if (ViewBag.Category != null)
                                         {
-                                            foreach (var category in ViewBag.Category as List<GroupBoizDAL.Entities.Category>)
+                                            var categoryList = ViewBag.Category as List<CategoryDTO>; // Ép kiểu đúng
+                                            if (categoryList != null && categoryList.Count > 0)
                                             {
-                                                <li><a href="#">- @category.CategoryName</a></li>
+                                                foreach (var category in categoryList)
+                                                {
+                                                    <li><a href="/News/ByCategory/@category.CategoryId">- @category.CategoryName</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li>No categories found.</li>
                                             }
                                         }
-                                        else
-                                        {
-                                            <li>No categories found.</li>
-                                        }
+
                                     </ul>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Tags -->
                         <div class="col-lg-12">
                             <div class="sidebar-item tags">
                                 <div class="sidebar-heading">
@@ -200,22 +161,27 @@
                                     <ul>
                                         @if (ViewBag.Tag != null)
                                         {
-                                            foreach (var tag in ViewBag.Tag as List<GroupBoizDAL.Entities.Tag>)
+                                            var tagList = ViewBag.Tag as List<TagDTO>; // Ép kiểu đúng
+                                            if (tagList != null && tagList.Count > 0)
                                             {
-                                                <li><a href="#">@tag.TagName</a></li>
+                                                foreach (var tag in tagList)
+                                                {
+                                                    <li><a href="/News/ByTag/@tag.TagId">@tag.TagName</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li>No tags found.</li>
                                             }
                                         }
-                                        else
-                                        {
-                                            <li>No tags found.</li>
-                                        }
+
                                     </ul>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    </div> <!-- row -->
+                </div> <!-- sidebar -->
+            </div> <!-- col-lg-4 -->
+        </div> <!-- row -->
+    </div> <!-- container -->
 </section>

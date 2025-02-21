@@ -11,8 +11,8 @@ namespace GroupBoizBLL.Services.Interface
     public interface ICategoryService
     {
         Task<ResponseDTO> GetAll();
-        Task<ResponseDTO> Create(Category category);
-        Task<ResponseDTO> UpdateCategory(Category category);
+        Task<ResponseDTO> Create(CategoryDTO categoryDto);
+        Task<ResponseDTO> UpdateCategory(CategoryDTO categoryDto);
         Task<ResponseDTO> Delete(short categoryId);
     }
 }

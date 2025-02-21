@@ -11,10 +11,13 @@ namespace GroupBoizDAL.Repository.Interface
     {
         Task<List<NewsArticle>> GetAllWithTagAsync();
         Task<NewsArticle?> GetNewArticleByIdWithTagAsync(string id);
-        Task DeleteNewsAsync(NewsArticle newsArticle);
+        //Task DeleteNewsAsync(NewsArticle newsArticle);
 
         Task<List<NewsArticle>> SearchByTitleAsync(string title);
         Task<List<NewsArticle>> GetByCategoryAsync(int categoryId);
+   
         Task<List<NewsArticle>> GetByTagAsync(int tagId);
+        Task CreateNewsArticle(NewsArticle newsArticle, List<int> selectedTags);
+        Task<string> GetMaxNewsArticleId();
     }
 }

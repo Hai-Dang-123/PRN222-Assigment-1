@@ -3,7 +3,8 @@ using System.Security.Claims;
 using Azure;
 using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
-using GroupBoizMVC.Models;
+using GroupBoizCommon.DTO;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroupBoizMVC.Controllers
@@ -43,7 +44,7 @@ namespace GroupBoizMVC.Controllers
             else
             {
                 ViewBag.ErrorMessage = categoryResponse.Message ?? tagResponse.Message;
-                ViewBag.TopThreeNews = new List<GroupBoizDAL.Entities.NewsArticle>();  // Tránh null reference
+                ViewBag.TopThreeNews = new List<GroupBoizCommon.DTO.NewsArticleDTO>();  // Tránh null reference
                 return View();
             }
         }

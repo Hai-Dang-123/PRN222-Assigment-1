@@ -1,0 +1,74 @@
+﻿@using GroupBoizCommon.DTO
+@model GroupBoizCommon.DTO.NewsArticleDTO
+
+@{
+    ViewData["Title"] = "Create News";
+}
+
+<h2>Create New Article</h2>
+
+<!-- Hiển thị thông báo lỗi nếu có -->
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="alert alert-danger mt-2">@ViewBag.ErrorMessage</div>
+}
+
+
+
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="NewsArticleId"  value="1" />
+    
+    <input type="hidden" asp-for="CreatedById" value="1" />
+
+    <div class="form-group">
+        <label asp-for="NewsTitle">Title</label>
+        <input asp-for="NewsTitle" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Headline">Headline</label>
+        <input asp-for="Headline" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NewsContent">Content</label>
+        <textarea asp-for="NewsContent" class="form-control" rows="5" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NewsSource">Source</label>
+        <input asp-for="NewsSource" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Category</label>
+        <select asp-for="CategoryId" class="form-control">
+            @foreach (var category in ViewBag.Category as List<CategoryDTO>)
+            {
+                <option value="@category.CategoryId">@category.CategoryName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Tags</label>
+        <div>
+            @foreach (var tag in ViewBag.Tag as List<TagDTO>)
+            {
+                <label>
+                    <input type="checkbox" name="TagId" value="@tag.TagId" /> @tag.TagName
+                </label>
+
+                <br />
+            }
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label>Image URL</label>
+        <input asp-for="ImageUrl" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

@@ -10,16 +10,19 @@ using GroupBoizCommon.Constants;
 using GroupBoizCommon.DTO;
 using GroupBoizDAL.Entities;
 using GroupBoizDAL.UnitOfWork;
+using Microsoft.AspNetCore.Http;
 
 namespace GroupBoizBLL.Services.Implement
 {
     public class AuthService : IAuthService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService (IUnitOfWork unitOfWork)
+        public AuthService (IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<ResponseDTO> Login(LoginDTO loginDTO)
         {
@@ -109,9 +112,41 @@ namespace GroupBoizBLL.Services.Implement
         }
 
 
-        public Task<ResponseDTO> LogoutAsync(string refreshTokenKey)
+        public async Task<ResponseDTO> LogoutAsync()
         {
-            throw new NotImplementedException();
+            var context = _httpContextAccessor.HttpContext;
+
+            if (context != null)
+            {
+                // Lấy refreshToken từ Cookie
+                var refreshToken = context.Request.Cookies["RefreshToken"];
+
+                // Kiểm tra nếu có refreshToken thì thu hồi
+                if (!string.IsNullOrEmpty(refreshToken))
+                {
+                    var token = await _unitOfWork.TokenRepo.GetRefreshTokenByKey(refreshToken);
+                    if (token != null)
+                    {
+                        token.IsRevoked = true;
+                        _unitOfWork.TokenRepo.UpdateAsync(token);
+                        await _unitOfWork.SaveChangeAsync();
+                        Console.WriteLine($"[AuthService] RefreshToken {refreshToken} đã bị thu hồi!");
+                    }
+                }
+
+                //// Xóa session
+                //context.Session.Clear();
+
+                // Xóa cookies (AccessToken & RefreshToken)
+                context.Response.Cookies.Delete("AccessToken");
+                context.Response.Cookies.Delete("RefreshToken");
+
+                Console.WriteLine("[AuthService] Đăng xuất thành công!");
+            }
+
+
+            return new ResponseDTO("Logout successful", 200, true);
+
         }
 
         public Task<ResponseDTO> RefreshBothTokens(string oldAccessToken, string refreshTokenKey)

@@ -1,4 +1,4 @@
-﻿@model List<GroupBoizDAL.Entities.Tag>
+﻿@model List<GroupBoizCommon.DTO.TagDTO>
 
 @{
     ViewData["Title"] = "Tag Management";
@@ -102,7 +102,7 @@
             fetch('/Tag/Delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tagId })
+                body: JSON.stringify(tagId)
             })
             .then(response => response.json())
             .then(data => {

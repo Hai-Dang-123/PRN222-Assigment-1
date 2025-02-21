@@ -21,14 +21,13 @@ namespace GroupBoizDAL.Repository.Implement
 
         public async Task<List<NewsArticle>> GetAllWithTagAsync()
         {
-
             return await _context.NewsArticle
-                //.Where(n => n.NewsStatus == true)
-                .Include(n => n.Tags)   // Nạp bảng NewsTags
+                .Where(n => n.NewsStatus == true)  // Lọc bài viết có NewsStatus là true
+                .Include(n => n.Tags)              // Nạp bảng NewsTags
                 .Include(n => n.CreatedBy)
                 .ToListAsync();
-
         }
+
         public async Task<NewsArticle?> GetNewArticleByIdWithTagAsync(string id)
         {
             return await _context.NewsArticle
@@ -37,11 +36,11 @@ namespace GroupBoizDAL.Repository.Implement
                 .Include(n => n.Category)
                 .FirstOrDefaultAsync(n => n.NewsArticleId == id);
         }
-        public async Task DeleteNewsAsync(NewsArticle newsArticle)
-        {
-            _context.NewsArticle.Remove(newsArticle);
-            await Task.CompletedTask;
-        }
+        //public async Task DeleteNewsAsync(NewsArticle newsArticle)
+        //{
+        //    _context.NewsArticle.Remove(newsArticle);
+        //    await Task.CompletedTask;
+        //}
 
 
         public async Task<List<NewsArticle>> SearchByTitleAsync(string title)
@@ -55,6 +54,7 @@ namespace GroupBoizDAL.Repository.Implement
         }
         public async Task<List<NewsArticle>> GetByCategoryAsync(int categoryId)
         {
+
             return await _context.NewsArticle
                 .Include(n => n.Category)
                 .Include(n => n.Tags)
@@ -72,6 +72,29 @@ namespace GroupBoizDAL.Repository.Implement
                 .Where(n => n.Tags.Any(t => t.TagId == tagId))
                 .ToListAsync();
         }
+
+        public async Task CreateNewsArticle(NewsArticle newsArticle, List<int> selectedTags)
+        {
+            if (newsArticle == null)
+                throw new ArgumentNullException(nameof(newsArticle));
+
+           
+            _context.NewsArticle.Add(newsArticle);
+            await _context.SaveChangesAsync();
+
+            
+        }
+        public async Task<string> GetMaxNewsArticleId()
+        {
+            // Lấy ID lớn nhất trong database
+            var maxId = await _context.NewsArticle
+                                      .OrderByDescending(n => n.NewsArticleId)
+                                      .Select(n => n.NewsArticleId)
+                                      .FirstOrDefaultAsync();
+
+            return maxId; // Trả về ID lớn nhất (hoặc null nếu chưa có bài viết nào)
+        }
+
 
 
 

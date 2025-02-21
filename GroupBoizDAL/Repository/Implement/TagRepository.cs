@@ -32,6 +32,13 @@ namespace GroupBoizDAL.Repository.Implement
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<List<Tag>> GetTagsByIdsAsync(List<int> tagIds)
+        {
+            return await _context.Tag
+                                 .Where(tag => tagIds.Contains(tag.TagId))
+                                 .ToListAsync();
+        }
+
 
     }
 }

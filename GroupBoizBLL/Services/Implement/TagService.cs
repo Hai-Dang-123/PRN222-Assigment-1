@@ -7,6 +7,7 @@ using GroupBoizBLL.Services.Interface;
 using GroupBoizCommon.DTO;
 using GroupBoizDAL.Entities;
 using GroupBoizDAL.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupBoizBLL.Services.Implement
 {
@@ -23,20 +24,37 @@ namespace GroupBoizBLL.Services.Implement
         {
             try
             {
-                var tags = await _unitOfWork.TagRepo.ToListAsync();  // Lấy danh sách tags từ database
+                
 
+                var query = _unitOfWork.TagRepo.GetAll();
+               
+
+                var tags = await query.ToListAsync();
+                
                 if (tags == null || !tags.Any())
                 {
+                   
                     return new ResponseDTO("No tags found", 404, false);
                 }
 
-                return new ResponseDTO("Tags found successfully", 200, true, tags);
+                var tagDTOList = tags.Select(c => new TagDTO
+                {
+                    TagId = c.TagId,
+                    TagName = c.TagName,
+                    Note = c.Note,
+                }).ToList();
+
+               
+
+                return new ResponseDTO("Tags found successfully", 200, true, tagDTOList);
             }
             catch (Exception ex)
             {
+                
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
+
         public async Task<ResponseDTO> GetById(int tagId)
         {
             try
@@ -52,16 +70,47 @@ namespace GroupBoizBLL.Services.Implement
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
-        public async Task<int> GetMaxTagIdAsync()
+        public async Task<ResponseDTO> GetMaxTagIdAsync()
         {
-            return await _unitOfWork.TagRepo.GetMaxTagIdAsync();
+            try
+            {
+                var maxTagId = await _unitOfWork.TagRepo.GetMaxTagIdAsync();
+                return new ResponseDTO("Max Tag ID fetched successfully", 200, true, maxTagId);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
         }
 
-        public async Task<bool> CreateAsync(Tag tag)
+        public async Task<ResponseDTO> CreateAsync(TagDTO tag)
         {
-            return await _unitOfWork.TagRepo.CreateAsync(tag);
+            try
+            {
+                var maxTagId = await _unitOfWork.TagRepo.GetMaxTagIdAsync(); 
+                var newTagId = maxTagId + 1;
+
+                var newTag = new Tag
+                {
+                    TagId = newTagId, 
+                    TagName = tag.TagName,
+                    Note = tag.Note
+                };
+
+                var isCreated = await _unitOfWork.TagRepo.CreateAsync(newTag);
+                if (!isCreated)
+                    return new ResponseDTO("Failed to create tag", 400, false);
+
+                return new ResponseDTO("Tag created successfully", 201, true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
         }
-        public async Task<ResponseDTO> UpdateTag(Tag tag)
+
+
+        public async Task<ResponseDTO> UpdateTag(TagDTO tag)
         {
             try
             {
@@ -72,8 +121,8 @@ namespace GroupBoizBLL.Services.Implement
                 existingTag.TagName = tag.TagName;
                 existingTag.Note = tag.Note;
 
-                _unitOfWork.TagRepo.UpdateAsync(existingTag);
-                await _unitOfWork.SaveAsync();
+                await _unitOfWork.TagRepo.UpdateAsync(existingTag);
+                await _unitOfWork.SaveChangeAsync();
 
                 return new ResponseDTO("Tag updated successfully", 200, true);
             }
@@ -91,8 +140,8 @@ namespace GroupBoizBLL.Services.Implement
                 if (tag == null)
                     return new ResponseDTO("Tag not found", 404, false);
 
-                _unitOfWork.TagRepo.Delete(tag);
-                await _unitOfWork.SaveAsync();
+                 _unitOfWork.TagRepo.Delete(tag);
+                await _unitOfWork.SaveChangeAsync();
 
                 return new ResponseDTO("Tag deleted successfully", 200, true);
             }

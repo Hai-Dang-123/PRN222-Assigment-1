@@ -11,12 +11,13 @@ namespace GroupBoizBLL.Services.Interface
     public interface IAccountService
     {
         Task<ResponseDTO> GetById(short id);
-        Task<ResponseDTO> UpdateAccount(SystemAccount account);
-        Task<IEnumerable<SystemAccount>> GetAllAccountsAsync();
+
+        Task<ResponseDTO> GetAllAccountsAsync();
         //Task<bool> DeleteAccountAsync(short id);
-        Task<bool> DeleteAccountAsync(short accountId);
-        Task<SystemAccount> CreateAccountAsync(SystemAccount account);
-        Task<SystemAccount> UpdateAccountAsync(short accountId, SystemAccount updatedAccount);
-       
+        Task<ResponseDTO> DeleteAccountAsync(short accountId);
+        Task<ResponseDTO> CreateAccountAsync(SystemAccountDTO accountDto);
+        Task<ResponseDTO> UpdateAccountAsync(SystemAccountDTO updatedAccount);
+
+
     }
 }

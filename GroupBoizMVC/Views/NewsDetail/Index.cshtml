@@ -1,4 +1,5 @@
-﻿
+﻿@using GroupBoizCommon.DTO
+
 @{
     ViewData["Title"] = "News Management Details Page";
 
@@ -69,24 +70,62 @@
 
                                     <div class="down-content">
                                         <span id="news-category">@(ViewBag.News.Category?.CategoryName ?? "No Category")</span>
-                                        <h4 id="news-title">@(ViewBag.News.NewsTitle ?? "No Title Available")</h4>
+
+                                        <input type="hidden" id="news-id" value="@ViewBag.News.NewsArticleId" />
+
+                                        <h4 id="news-title">@(ViewBag.News.NewsTitle ?? "No Title Available")</h4>  
+
                                         <ul class="post-info">
-                                            <li><span id="news-category-name">@(ViewBag.News.Category?.CategoryName ?? "Unknown Category")</span></li>
+                                            
                                             <li><span id="news-date">@(ViewBag.News.CreatedDate?.ToString("yyyy-MM-dd") ?? "Unknown Date")</span></li>
 
                                         </ul>
+                                        @* <p>@news.NewsContent</p> *@
+                                        <div class="post-options">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <ul id="news-tags" class="post-tags">
+                                                        <li><i class="fa fa-tags"></i></li>
+                                                        @foreach (var tag in ViewBag.News.Tags)
+                                                        {
+                                                            <li>@tag.TagName,</li>
+                                                        }
+                                                    </ul>
+                                                    <div id="tag-selector" class="d-none">
+                                                        @if (ViewBag.Tag != null)
+                                                        {
+                                                            var tagList = ViewBag.Tag as List<TagDTO>;
+                                                            if (tagList != null)
+                                                            {
+                                                                foreach (var tag in tagList)
+                                                                {
+                                                                    <div class="form-check">
+                                                                        <input type="checkbox" class="form-check-input tag-checkbox" id="tag-@tag.TagId" value="@tag.TagId">
+                                                                        <label class="form-check-label" for="tag-@tag.TagId">@tag.TagName</label>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <p id="news-content">@(ViewBag.News.NewsContent ?? "No Content Available")</p>
 
                                         <div class="post-options">
                                             <div class="row">
                                                 <div class="col-6">
-                                                    @if (ViewBag.Role != null && ViewBag.AccountId != null && ViewBag.News?.CreateById != null)
+                                                    @if (ViewBag.Role != null && ViewBag.AccountId != null && ViewBag.News?.CreatedById != null)
                                                     {
-                                                        if (ViewBag.Role != "Lecturer" && ViewBag.Role != "User" && ViewBag.AccountId == ViewBag.News.CreateById)
+                                                        @if (ViewBag.Role == "Staff")
                                                         {
                                                             <button class="btn btn-warning" id="edit-button">Edit</button>
                                                             <button class="btn btn-danger" id="delete-button">Delete</button>
                                                         }
+
+
                                                     }
                                                     <button class="btn btn-success d-none" id="save-button">Save</button>
                                                 </div>
@@ -193,15 +232,20 @@
                                     <ul>
                                         @if (ViewBag.Category != null)
                                         {
-                                            foreach (var category in ViewBag.Category as List<GroupBoizDAL.Entities.Category>)
+                                            var categoryList = ViewBag.Category as List<CategoryDTO>; // Ép kiểu đúng
+                                            if (categoryList != null && categoryList.Count > 0)
                                             {
-                                                <li><a href="#">- @category.CategoryName</a></li>
+                                                foreach (var category in categoryList)
+                                                {
+                                                    <li><a href="/News/ByCategory/@category.CategoryId">- @category.CategoryName</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li>No categories found.</li>
                                             }
                                         }
-                                        else
-                                        {
-                                            <li>No categories found.</li>
-                                        }
+
                                     </ul>
                                 </div>
                             </div>
@@ -216,16 +260,19 @@
                                     <ul>
                                         @if (ViewBag.Tag != null)
                                         {
-                                            foreach (var tag in ViewBag.Tag as List<GroupBoizDAL.Entities.Tag>)
+                                            var tagList = ViewBag.Tag as List<TagDTO>; // Ép kiểu đúng
+                                            if (tagList != null && tagList.Count > 0)
                                             {
-                                                <li><a href="#">@tag.TagName</a></li>
+                                                foreach (var tag in tagList)
+                                                {
+                                                    <li><a href="/News/ByTag/@tag.TagId">@tag.TagName</a></li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li>No tags found.</li>
                                             }
                                         }
-                                        else
-                                        {
-                                            <li>No tags found.</li>
-                                        }
-                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -238,50 +285,139 @@
 
 </section>
     <script>
-                document.getElementById('save-button').addEventListener('click', function() {
-            const updatedNews = {
-                NewsArticleId: '@ViewBag.News.NewsArticleId',
-                NewsTitle: document.getElementById('news-title').innerText,
-                NewsContent: document.getElementById('news-content').innerText
-            };
+    document.addEventListener("DOMContentLoaded", function () {
+        const editButton = document.getElementById('edit-button');
+        const saveButton = document.getElementById('save-button');
+        const deleteButton = document.getElementById('delete-button');
+        const newsTitle = document.getElementById('news-title');
+        const newsContent = document.getElementById('news-content');
+        const newsTagsUl = document.getElementById('news-tags');
+        const tagSelector = document.getElementById('tag-selector');
 
-            fetch('/NewsDetail/UpdateNews', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedNews)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                document.getElementById('news-title').contentEditable = false;
-                document.getElementById('news-content').contentEditable = false;
-                document.getElementById('save-button').classList.add('d-none');
-                document.getElementById('edit-button').classList.remove('d-none');
-            })
-            .catch(error => alert('Error updating news!'));
-        });
+        if (editButton) {
+            editButton.addEventListener('click', function () {
+                if (newsTitle) newsTitle.contentEditable = true;
+                if (newsContent) newsContent.contentEditable = true;
 
-        document.getElementById('delete-button').addEventListener('click', function() {
+                // Ẩn danh sách tag, hiển thị checkbox
+                if (newsTagsUl) newsTagsUl.classList.add('d-none');
+                if (tagSelector) tagSelector.classList.remove('d-none');
+
+                // ✅ Đánh dấu các checkbox theo tag hiện có
+                let selectedTags = Array.from(newsTagsUl.querySelectorAll('.tag-item'))
+                                        .map(tag => tag.textContent.trim().toLowerCase());
+
+                document.querySelectorAll('.tag-checkbox').forEach(checkbox => {
+                    checkbox.checked = selectedTags.includes(checkbox.nextElementSibling.textContent.trim().toLowerCase());
+                });
+
+                if (saveButton) saveButton.classList.remove('d-none');
+                editButton.classList.add('d-none');
+            });
+        }
+
+        if (saveButton) {
+            saveButton.addEventListener('click', function () {
+                if (newsTitle) newsTitle.contentEditable = false;
+                if (newsContent) newsContent.contentEditable = false;
+
+                // ✅ Lấy danh sách tag đã chọn từ checkbox
+                let selectedTagIds = [];
+                let selectedTagNames = [];
+
+                document.querySelectorAll('.tag-checkbox:checked').forEach(checkbox => {
+                    selectedTagIds.push(checkbox.value);
+                    selectedTagNames.push(checkbox.nextElementSibling.textContent.trim());
+                });
+
+                // ✅ Cập nhật danh sách tag hiển thị
+                if (newsTagsUl) {
+                    newsTagsUl.innerHTML = '<li><i class="fa fa-tags"></i></li>';
+                    selectedTagNames.forEach(tag => {
+                        let li = document.createElement('li');
+                        li.classList.add('tag-item');
+                        li.textContent = tag;
+                        newsTagsUl.appendChild(li);
+                    });
+
+                    newsTagsUl.classList.remove('d-none');
+                }
+
+                if (tagSelector) tagSelector.classList.add('d-none');
+                saveButton.classList.add('d-none');
+                if (editButton) editButton.classList.remove('d-none');
+
+                selectedTagIds = selectedTagIds.map(Number);
+
+                    const articleIdElement = document.getElementById('news-id');
+    const articleId = articleIdElement ? articleIdElement.value : null;
+
+    if (!articleId) {
+        alert("Lỗi: Không tìm thấy NewsArticleId!");
+        return;
+    }
+
+                // ✅ Gửi dữ liệu lên server
+                const updatedNews = {
+                    NewsArticleId: articleId ,
+                    NewsTitle: newsTitle ? newsTitle.innerText.trim() : '',
+                    NewsContent: newsContent ? newsContent.innerText.trim() : '',
+                    TagIds: selectedTagIds // 🔥 Fix lỗi invalid data
+                };
+
+                console.log("Dữ liệu gửi lên server:", updatedNews); // Debug
+
+                fetch('/NewsDetail/UpdateNews', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedNews)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Invalid response from server');
+                    return response.json();
+                })
+                .then(data => alert(data.message))
+                .catch(error => alert('Error updating news: ' + error.message));
+            });
+        }
+
+    // Kiểm tra xem deleteButton có tồn tại không
+    if (deleteButton) {
+        // Lấy articleId từ phần tử input hoặc một phần tử chứa ID
+        const articleIdElement = document.getElementById('news-id');
+        const articleId = articleIdElement ? articleIdElement.value : null;
+
+        // Nếu không có articleId, hiển thị thông báo lỗi
+        if (!articleId) {
+            alert("Lỗi: Không tìm thấy NewsArticleId!");
+            return;
+        }
+
+        // Gắn sự kiện click cho deleteButton
+        deleteButton.addEventListener('click', function () {
+            // Hiển thị thông báo xác nhận trước khi xóa
             if (confirm('Are you sure you want to delete this news article?')) {
+                // Gửi yêu cầu xóa bài viết qua API
                 fetch('/NewsDetail/DeleteNews', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ NewsArticleId: '@ViewBag.News.NewsArticleId' })
+                    body: JSON.stringify(articleId) // Chuyển articleId thành đối tượng JSON
                 })
-                .then(response => response.json())
+                .then(response => response.json()) // Xử lý phản hồi từ server
                 .then(data => {
+                    // Hiển thị thông báo kết quả
                     alert(data.message);
-                    window.location.href = '/News';
+                    if (data.success) {
+                        window.location.href = '/News'; // Điều hướng về trang danh sách tin tức
+                    }
                 })
-                .catch(error => alert('Error deleting news!'));
+                .catch(error => alert('Error deleting news!')); // Xử lý lỗi
             }
         });
-            document.getElementById('edit-button').addEventListener('click', function () {
-        document.getElementById('news-title').contentEditable = true;
-        document.getElementById('news-content').contentEditable = true;
-        document.getElementById('save-button').classList.remove('d-none');
-        document.getElementById('edit-button').classList.add('d-none');
+    }
+
     });
+
 
 
     </script>

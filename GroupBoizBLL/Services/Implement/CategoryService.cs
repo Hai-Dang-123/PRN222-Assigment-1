@@ -31,7 +31,16 @@ namespace GroupBoizBLL.Services.Implement
                     return new ResponseDTO("No categories found", 404, false);
                 }
 
-                return new ResponseDTO("Categories retrieved successfully", 200, true, categoryList);
+                // Chuyển đổi danh sách Category sang CategoryDTO
+                var categoryDTOList = categoryList.Select(c => new CategoryDTO
+                {
+                    CategoryId = c.CategoryId,
+                    CategoryName = c.CategoryName,
+                    CategoryDesciption = c.CategoryDesciption,
+                    IsActive = c.IsActive
+                }).ToList();
+
+                return new ResponseDTO("Categories retrieved successfully", 200, true, categoryDTOList);
             }
             catch (Exception ex)
             {
@@ -40,14 +49,22 @@ namespace GroupBoizBLL.Services.Implement
         }
 
         // Thêm Category
-        public async Task<ResponseDTO> Create(Category category)
+        public async Task<ResponseDTO> Create(CategoryDTO categoryDto)
         {
             try
             {
-                if (category == null)
+                if (categoryDto == null)
                 {
                     return new ResponseDTO("Invalid category data", 400, false);
                 }
+
+                // Chuyển đổi từ CategoryDTO sang Category
+                var category = new Category
+                {
+                    CategoryName = categoryDto.CategoryName,
+                    CategoryDesciption = categoryDto.CategoryDesciption,
+                    IsActive = categoryDto.IsActive
+                };
 
                 await _unitOfWork.CategoryRepo.AddAsync(category);
                 await _unitOfWork.SaveAsync();
@@ -60,18 +77,19 @@ namespace GroupBoizBLL.Services.Implement
             }
         }
 
-        public async Task<ResponseDTO> UpdateCategory(Category category)
+        // Cập nhật Category
+        public async Task<ResponseDTO> UpdateCategory(CategoryDTO categoryDto)
         {
             try
             {
-                var existingCategory = await _unitOfWork.CategoryRepo.GetByIdAsync(category.CategoryId);
+                var existingCategory = await _unitOfWork.CategoryRepo.GetByIdAsync(categoryDto.CategoryId);
                 if (existingCategory == null)
                     return new ResponseDTO("Category not found", 404, false);
 
-                // Cập nhật thông tin từ category nhận vào
-                existingCategory.CategoryName = category.CategoryName;
-                existingCategory.CategoryDesciption = category.CategoryDesciption;
-                existingCategory.IsActive = category.IsActive;
+                // Cập nhật thông tin từ CategoryDTO nhận vào
+                existingCategory.CategoryName = categoryDto.CategoryName;
+                existingCategory.CategoryDesciption = categoryDto.CategoryDesciption;
+                existingCategory.IsActive = categoryDto.IsActive;
 
                 _unitOfWork.CategoryRepo.Update(existingCategory);
                 await _unitOfWork.SaveAsync();
@@ -83,8 +101,6 @@ namespace GroupBoizBLL.Services.Implement
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
-
-
 
         // Xóa Category
         public async Task<ResponseDTO> Delete(short categoryId)

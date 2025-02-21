@@ -1,9 +1,7 @@
-﻿using GroupBoizBLL.Services.Implement;
-using GroupBoizBLL.Services.Interface;
-using GroupBoizDAL.Entities;
+﻿using GroupBoizBLL.Services.Interface;
+using GroupBoizCommon.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GroupBoizMVC.Controllers
@@ -24,62 +22,48 @@ namespace GroupBoizMVC.Controllers
 
             if (response.IsSuccess)
             {
-                return View(response.Result);
+                return View(response.Result);  // Trả về danh sách CategoryDTO
             }
 
             ViewBag.ErrorMessage = response.Message;
-            return View(new List<Category>());
+            return View(new List<CategoryDTO>());
         }
 
         // Thêm mới category
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Category category)
+        public async Task<IActionResult> Create([FromBody] CategoryDTO categoryDto)
         {
-            if (category == null)
+            if (categoryDto == null)
             {
                 return Json(new { success = false, message = "Invalid data!" });
             }
 
-            var response = await _categoryService.Create(category);
+            var response = await _categoryService.Create(categoryDto);
 
-            if (response.IsSuccess)
-            {
-                return Json(new { success = true, message = "Category created successfully!" });
-            }
-
-            return Json(new { success = false, message = response.Message });
+            return Json(new { success = response.IsSuccess, message = response.Message });
         }
 
         // Cập nhật category
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody] Category category)
+        public async Task<IActionResult> Update([FromBody] CategoryDTO categoryDto)
         {
-            if (category == null || category.CategoryId == 0)
+            if (categoryDto == null || categoryDto.CategoryId == 0)
             {
                 return Json(new { success = false, message = "Invalid data!" });
             }
 
-            var response = await _categoryService.UpdateCategory(category);
+            var response = await _categoryService.UpdateCategory(categoryDto);
 
-            if (response.IsSuccess)
-            {
-                return Json(new { success = true, message = "Category updated successfully!" });
-            }
-
-            return Json(new { success = false, message = response.Message });
+            return Json(new { success = response.IsSuccess, message = response.Message });
         }
 
         // Xóa category
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] int categoryId) // 🔹 Nhận trực tiếp số nguyên
+        public async Task<IActionResult> Delete([FromBody] int categoryId)
         {
             var response = await _categoryService.Delete((short)categoryId);
 
-            return Json(new { success = response.IsSuccess, message = response.IsSuccess ? "Category deleted successfully!" : response.Message });
+            return Json(new { success = response.IsSuccess, message = response.Message });
         }
-
-
-
-
     }
 }

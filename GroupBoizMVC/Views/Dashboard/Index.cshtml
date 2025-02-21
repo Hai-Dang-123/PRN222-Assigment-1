@@ -1,8 +1,7 @@
-﻿﻿
-@model List<GroupBoizDAL.Entities.NewsArticle>
+﻿@model List<GroupBoizDAL.Entities.NewsArticle>
 
 @{
-    ViewData["Title"] = "Báo cáo thống kê bài viết";
+    ViewData["Title"] = "Article Statistics Report";
     Layout = "_MinimalLayout";
 }
 
@@ -13,38 +12,38 @@
 <link rel="stylesheet" href="~/assets/css/templatemo-stand-blog.css" asp-append-version="true">
 <link rel="stylesheet" href="~/assets/css/owl.css" asp-append-version="true">
 
-@* <h2 class="mb-3">Báo cáo thống kê bài viết</h2> *@
+@* <h2 class="mb-3">Article Statistics Report</h2> *@
 
-@* <!-- Form chọn khoảng thời gian --> *@
+@* <!-- Date Range Selection Form --> *@
 @* <form method="get"> *@
 @*     <div class="row mb-3"> *@
 @*         <div class="col-md-4"> *@
-@*             <label for="startDate" class="form-label">Từ ngày:</label> *@
+@*             <label for="startDate" class="form-label">From Date:</label> *@
 @*             <input type="date" id="startDate" name="startDate" class="form-control" *@
 @*                    value="@ViewData["StartDate"]" required> *@
 @*         </div> *@
 @*         <div class="col-md-4"> *@
-@*             <label for="endDate" class="form-label">Đến ngày:</label> *@
+@*             <label for="endDate" class="form-label">To Date:</label> *@
 @*             <input type="date" id="endDate" name="endDate" class="form-control" *@
 @*                    value="@ViewData["EndDate"]" required> *@
 @*         </div> *@
 @*         <div class="col-md-4 d-flex align-items-end"> *@
-@*             <button type="submit" class="btn btn-primary">Xem báo cáo</button> *@
+@*             <button type="submit" class="btn btn-primary">View Report</button> *@
 @*         </div> *@
 @*     </div> *@
-@* </form> *@
+@* </form> *@>
 
-@* <!-- Bảng hiển thị danh sách bài viết --> *@
+@* <!-- Table Displaying Article List --> *@
 @* @if (Model != null && Model.Any()) *@
 @* { *@
 @*     <table class="table table-bordered table-striped"> *@
 @*         <thead class="table-dark"> *@
 @*             <tr> *@
 @*                 <th>ID</th> *@
-@*                 <th>Tiêu đề</th> *@
-@*                 <th>Ngày tạo</th> *@
-@*                 <th>Nguồn</th> *@
-@*                 <th>Trạng thái</th> *@
+@*                 <th>Title</th> *@
+@*                 <th>Creation Date</th> *@
+@*                 <th>Source</th> *@
+@*                 <th>Status</th> *@
 @*             </tr> *@
 @*         </thead> *@
 @*         <tbody> *@
@@ -55,7 +54,7 @@
 @*                     <td>@news.NewsTitle</td> *@
 @*                     <td>@(news.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td> *@
 @*                     <td>@news.NewsSource</td> *@
-@*                     <td>@(news.NewsStatus == true ? "Đã duyệt" : "Chưa duyệt")</td> *@
+@*                     <td>@(news.NewsStatus == true ? "Approved" : "Not Approved")</td> *@
 @*                 </tr> *@
 @*             } *@
 @*         </tbody> *@
@@ -63,29 +62,29 @@
 @* } *@
 @* else *@
 @* { *@
-@*     <p class="text-danger">Không có bài viết nào trong khoảng thời gian này.</p> *@
+@*     <p class="text-danger">No articles found in this time range.</p> *@
 @* } *@
 
-<h2 class="mb-4 text-center">Báo cáo thống kê bài viết</h2>
+<h2 class="mb-4 text-center">Article Statistics Report</h2>
 
-<!-- Form chọn khoảng thời gian -->
+<!-- Date Range Selection Form -->
 <div class="card shadow-sm mb-4">
     <div class="card-body">
         <form method="get">
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label for="startDate" class="form-label">Từ ngày:</label>
+                    <label for="startDate" class="form-label">From Date:</label>
                     <input type="date" id="startDate" name="startDate" class="form-control"
                            value="@ViewData["StartDate"]" required>
                 </div>
                 <div class="col-md-4">
-                    <label for="endDate" class="form-label">Đến ngày:</label>
+                    <label for="endDate" class="form-label">To Date:</label>
                     <input type="date" id="endDate" name="endDate" class="form-control"
                            value="@ViewData["EndDate"]" required>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-chart-line me-2"></i>Xem báo cáo
+                        <i class="fas fa-chart-line me-2"></i>View Report
                     </button>
                 </div>
             </div>
@@ -93,7 +92,7 @@
     </div>
 </div>
 
-<!-- Bảng hiển thị danh sách bài viết -->
+<!-- Table Displaying Article List -->
 @if (Model != null && Model.Any())
 {
     <div class="card shadow-sm">
@@ -102,10 +101,10 @@
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Tiêu đề</th>
-                        <th>Ngày tạo</th>
-                        <th>Nguồn</th>
-                        <th>Trạng thái</th>
+                        <th>Title</th>
+                        <th>Creation Date</th>
+                        <th>Source</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,7 +115,7 @@
                             <td>@news.NewsTitle</td>
                             <td>@(news.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
                             <td>@news.NewsSource</td>
-                            <td>@(news.NewsStatus == true ? "Đã duyệt" : "Chưa duyệt")</td>
+                            <td>@(news.NewsStatus == true ? "Approved" : "Not Approved")</td>
                         </tr>
                     }
                 </tbody>
@@ -127,11 +126,11 @@
 else
 {
     <div class="alert alert-warning shadow-sm" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i>Không có bài viết nào trong khoảng thời gian này.
+        <i class="fas fa-exclamation-circle me-2"></i>No articles found in this time range.
     </div>
 }
 
-<!-- Thêm Font Awesome cho icon -->
+<!-- Add Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <style>

@@ -12,11 +12,13 @@ namespace GroupBoizBLL.Services.Interface
     {
         Task<ResponseDTO> GetAllNewsWithTag();
         Task<ResponseDTO> GetNewsById(string NewsArticleId);
-        Task<ResponseDTO> UpdateNewsArticle(NewsArticle updatedNews);
+        Task<ResponseDTO> UpdateNewsArticle(NewsArticleDTO updatedNews);
         Task<ResponseDTO> DeleteNews(string newsArticleId);
-        Task<List<NewsArticle>> SearchNewsByTitle(string title);
-        Task<List<NewsArticle>> GetByCategoryAsync(int categoryId);
-        Task<List<NewsArticle>> GetByTagAsync(int tagId);
+        Task<ResponseDTO> SearchNewsByTitle(string title);
+        Task<ResponseDTO> GetByCategoryAsync(int categoryId);
+        Task<ResponseDTO> GetByTagAsync(int tagId);
         Task<ResponseDTO> GetNewsByPeriod(DateTime? startDate, DateTime? endDate);
+        Task<ResponseDTO> CreateNewsArticle(NewsArticleDTO newsDto);
+
     }
 }

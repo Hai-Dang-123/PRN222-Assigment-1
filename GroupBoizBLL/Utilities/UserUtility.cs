@@ -68,7 +68,7 @@ namespace GroupBoizBLL.Utilities
                     return -1; // Trả về -1 nếu không có token
 
                 var claims = JWTProvide.DecodeToken(token);
-                var userIdClaim = claims.FirstOrDefault(c => c.Type == "UserId" || c.Type == "sub");
+                var userIdClaim = claims.FirstOrDefault(c => c.Type == "userId" || c.Type == "sub");
 
                 if (userIdClaim != null && short.TryParse(userIdClaim.Value, out short userId))
                 {

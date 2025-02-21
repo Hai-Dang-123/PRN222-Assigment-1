@@ -12,9 +12,9 @@ namespace GroupBoizBLL.Services.Interface
     {
         Task<ResponseDTO> GetAllTags();
         Task<ResponseDTO> GetById(int tagId);
-        Task<int> GetMaxTagIdAsync();
-        Task<bool> CreateAsync(Tag tag);
-        Task<ResponseDTO> UpdateTag(Tag tag);
+        Task<ResponseDTO> GetMaxTagIdAsync();
+        Task<ResponseDTO> CreateAsync(TagDTO tag);
+        Task<ResponseDTO> UpdateTag(TagDTO tag);
         Task<ResponseDTO> Delete(int tagId);
     }
 }

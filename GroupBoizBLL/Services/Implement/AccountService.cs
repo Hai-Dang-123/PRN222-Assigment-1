@@ -16,7 +16,6 @@ namespace GroupBoizBLL.Services.Implement
             _unitOfWork = unitOfWork;
         }
 
-        // Lấy thông tin tài khoản theo ID
         public async Task<ResponseDTO> GetById(short id)
         {
             try
@@ -33,64 +32,110 @@ namespace GroupBoizBLL.Services.Implement
             }
         }
 
-        // Cập nhật thông tin tài khoản
-        public async Task<ResponseDTO> UpdateAccount(SystemAccount account)
+        public async Task<ResponseDTO> GetAllAccountsAsync()
         {
             try
             {
-                var existingAccount = await _unitOfWork.AccountRepo.GetByShortIdAsync(account.AccountId);
-                if (existingAccount == null)
-                    return new ResponseDTO("Account not found", 404, false);
+                var accounts = await _unitOfWork.AccountRepo.GetAllAsync();  // Lấy danh sách SystemAccount từ DB
 
-                existingAccount.AccountName = account.AccountName;
-                existingAccount.AccountEmail = account.AccountEmail;
-                existingAccount.AccountRole = account.AccountRole;
-                existingAccount.AccountPassword = account.AccountPassword;
+                if (accounts == null || !accounts.Any())
+                {
+                    return new ResponseDTO("No accounts found", 404, false);
+                }
 
-                _unitOfWork.AccountRepo.UpdateAsync(existingAccount);
-                await _unitOfWork.SaveAsync();
+                // **Mapping từ Entity -> DTO**
+                var accountDtoList = accounts.Select(account => new SystemAccountDTO
+                {
+                    AccountId = account.AccountId,
+                    AccountName = account.AccountName,
+                    AccountEmail = account.AccountEmail,
+                    AccountRole = account.AccountRole,
+                   
+                }).ToList();
 
-                return new ResponseDTO("Account updated successfully", 200, true);
+                Console.WriteLine($"✅ Mapped {accountDtoList.Count} accounts to DTO");
+
+                return new ResponseDTO("Accounts retrieved successfully", 200, true, accountDtoList);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error: {ex.Message}");
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
+
+
+        public async Task<ResponseDTO> CreateAccountAsync(SystemAccountDTO accountDto)
+        {
+            try
+            {
+                var newAccount = new SystemAccount
+                {
+                    AccountName = accountDto.AccountName,
+                    AccountEmail = accountDto.AccountEmail,
+                    AccountRole = accountDto.AccountRole,
+                    AccountPassword = accountDto.AccountPassword
+                };
+
+                await _unitOfWork.AccountRepo.AddAsync(newAccount);
+                await _unitOfWork.AccountRepo.SaveChangesAsync();
+
+                return new ResponseDTO("Account created successfully", 201, true, newAccount);
             }
             catch (Exception ex)
             {
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
-        public async Task<IEnumerable<SystemAccount>> GetAllAccountsAsync()
-        {
-            return await _unitOfWork.AccountRepo.GetAllAsync();
-        }
 
-        public Task<SystemAccount> CreateAccountAsync(SystemAccount account)
+        public async Task<ResponseDTO> DeleteAccountAsync(short accountId)
         {
-            throw new NotImplementedException();
-        }
-        public async Task<bool> DeleteAccountAsync(short accountId)
-        {
-            return await _unitOfWork.AccountRepo.DeleteAccountAsync(accountId);
-        }
-        public async Task<SystemAccount> UpdateAccountAsync(short accountId, SystemAccount updatedAccount)
-        {
-            var existingAccount = await _unitOfWork.AccountRepo.FindByIdAsync(accountId);
-            if (existingAccount == null)
+            try
             {
-                throw new KeyNotFoundException("Account not found.");
+                var isDeleted = await _unitOfWork.AccountRepo.DeleteAccountAsync(accountId);
+                if (!isDeleted)
+                    return new ResponseDTO("Account not found", 404, false);
+
+                return new ResponseDTO("Account deleted successfully", 200, true);
             }
-
-            if (!string.IsNullOrEmpty(updatedAccount.AccountName))
-                existingAccount.AccountName = updatedAccount.AccountName;
-
-            if (!string.IsNullOrEmpty(updatedAccount.AccountEmail))
-                existingAccount.AccountEmail = updatedAccount.AccountEmail;
-
-            if (!string.IsNullOrEmpty(updatedAccount.AccountPassword))
-                existingAccount.AccountPassword = updatedAccount.AccountPassword;
-
-            await _unitOfWork.AccountRepo.UpdateAccountAsync(existingAccount);
-            await _unitOfWork.AccountRepo.SaveChangesAsync();  // Đảm bảo thay đổi được lưu
-
-            return existingAccount;
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
         }
+
+        public async Task<ResponseDTO> UpdateAccountAsync(SystemAccountDTO updatedAccount)
+        {
+            try
+            {
+                Console.WriteLine(updatedAccount.AccountId);
+                var existingAccount = await _unitOfWork.AccountRepo.FindByIdAsync(updatedAccount.AccountId);
+                if (existingAccount == null)
+                {
+                    return new ResponseDTO("Account not found", 404, false);
+                }
+
+                if (!string.IsNullOrEmpty(updatedAccount.AccountName))
+                    existingAccount.AccountName = updatedAccount.AccountName;
+
+                if (!string.IsNullOrEmpty(updatedAccount.AccountEmail))
+                    existingAccount.AccountEmail = updatedAccount.AccountEmail;
+
+                if (!string.IsNullOrEmpty(updatedAccount.AccountPassword))
+                    existingAccount.AccountPassword = updatedAccount.AccountPassword;
+
+                existingAccount.AccountRole = updatedAccount.AccountRole;
+
+                await _unitOfWork.AccountRepo.UpdateAccountAsync(existingAccount);
+                await _unitOfWork.AccountRepo.SaveChangesAsync();
+
+                return new ResponseDTO("Account updated successfully", 200, true, existingAccount);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
+
     }
 }

@@ -1,5 +1,4 @@
-﻿﻿
-@model IEnumerable<GroupBoizDAL.Entities.SystemAccount>
+﻿@model IEnumerable<GroupBoizCommon.DTO.SystemAccountDTO>
 
 @{
     ViewData["Title"] = "Account Management Page";
@@ -7,16 +6,17 @@
 
 <section class="account-management">
     <div class="container">
-        <h2 class="tm-margin-b-30">Quản lý Tài Khoản</h2>
+        <h2 class="tm-margin-b-30">Manage Account</h2>
 
-        <!-- Bảng danh sách tài khoản -->
+        <!-- Account list table -->
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Họ Tên</th>
+                    <th>Full Name</th>
                     <th>Email</th>
-                    <th>Hành động</th>
+                    <th>Role</th> <!-- Add Role column -->
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,11 +26,11 @@
                         <td>@user.AccountId</td>
                         <td>@user.AccountName</td>
                         <td>@user.AccountEmail</td>
+                        <td>@user.AccountRole</td> <!-- Display Role name -->
                         <td>
-                            <a href="/account/details/@user.AccountId" class="btn btn-info btn-sm">Xem Chi Tiết</a>
-                            <button class="btn btn-warning btn-sm" onclick="openEditModal(@user.AccountId, '@user.AccountName', '@user.AccountEmail')">Sửa</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteAccount(@user.AccountId)">Xóa</button>
-
+                            <a href="/account/details/@user.AccountId" class="btn btn-info btn-sm">View Details</a>
+                            <button class="btn btn-warning btn-sm" onclick="openEditModal(@user.AccountId, '@user.AccountName', '@user.AccountEmail', '@user.AccountRole')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteAccount(@user.AccountId)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -39,12 +39,12 @@
     </div>
 </section>
 
-<!-- Modal cập nhật tài khoản -->
+<!-- Account update modal -->
 <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editAccountModalLabel">Chỉnh sửa tài khoản</h5>
+                <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -52,7 +52,7 @@
                     <input type="hidden" id="editAccountId" name="AccountId" />
 
                     <div class="mb-3">
-                        <label for="editAccountName" class="form-label">Họ Tên</label>
+                        <label for="editAccountName" class="form-label">Full Name</label>
                         <input type="text" id="editAccountName" name="AccountName" class="form-control" required />
                     </div>
 
@@ -60,25 +60,37 @@
                         <label for="editAccountEmail" class="form-label">Email</label>
                         <input type="email" id="editAccountEmail" name="AccountEmail" class="form-control" required />
                     </div>
+
                     <div class="mb-3">
-                        <label for="editAccountPassword" class="form-label">Mật khẩu</label>
+                        <label for="editAccountPassword" class="form-label">Password (only change if needed)</label>
                         <input type="password" id="editAccountPassword" name="AccountPassword" class="form-control" />
                     </div>
 
+                    <div class="mb-3">
+                        <label for="editAccountRole" class="form-label">Role</label>
+                        <select id="editAccountRole" name="AccountRole" class="form-control">
+                            <option value="1">Staff</option>
+                            <option value="2">Lecturer</option>
+                        </select>
+                    </div>
 
-                    <button type="button" class="btn btn-primary" onclick="submitEditForm()">Cập nhật</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditForm()">Update</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
+<!-- JavaScript Code -->
 <script>
-    function openEditModal(id, name, email) {
+    function openEditModal(id, name, email, role) {
         document.getElementById("editAccountId").value = id;
         document.getElementById("editAccountName").value = name;
         document.getElementById("editAccountEmail").value = email;
+        document.getElementById("editAccountRole").value = role;
+
+        // Initialize and show modal using Bootstrap Modal API
         var myModal = new bootstrap.Modal(document.getElementById("editAccountModal"));
         myModal.show();
     }
@@ -88,11 +100,14 @@
         const accountName = document.getElementById("editAccountName").value;
         const accountEmail = document.getElementById("editAccountEmail").value;
         const accountPassword = document.getElementById("editAccountPassword")?.value || "";
+        const accountRole = document.getElementById("editAccountRole").value;
 
         const requestData = {
+            AccountId: accountId,
             AccountName: accountName,
             AccountEmail: accountEmail,
-            AccountPassword: accountPassword
+            AccountPassword: accountPassword,
+            AccountRole: accountRole
         };
 
         try {
@@ -104,50 +119,41 @@
                 body: JSON.stringify(requestData)
             });
 
-
             if (response.ok) {
-                alert("Cập nhật thành công!");
+                alert("Update successful!");
                 location.reload();
             } else {
                 const errorMsg = await response.text();
-                alert("Cập nhật thất bại: " + errorMsg);
+                alert("Update failed: " + errorMsg);
             }
         } catch (error) {
-            alert("Lỗi hệ thống: " + error.message);
+            alert("System error: " + error.message);
         }
     }
 
-
-
-</script>
-<script>
     async function deleteAccount(accountId) {
-        // if (!confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
-        //     return;
-        // }
+        if (!confirm("Are you sure you want to delete this account?")) {
+            return;
+        }
 
         try {
-            // Gửi yêu cầu DELETE đến API với đúng URL
             const response = await fetch(`/account/deleteaccount/${accountId}`, {
-                method: "DELETE",  // Phương thức DELETE
+                method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 }
             });
 
             if (response.ok) {
-                const data = await response.json(); // Nhận dữ liệu trả về từ server
-                alert(data.message);  // Hiển thị thông báo từ server
-                location.reload();    // Tải lại trang để cập nhật danh sách tài khoản
+                const data = await response.json();
+                alert(data.message);
+                location.reload();
             } else {
                 const errorMsg = await response.text();
-                alert("Xóa thất bại: " + errorMsg);
+                alert("Delete failed: " + errorMsg);
             }
         } catch (error) {
-            alert("Lỗi hệ thống: " + error.message);
+            alert("System error: " + error.message);
         }
     }
-
-
-
 </script>

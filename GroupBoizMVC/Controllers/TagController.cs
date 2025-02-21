@@ -1,5 +1,6 @@
 ﻿using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
+using GroupBoizCommon.DTO;
 using GroupBoizDAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -31,27 +32,18 @@ namespace GroupBoizMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Tag tag)
+        public async Task<IActionResult> Create([FromBody] TagDTO tag) // 🔹 Fix: Dùng TagDTO thay vì Tag
         {
             if (tag == null || string.IsNullOrWhiteSpace(tag.TagName))
             {
                 return Json(new { success = false, message = "Tag name cannot be empty!" });
             }
 
-            // 🔹 Gọi Service để lấy TagID lớn nhất rồi +1
-            int maxId = await _tagService.GetMaxTagIdAsync();
-            tag.TagId = maxId + 1; // Gán ID mới
-
             try
             {
-                bool isCreated = await _tagService.CreateAsync(tag);
+                var response = await _tagService.CreateAsync(tag); // 🔹 Fix: Trả về ResponseDTO
 
-                if (isCreated)
-                {
-                    return Json(new { success = true, message = "Tag created successfully!" });
-                }
-
-                return Json(new { success = false, message = "Failed to create tag!" });
+                return Json(new { success = response.IsSuccess, message = response.Message });
             }
             catch (Exception ex)
             {
@@ -59,39 +51,45 @@ namespace GroupBoizMVC.Controllers
             }
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody] Tag tag)
+        public async Task<IActionResult> Update([FromBody] TagDTO tag)
         {
-            if (tag == null || tag.TagId <= 0)  // Sửa TagId -> TagID
+            if (tag == null || tag.TagId <= 0)
             {
                 return Json(new { success = false, message = "Invalid data!" });
             }
 
-            // Kiểm tra xem Tag có tồn tại không
-            var existingTag = await _tagService.GetById(tag.TagId);
-            if (existingTag == null)
+            try
             {
-                return Json(new { success = false, message = "Tag not found!" });
+                var existingTag = await _tagService.GetById(tag.TagId);
+                if (!existingTag.IsSuccess)  
+                {
+                    return Json(new { success = false, message = "Tag not found!" });
+                }
+
+                var response = await _tagService.UpdateTag(tag);
+
+                return Json(new { success = response.IsSuccess, message = response.Message });
             }
-
-            var response = await _tagService.UpdateTag(tag);
-
-            if (response.IsSuccess)
+            catch (Exception ex)
             {
-                return Json(new { success = true, message = "Tag updated successfully!" });
+                return Json(new { success = false, message = "Error: " + ex.Message });
             }
-
-            return Json(new { success = false, message = response.Message });
         }
 
-        // Xóa category
+        // Xóa Tag
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] int tagId) // 🔹 Nhận trực tiếp số nguyên
+        public async Task<IActionResult> Delete([FromBody] int tagId)
         {
-            var response = await _tagService.Delete((int)tagId);
-
-            return Json(new { success = response.IsSuccess, message = response.IsSuccess ? "Category deleted successfully!" : response.Message });
+            try
+            {
+                var response = await _tagService.Delete(tagId);
+                return Json(new { success = response.IsSuccess, message = response.IsSuccess ? "Tag deleted successfully!" : response.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message });
+            }
         }
     }
 }
