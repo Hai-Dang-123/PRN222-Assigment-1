@@ -45,7 +45,7 @@
                         @if (string.IsNullOrEmpty(userRole)) // Chưa đăng nhập
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
+                                <a class="nav-link" asp-controller="Login" asp-action="Index">Login</a>
                             </li>
                         }
                         else
@@ -69,6 +69,11 @@
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="News" asp-action="Index">News Management</a>
                                 </li>
+                            }
+
+                            @if (userRole == "Staff")
+                            {
+                                
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Category" asp-action="Index">Category Management</a>
                                 </li>
@@ -77,12 +82,7 @@
                                 </li>
                             }
 
-                            @if (userRole == "Admin" || userRole == "Staff")
-                            {
-                                @* <li class="nav-item"> *@
-                                @*     <a class="nav-link" asp-controller="News" asp-action="History">News History</a> *@
-                                @* </li> *@
-                            }
+                            
                             @if (userRole == "Lecturer") // 🟢 Thêm mục cho Lecturer
                             {
                                 <li class="nav-item">

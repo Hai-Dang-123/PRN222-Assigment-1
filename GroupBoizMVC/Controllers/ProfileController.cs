@@ -1,7 +1,7 @@
 ﻿using GroupBoizBLL.Services.Interface;
 using GroupBoizBLL.Utilities;
 using GroupBoizCommon.DTO;
-using GroupBoizDAL.Entities;
+
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -31,7 +31,7 @@ namespace GroupBoizMVC.Controllers
             }
 
             ViewBag.ErrorMessage = response.Message;
-            return View(new SystemAccount());
+            return View(new SystemAccountDTO());
         }
 
         // Cập nhật thông tin profile

@@ -1,5 +1,6 @@
 ﻿using GroupBoizBLL.Services.Interface;
-using GroupBoizDAL.Entities;
+using GroupBoizCommon.DTO;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,7 @@ namespace GroupBoizMVC.Controllers
             if (!response.IsSuccess)
             {
                 ViewData["ErrorMessage"] = response.Message;
-                return View(new List<NewsArticle>()); // Trả về danh sách trống
+                return View(new List<NewsArticleDTO>()); // Trả về danh sách trống
             }
 
             return View(response.Result);

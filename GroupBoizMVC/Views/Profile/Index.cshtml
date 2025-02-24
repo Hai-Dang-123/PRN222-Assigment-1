@@ -8,7 +8,7 @@
 
 <div class="card">
     <div class="card-body">
-        <input type="hidden" id="accountId" value="@Model.AccountId">
+        <input type="hidden" id="accountId" value="@Model.AccountId" readonly>
 
         <div class="mb-3">
             <label>Account Name</label>
@@ -27,7 +27,7 @@
 
         <div class="mb-3">
             <label>Password</label>
-            <input type="password" id="accountPassword" class="form-control" value="@Model.AccountPassword">
+            <input type="password" id="accountPassword" class="form-control" value="@Model.AccountPassword" readonly>
         </div>
 
         <button class="btn btn-success" id="saveProfile">Save</button>

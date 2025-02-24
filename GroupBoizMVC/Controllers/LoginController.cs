@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using GroupBoizMVC.Models;  // Thêm namespace cho DTO
+
 using GroupBoizBLL.Services.Interface;  // Thêm namespace cho service
 using System.Threading.Tasks;
 using GroupBoizCommon.DTO;

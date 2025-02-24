@@ -18,7 +18,7 @@ namespace GroupBoizMVC.Controllers
         {
             await _authService.LogoutAsync(); // Gọi hàm logout từ service
 
-            return RedirectToAction("Index", "Login"); // Chuyển hướng về trang login
+            return RedirectToAction("Index", "Home"); // Chuyển hướng về trang login
         }
     }
 }

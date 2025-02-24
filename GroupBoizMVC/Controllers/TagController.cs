@@ -1,7 +1,7 @@
 ﻿using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
 using GroupBoizCommon.DTO;
-using GroupBoizDAL.Entities;
+
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,7 +28,7 @@ namespace GroupBoizMVC.Controllers
             }
 
             ViewBag.ErrorMessage = response.Message;
-            return View(new List<Tag>());
+            return View(new List<TagDTO>());
         }
 
         [HttpPost]

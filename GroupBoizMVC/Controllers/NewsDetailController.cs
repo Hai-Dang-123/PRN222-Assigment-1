@@ -1,7 +1,7 @@
 ﻿using GroupBoizBLL.Services.Interface;
 using GroupBoizBLL.Utilities;
 using GroupBoizCommon.DTO;
-using GroupBoizDAL.Entities;
+
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;

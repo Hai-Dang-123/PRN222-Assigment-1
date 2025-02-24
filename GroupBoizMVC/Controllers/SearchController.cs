@@ -1,4 +1,5 @@
 ﻿using GroupBoizBLL.Services.Interface;
+using GroupBoizCommon.DTO;
 using GroupBoizDAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +28,7 @@ namespace GroupBoizMVC.Controllers
             if (string.IsNullOrWhiteSpace(q))
             {
 
-                ViewBag.News = new List<NewsArticle>(); // Trả về danh sách rỗng nếu không có từ khóa
+                ViewBag.News = new List<NewsArticleDTO>(); // Trả về danh sách rỗng nếu không có từ khóa
                 return View();
             }
 
