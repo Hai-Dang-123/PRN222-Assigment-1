@@ -18,8 +18,8 @@ namespace GroupBoizMVC.Controllers
         private readonly ITagService _tagService;
         private readonly INewsArticleService _newsArticleService;
         private readonly UserUtility _userUtility;
-        private readonly IHubContext<NewsHub> _hubContext; // 🔥 Inject SignalR Hub
-        public NewsController (ICategoryService categoryService, ITagService tagService,  INewsArticleService newsArticleService, UserUtility userUtility, IHubContext<NewsHub> hubContext)
+        private readonly IHubContext<AllHub> _hubContext; // 🔥 Inject SignalR Hub
+        public NewsController (ICategoryService categoryService, ITagService tagService,  INewsArticleService newsArticleService, UserUtility userUtility, IHubContext<AllHub> hubContext)
         {
             _categoryService = categoryService;
             _tagService = tagService;
@@ -71,13 +71,7 @@ namespace GroupBoizMVC.Controllers
             ViewBag.Category = categoryResponse.Result;
             ViewBag.Tag = tagResponse.Result;
 
-            if (articles.IsSuccess)
-            {
-                // 🔥 Khi bài viết mới được tạo, gửi tín hiệu cho tất cả client reload trang
-                await _hubContext.Clients.All.SendAsync("ReloadPage");
-
-                return RedirectToAction("Index");
-            }
+            
 
             return View("Index");
         }
@@ -94,13 +88,7 @@ namespace GroupBoizMVC.Controllers
             ViewBag.Category = categoryResponse.Result;
             ViewBag.Tag = tagResponse.Result;
 
-            if (articles.IsSuccess)
-            {
-                // 🔥 Khi bài viết mới được tạo, gửi tín hiệu cho tất cả client reload trang
-                await _hubContext.Clients.All.SendAsync("ReloadPage");
-
-                return RedirectToAction("Index");
-            }
+           
 
             return View("Index");
         }

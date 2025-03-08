@@ -1,4 +1,5 @@
-﻿@model IEnumerable<GroupBoizCommon.DTO.SystemAccountDTO>
+﻿﻿
+@model IEnumerable<GroupBoizCommon.DTO.SystemAccountDTO>
 
 @{
     ViewData["Title"] = "Account Management Page";
@@ -31,6 +32,17 @@
                             @* <a href="/account/details/@user.AccountId" class="btn btn-info btn-sm">View Details</a> *@
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(@user.AccountId, '@user.AccountName', '@user.AccountEmail', '@user.AccountRole')">Edit</button>
                             <button class="btn btn-danger btn-sm" onclick="deleteAccount(@user.AccountId)">Delete</button>
+
+                            @* Nút Enable / Block *@
+                            @if (user.IsEnable)
+                            {
+                                <button class="btn btn-danger btn-sm" onclick="toggleAccountStatus(@user.AccountId, false)">Block</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success btn-sm" onclick="toggleAccountStatus(@user.AccountId, true)">Enable</button>
+                            }
+
                         </td>
                     </tr>
                 }
@@ -95,7 +107,7 @@
         myModal.show();
     }
 
-    async function submitEditForm() {
+        async function submitEditForm() {
         const accountId = document.getElementById("editAccountId").value;
         const accountName = document.getElementById("editAccountName").value;
         const accountEmail = document.getElementById("editAccountEmail").value;
@@ -110,6 +122,9 @@
             AccountRole: accountRole
         };
 
+        // 🛑 Log dữ liệu request để kiểm tra
+        console.log("📤 Sending API Request:", requestData);
+
         try {
             const response = await fetch(`/account/edit?id=${accountId}`, {
                 method: "POST",
@@ -119,17 +134,26 @@
                 body: JSON.stringify(requestData)
             });
 
+            // 🛑 Log request URL
+            console.log("🔗 Request URL:", `/account/edit?id=${accountId}`);
+
+            // 🛑 Log response status
+            console.log("📥 Response Status:", response.status);
+
             if (response.ok) {
                 alert("Update successful!");
                 location.reload();
             } else {
                 const errorMsg = await response.text();
+                console.error("❌ Update failed:", errorMsg);
                 alert("Update failed: " + errorMsg);
             }
         } catch (error) {
+            console.error("🚨 System error:", error.message);
             alert("System error: " + error.message);
         }
     }
+
 
     async function deleteAccount(accountId) {
         if (!confirm("Are you sure you want to delete this account?")) {
@@ -156,4 +180,45 @@
             alert("System error: " + error.message);
         }
     }
+
+        async function toggleAccountStatus(accountId, isEnable) {
+        const requestData = {
+            AccountId: accountId,
+            IsEnable: isEnable
+        };
+
+        // 🛑 Debug dữ liệu request gửi đi
+        console.log("📤 Sending API Request:", requestData);
+
+        try {
+            const response = await fetch(`/Account/ToggleAccountStatus`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            // 🛑 Log request URL
+            console.log("🔗 Request URL:", `/Account/ToggleAccountStatus`);
+
+            // 🛑 Log response status
+            console.log("📥 Response Status:", response.status);
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message); // Hiển thị thông báo từ server
+                location.reload(); // Reload trang để cập nhật trạng thái
+            } else {
+                const errorMsg = await response.text();
+                console.error("❌ Toggle status failed:", errorMsg);
+                alert("Toggle status failed: " + errorMsg);
+            }
+        } catch (error) {
+            console.error("🚨 System error:", error.message);
+            alert("System error: " + error.message);
+        }
+    }
+
+
 </script>

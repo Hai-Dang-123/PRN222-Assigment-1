@@ -1,8 +1,10 @@
-﻿using GroupBoizBLL.Services.Implement;
+﻿using GroupBoizBLL.Hubs;
+using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
 using GroupBoizCommon.DTO;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,10 +13,12 @@ namespace GroupBoizMVC.Controllers
     public class TagController : Controller
     {
         private readonly ITagService _tagService;
+        private readonly IHubContext<AllHub> _hubContext;
 
-        public TagController(ITagService tagService)
+        public TagController(ITagService tagService, IHubContext<AllHub> hubContext)
         {
             _tagService = tagService;
+            _hubContext = hubContext;
         }
 
         // Hiển thị danh sách Tag
@@ -43,6 +47,8 @@ namespace GroupBoizMVC.Controllers
             {
                 var response = await _tagService.CreateAsync(tag); // 🔹 Fix: Trả về ResponseDTO
 
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
                 return Json(new { success = response.IsSuccess, message = response.Message });
             }
             catch (Exception ex)
@@ -69,6 +75,8 @@ namespace GroupBoizMVC.Controllers
 
                 var response = await _tagService.UpdateTag(tag);
 
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
                 return Json(new { success = response.IsSuccess, message = response.Message });
             }
             catch (Exception ex)
@@ -84,7 +92,11 @@ namespace GroupBoizMVC.Controllers
             try
             {
                 var response = await _tagService.Delete(tagId);
+
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
                 return Json(new { success = response.IsSuccess, message = response.IsSuccess ? "Tag deleted successfully!" : response.Message });
+
             }
             catch (Exception ex)
             {

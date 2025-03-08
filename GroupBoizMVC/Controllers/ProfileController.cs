@@ -1,8 +1,10 @@
-﻿using GroupBoizBLL.Services.Interface;
+﻿using GroupBoizBLL.Hubs;
+using GroupBoizBLL.Services.Interface;
 using GroupBoizBLL.Utilities;
 using GroupBoizCommon.DTO;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
 namespace GroupBoizMVC.Controllers
@@ -11,11 +13,13 @@ namespace GroupBoizMVC.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly UserUtility _userUtility;
+        private readonly IHubContext<AllHub> _hubContext;
 
-        public ProfileController(IAccountService accountService, UserUtility userUtility)
+        public ProfileController(IAccountService accountService, UserUtility userUtility, IHubContext<AllHub> hubContext)
         {
             _accountService = accountService;
             _userUtility = userUtility;
+            _hubContext = hubContext;
         }
 
         // Hiển thị thông tin profile
@@ -47,6 +51,9 @@ namespace GroupBoizMVC.Controllers
 
             if (response.IsSuccess)
             {
+
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
                 return Json(new { success = true, message = "Profile updated successfully!" });
             }
 

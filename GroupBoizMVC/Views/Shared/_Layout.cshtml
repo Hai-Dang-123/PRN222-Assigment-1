@@ -3,6 +3,7 @@
 @{
     var userRole = UserUtility.GetRoleFromToken();
     var userName = UserUtility.GetFullNameFromToken();
+    var userID = UserUtility.GetUserIDFromToken();
 }
 
 
@@ -193,51 +194,61 @@
     @* Signal RealTime *@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <!-- Thêm thư viện SweetAlert2 (nếu chưa có) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const userID = "@userID"; // 🟢 Lấy userID từ Razor
+
+            if (!userID) {
+                console.warn("⚠️ Không có userID, không kết nối SignalR.");
+                return;
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl(`/allHub?userId=${userID}`)
+                .build();
+
+            connection.start()
+                .then(() => console.log("✅ Kết nối SignalR thành công với userID:", userID))
+                .catch(err => console.error("❌ Lỗi kết nối SignalR:", err));
+
+            // 🛑 Nếu user bị block, hiển thị thông báo & logout
+            connection.on("AccountBlocked", async function () {
+                console.log("🚨 Tài khoản bị khóa!");
+
+                Swal.fire({
+                    icon: 'warning', // Biểu tượng cảnh báo
+                    title: 'Tài khoản của bạn đã bị khóa!',
+                    text: 'Bạn sẽ bị đăng xuất ngay bây giờ.',
+                    confirmButtonText: 'OK', // 🟢 Nút bấm OK
+                    allowOutsideClick: false // Không cho phép bấm ra ngoài để đóng
+                }).then(() => {
+                    window.location.href = "/Logout"; // Chuyển hướng khi nhấn OK
+                });
+            });
+        });
+    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/newsHub")
+                .withUrl("/allHub")
                 .build();
 
             connection.start()
                 .then(() => console.log("✅ Kết nối SignalR thành công!"))
                 .catch(err => console.error("❌ Lỗi kết nối SignalR:", err));
 
-            
-
-            // 🚫 Khi tài khoản bị khóa, hiển thị thông báo và chuyển về Home
-            connection.on("AccountIsBlocked", function () {
-                console.log("🚫 Tài khoản của bạn đã bị khóa!");
-
-                // Tạo modal cảnh báo
-                const modal = document.createElement("div");
-                modal.innerHTML = `
-                    <div style="
-                        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                        background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-                        text-align: center; border-radius: 8px; z-index: 1000;
-                    ">
-                        <h3 style="color: red;">🚫 Tài khoản bị khóa!</h3>
-                        <p>Vui lòng liên hệ quản trị viên để biết thêm chi tiết.</p>
-                        <button id="nextButton" style="
-                            padding: 8px 16px; background: blue; color: white; border: none;
-                            cursor: pointer; border-radius: 4px;
-                        ">Next</button>
-                    </div>
-                `;
-
-                // Thêm modal vào trang
-                document.body.appendChild(modal);
-
-                // Khi bấm "Next", chuyển hướng về Home
-                document.getElementById("nextButton").addEventListener("click", function () {
-                    window.location.href = "/home"; // 🔄 Chuyển về trang chủ
-                });
+            // 🔥 Khi có bài viết mới, tự động reload trang
+            connection.on("ReloadPage", function () {
+                console.log("🔄 Bài viết mới đã được tạo, reload trang...");
+                window.location.reload(); // 🟢 Tự động reload
             });
         });
+
     </script>
-
-
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

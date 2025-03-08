@@ -50,7 +50,8 @@ namespace GroupBoizBLL.Services.Implement
                     AccountName = account.AccountName,
                     AccountEmail = account.AccountEmail,
                     AccountRole = account.AccountRole,
-                   
+                    IsEnable = account.IsEnable,
+
                 }).ToList();
 
                 Console.WriteLine($"✅ Mapped {accountDtoList.Count} accounts to DTO");
@@ -135,6 +136,20 @@ namespace GroupBoizBLL.Services.Implement
             {
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
+        }
+
+        public async Task<bool> ToggleAccountStatusAsync(short accountId, bool isEnable)
+        {
+            var user = await _unitOfWork.AccountRepo.GetByShortIdAsync(accountId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.IsEnable = isEnable;
+            await _unitOfWork.AccountRepo.UpdateAsync(user);
+            await _unitOfWork.SaveChangeAsync();
+            return true;
         }
 
     }

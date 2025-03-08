@@ -1,9 +1,11 @@
-﻿using GroupBoizBLL.Services.Interface;
+﻿using GroupBoizBLL.Hubs;
+using GroupBoizBLL.Services.Interface;
 using GroupBoizBLL.Utilities;
 using GroupBoizCommon.DTO;
 
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Threading.Tasks;
@@ -16,13 +18,15 @@ namespace GroupBoizMVC.Controllers
         private readonly ITagService _tagService;
         private readonly INewsArticleService _newsArticleService;
         private readonly UserUtility _userUtility;
+        private readonly IHubContext<AllHub> _hubContext;
 
-        public NewsDetailController(ICategoryService categoryService, ITagService tagService, INewsArticleService newsArticleService, UserUtility userUtility)
+        public NewsDetailController(ICategoryService categoryService, ITagService tagService, INewsArticleService newsArticleService, UserUtility userUtility, IHubContext<AllHub> hubContext)
         {
             _categoryService = categoryService;
             _tagService = tagService;
             _newsArticleService = newsArticleService;
             _userUtility = userUtility;
+            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> Index(string id)
@@ -62,6 +66,8 @@ namespace GroupBoizMVC.Controllers
 
             if (updateResponse.IsSuccess)
             {
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
                 return Ok(new { success = true, message = "News updated successfully!" });
             }
 
@@ -86,6 +92,9 @@ namespace GroupBoizMVC.Controllers
             // Kiểm tra phản hồi từ service
             if (deleteResponse.IsSuccess)
             {
+
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
                 return Ok(new { success = true, message = "News deleted successfully!" });
             }
 

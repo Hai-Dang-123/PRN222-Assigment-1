@@ -86,7 +86,7 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers(); // Đảm bảo API hỗ trợ DELETE
-    endpoints.MapHub<NewsHub>("/newsHub");
+    endpoints.MapHub<AllHub>("/allHub");
 });
 
 // 🟢 Map routes

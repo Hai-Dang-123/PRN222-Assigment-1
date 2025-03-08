@@ -34,7 +34,7 @@ namespace GroupBoizBLL.Services.Implement
                     var adminClaims = new List<Claim>
             {
                 new Claim(JWTConstants.KeyClaim.Email, "admin@FUNewsManagementSystem.org"),
-                new Claim(JWTConstants.KeyClaim.userId, "1"),  // Đảm bảo đồng nhất kiểu dữ liệu
+                new Claim(JWTConstants.KeyClaim.userId, "-1"),  // Đảm bảo đồng nhất kiểu dữ liệu
                 new Claim(JWTConstants.KeyClaim.fullName, "Admin"),
                 new Claim(ClaimTypes.Role, "Admin")
             };
@@ -56,6 +56,13 @@ namespace GroupBoizBLL.Services.Implement
                 if (user == null)
                 {
                     return new ResponseDTO("User not found", 404, false);
+                }
+
+
+                ////  Nếu tài khoản bị khóa, không cho đăng nhập
+                if (!user.IsEnable)
+                {
+                    return new ResponseDTO("Your account has been blocked. Please contact admin.", 403, false);
                 }
 
                 // Kiểm tra refreshToken hiện tại của người dùng

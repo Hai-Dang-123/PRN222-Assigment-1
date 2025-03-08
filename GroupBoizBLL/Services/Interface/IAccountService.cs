@@ -18,6 +18,6 @@ namespace GroupBoizBLL.Services.Interface
         Task<ResponseDTO> CreateAccountAsync(SystemAccountDTO accountDto);
         Task<ResponseDTO> UpdateAccountAsync(SystemAccountDTO updatedAccount);
 
-
+        Task<bool> ToggleAccountStatusAsync(short accountId, bool isEnable);
     }
 }

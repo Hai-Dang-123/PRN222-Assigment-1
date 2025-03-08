@@ -17,8 +17,11 @@ namespace GroupBoizDAL.Entities
 
         public int? AccountRole { get; set; }
 
+        public bool IsEnable { get; set; } = true;
+
         [StringLength(70)]
         public string? AccountPassword { get; set; }
+   
 
         [InverseProperty("CreatedBy")]
         public virtual ICollection<NewsArticle> NewsArticles { get; set; } = new List<NewsArticle>();

@@ -19,8 +19,10 @@ namespace GroupBoizCommon.DTO
 
 
         public string? AccountPassword { get; set; }
+               
+        public bool IsEnable { get; set; }
 
 
-       
+
     }
 }

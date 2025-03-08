@@ -21,12 +21,23 @@ namespace GroupBoizDAL.Repository.Implement
 
         public async Task<List<NewsArticle>> GetAllWithTagAsync()
         {
-            return await _context.NewsArticle
-                .Where(n => n.NewsStatus == true)  // Lọc bài viết có NewsStatus là true
-                .Include(n => n.Tags)              // Nạp bảng NewsTags
-                .Include(n => n.CreatedBy)
-                .ToListAsync();
+            try
+            {
+                var result = await _context.NewsArticle
+                    .Where(n => n.NewsStatus == true)  // Lọc bài viết có NewsStatus là true
+                    .Include(n => n.Tags)              // Nạp bảng Tags
+                    .Include(n => n.CreatedBy)         // Nạp bảng CreatedBy (User)
+                    .ToListAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"🔥 ERROR: {ex.Message}");
+                throw; // Ném lỗi ra để xem StackTrace
+            }
         }
+
 
         public async Task<NewsArticle?> GetNewArticleByIdWithTagAsync(string id)
         {

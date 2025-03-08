@@ -15,9 +15,9 @@ namespace GroupBoizBLL.Services.Implement
     public class NewsArticleService : INewsArticleService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IHubContext<NewsHub> _hubContext;
+        private readonly IHubContext<AllHub> _hubContext;
 
-        public NewsArticleService(IUnitOfWork unitOfWork, IHubContext<NewsHub> hubContext)
+        public NewsArticleService(IUnitOfWork unitOfWork, IHubContext<AllHub> hubContext)
         {
             _unitOfWork = unitOfWork;
             _hubContext = hubContext;
