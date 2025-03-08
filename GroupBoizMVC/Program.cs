@@ -4,6 +4,7 @@ using GroupBoizBLL.Utilities;
 using GroupBoizCommon.Setting;
 using GroupBoizDAL.Data;
 using GroupBoizDAL.UnitOfWork;
+using GroupBoizBLL.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +13,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSignalR();
 // 🟢 Đăng ký các dịch vụ
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITagService, TagService>();
@@ -84,6 +86,7 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers(); // Đảm bảo API hỗ trợ DELETE
+    endpoints.MapHub<NewsHub>("/newsHub");
 });
 
 // 🟢 Map routes

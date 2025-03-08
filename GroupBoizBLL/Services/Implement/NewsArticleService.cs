@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GroupBoizBLL.Hubs;
 using GroupBoizBLL.Services.Interface;
 using GroupBoizCommon.DTO;
 using GroupBoizDAL.Entities;
 using GroupBoizDAL.UnitOfWork;
+using Microsoft.AspNetCore.SignalR;
 
 namespace GroupBoizBLL.Services.Implement
 {
     public class NewsArticleService : INewsArticleService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHubContext<NewsHub> _hubContext;
 
-        public NewsArticleService(IUnitOfWork unitOfWork)
+        public NewsArticleService(IUnitOfWork unitOfWork, IHubContext<NewsHub> hubContext)
         {
             _unitOfWork = unitOfWork;
+            _hubContext = hubContext;
         }
 
         public async Task<ResponseDTO> GetAllNewsWithTag()
@@ -374,9 +378,11 @@ namespace GroupBoizBLL.Services.Implement
 
                 var maxId = await _unitOfWork.NewsArticleRepo.GetMaxNewsArticleId();
 
-
+                Console.WriteLine(maxId.ToString());
 
                 string newIdNumber = string.IsNullOrEmpty(maxId) ? "1" : (int.Parse(maxId) + 1).ToString();
+
+                Console.WriteLine(newIdNumber);
 
                 // Tạo đối tượng NewsArticle
                 var newsArticle = new NewsArticle
@@ -410,7 +416,10 @@ namespace GroupBoizBLL.Services.Implement
                     }
                 }
 
-                return new ResponseDTO("News created successfully", 201, true);
+                //// 🔥 Gửi dữ liệu real-time đến tất cả client
+                //await _hubContext.Clients.All.SendAsync("ReceiveNews", newsArticle.NewsTitle, newsArticle.NewsContent, newsArticle.ImageUrl);
+
+                return new ResponseDTO("News created successfully", 201, true, newsArticle);
             }
             catch (Exception ex)
             {

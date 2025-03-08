@@ -1,10 +1,13 @@
-﻿using GroupBoizBLL.Services.Interface;
+﻿using Azure;
+using GroupBoizBLL.Hubs;
+using GroupBoizBLL.Services.Interface;
 using GroupBoizBLL.Utilities;
 using GroupBoizCommon.DTO;
 
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroupBoizMVC.Controllers
@@ -15,12 +18,14 @@ namespace GroupBoizMVC.Controllers
         private readonly ITagService _tagService;
         private readonly INewsArticleService _newsArticleService;
         private readonly UserUtility _userUtility;
-        public NewsController (ICategoryService categoryService, ITagService tagService,  INewsArticleService newsArticleService, UserUtility userUtility)
+        private readonly IHubContext<NewsHub> _hubContext; // 🔥 Inject SignalR Hub
+        public NewsController (ICategoryService categoryService, ITagService tagService,  INewsArticleService newsArticleService, UserUtility userUtility, IHubContext<NewsHub> hubContext)
         {
             _categoryService = categoryService;
             _tagService = tagService;
             _newsArticleService = newsArticleService;
             _userUtility = userUtility;
+            _hubContext = hubContext;
         }
 
         // Action để hiển thị danh sách Category
@@ -53,16 +58,27 @@ namespace GroupBoizMVC.Controllers
                 return View();
             }
         }
+        // 📌 ByCategory - Lọc bài viết theo danh mục
         public async Task<IActionResult> ByCategory(int id)
         {
             var articles = await _newsArticleService.GetByCategoryAsync(id);
             var categoryResponse = await _categoryService.GetAll();
             var tagResponse = await _tagService.GetAllTags();
             var role = _userUtility.GetRoleFromToken();
+
             ViewBag.Role = role;
             ViewBag.News = articles.Result;
-            ViewBag.Category = categoryResponse.Result;  // Truyền categories vào view
-            ViewBag.Tag = tagResponse.Result;  // Truyền tags vào view
+            ViewBag.Category = categoryResponse.Result;
+            ViewBag.Tag = tagResponse.Result;
+
+            if (articles.IsSuccess)
+            {
+                // 🔥 Khi bài viết mới được tạo, gửi tín hiệu cho tất cả client reload trang
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
+                return RedirectToAction("Index");
+            }
+
             return View("Index");
         }
 
@@ -72,10 +88,20 @@ namespace GroupBoizMVC.Controllers
             var categoryResponse = await _categoryService.GetAll();
             var tagResponse = await _tagService.GetAllTags();
             var role = _userUtility.GetRoleFromToken();
+
             ViewBag.Role = role;
             ViewBag.News = articles.Result;
-            ViewBag.Category = categoryResponse.Result;  // Truyền categories vào view
-            ViewBag.Tag = tagResponse.Result;  // Truyền tags vào view
+            ViewBag.Category = categoryResponse.Result;
+            ViewBag.Tag = tagResponse.Result;
+
+            if (articles.IsSuccess)
+            {
+                // 🔥 Khi bài viết mới được tạo, gửi tín hiệu cho tất cả client reload trang
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
+                return RedirectToAction("Index");
+            }
+
             return View("Index");
         }
 
@@ -106,24 +132,30 @@ namespace GroupBoizMVC.Controllers
 
             if (!ModelState.IsValid)
             {
-               
+
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 ViewBag.ErrorMessage = "Invalid input data! Errors: " + string.Join(", ", errors);
                 return View(newsArticle);
             }
 
             newsArticle.CreatedById = userId; // ✅ Đảm bảo CreatedById lấy từ token
-
             var response = await _newsArticleService.CreateNewsArticle(newsArticle);
+
+
 
             if (response.IsSuccess)
             {
+                // 🔥 Khi bài viết mới được tạo, gửi tín hiệu cho tất cả client reload trang
+                await _hubContext.Clients.All.SendAsync("ReloadPage");
+
                 return RedirectToAction("Index");
             }
 
             ViewBag.ErrorMessage = response.Message;
             return View(newsArticle);
         }
+
+
 
     }
 

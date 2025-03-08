@@ -86,16 +86,20 @@ namespace GroupBoizDAL.Repository.Implement
         }
         public async Task<string> GetMaxNewsArticleId()
         {
-            // Lấy ID lớn nhất trong database
-            var maxId = await _context.NewsArticle
-                                      .OrderByDescending(n => n.NewsArticleId)
-                                      .Select(n => n.NewsArticleId)
-                                      .FirstOrDefaultAsync();
+            var allIds = await _context.NewsArticle
+                                       .AsNoTracking()
+                                       .Select(n => n.NewsArticleId)
+                                       .ToListAsync();
 
-            return maxId; // Trả về ID lớn nhất (hoặc null nếu chưa có bài viết nào)
+            var maxId = allIds
+                         .Where(id => int.TryParse(id, out _)) // Lọc những ID hợp lệ
+                         .Select(id => int.Parse(id)) // Chuyển sang số
+                         .DefaultIfEmpty(0) // Nếu không có ID thì mặc định là 0
+                         .Max() // Lấy số lớn nhất
+                         .ToString(); // Chuyển về string
+
+            return maxId;
         }
-
-
 
 
     }

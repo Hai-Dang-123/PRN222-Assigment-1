@@ -205,3 +205,25 @@
         </div>
     </div>
 </section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/newsHub")
+        .build();
+
+    connection.start()
+        .then(() => console.log("✅ Kết nối SignalR thành công!"))
+        .catch(err => console.error("❌ Lỗi kết nối SignalR:", err));
+
+    // 🔥 Khi có bài viết mới, tự động reload trang
+    connection.on("ReloadPage", function () {
+        console.log("🔄 Bài viết mới đã được tạo, reload trang...");
+        window.location.reload(); // 🟢 Tự động reload
+    });
+});
+
+</script>

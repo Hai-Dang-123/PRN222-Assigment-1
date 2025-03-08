@@ -190,6 +190,54 @@
         }, 60000);
     </script>
 
+    @* Signal RealTime *@
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/newsHub")
+                .build();
+
+            connection.start()
+                .then(() => console.log("✅ Kết nối SignalR thành công!"))
+                .catch(err => console.error("❌ Lỗi kết nối SignalR:", err));
+
+            
+
+            // 🚫 Khi tài khoản bị khóa, hiển thị thông báo và chuyển về Home
+            connection.on("AccountIsBlocked", function () {
+                console.log("🚫 Tài khoản của bạn đã bị khóa!");
+
+                // Tạo modal cảnh báo
+                const modal = document.createElement("div");
+                modal.innerHTML = `
+                    <div style="
+                        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                        background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+                        text-align: center; border-radius: 8px; z-index: 1000;
+                    ">
+                        <h3 style="color: red;">🚫 Tài khoản bị khóa!</h3>
+                        <p>Vui lòng liên hệ quản trị viên để biết thêm chi tiết.</p>
+                        <button id="nextButton" style="
+                            padding: 8px 16px; background: blue; color: white; border: none;
+                            cursor: pointer; border-radius: 4px;
+                        ">Next</button>
+                    </div>
+                `;
+
+                // Thêm modal vào trang
+                document.body.appendChild(modal);
+
+                // Khi bấm "Next", chuyển hướng về Home
+                document.getElementById("nextButton").addEventListener("click", function () {
+                    window.location.href = "/home"; // 🔄 Chuyển về trang chủ
+                });
+            });
+        });
+    </script>
+
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
