@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Azure;
 using GroupBoizBLL.Services.Implement;
 using GroupBoizBLL.Services.Interface;
+using GroupBoizBLL.Utilities;
 using GroupBoizCommon.DTO;
 
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,14 @@ namespace GroupBoizMVC.Controllers
         private readonly ICategoryService _categoryService;
         private readonly ITagService _tagService;
         private readonly INewsArticleService _newsArticleService;
-
+        private readonly UserUtility _userUtility;
         // Inject CategoryService vào controller thông qua constructor
-        public HomeController(ICategoryService categoryService, ITagService tagService, INewsArticleService newsArticleService)
+        public HomeController(ICategoryService categoryService, ITagService tagService, INewsArticleService newsArticleService, UserUtility userUtility)
         {
             _categoryService = categoryService;
             _tagService = tagService;
             _newsArticleService = newsArticleService;
+            _userUtility = userUtility;
         }
 
         // Action để hiển thị danh sách Category
@@ -30,14 +32,14 @@ namespace GroupBoizMVC.Controllers
             var categoryResponse = await _categoryService.GetAll();
             var tagResponse = await _tagService.GetAllTags();
             var newsResponse = await _newsArticleService.GetAllNewsWithTag();
-            //var userRole = User.FindFirstValue(ClaimTypes.Role); // Lấy role từ Claims
+            var userRole = _userUtility.GetRoleFromToken(); // Lấy role từ Claims
 
             if (categoryResponse.IsSuccess && tagResponse.IsSuccess && newsResponse.IsSuccess )
             {
                 ViewBag.Category = categoryResponse.Result;  // Truyền categories vào view
                 ViewBag.Tag = tagResponse.Result;  // Truyền tags vào view
                 ViewBag.News = newsResponse.Result;
-                //ViewBag.UserRole = userRole;
+                ViewBag.UserRole = userRole;
 
                 return View(); // Trả về view chính
             }

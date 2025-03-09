@@ -13,5 +13,6 @@ namespace GroupBoizBLL.Services.Interface
         
         Task<ResponseDTO> RefreshBothTokens(string oldAccessToken, string refreshTokenKey);
         Task<ResponseDTO> LogoutAsync();
+        Task<ResponseDTO> Register(RegisterDTO registerDTO);
     }
 }

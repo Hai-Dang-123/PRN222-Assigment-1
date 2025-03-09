@@ -59,7 +59,7 @@ namespace GroupBoizMVC.Controllers
             }
         }
 
-        [HttpDelete("deleteaccount/{id}")]
+        [HttpDelete()]
         public async Task<IActionResult> DeleteAccount(short id)
         {
             try

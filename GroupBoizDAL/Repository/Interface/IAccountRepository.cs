@@ -18,5 +18,6 @@ namespace GroupBoizDAL.Repository.Interface
         Task<int> SaveChangesAsync();
         Task<bool> DeleteAccountAsync(short accountId);
         Task<SystemAccount> FindByIdAsync(short accountId);
+        Task<short> GetMaxShortValue();
     }
 }

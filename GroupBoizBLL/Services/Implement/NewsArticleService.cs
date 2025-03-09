@@ -64,6 +64,8 @@ namespace GroupBoizBLL.Services.Implement
             }
         }
 
+        
+
         public async Task<ResponseDTO> GetNewsById(string NewsArticleId)
         {
             try

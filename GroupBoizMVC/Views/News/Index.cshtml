@@ -53,6 +53,7 @@
 }
 
 
+
 <section class="blog-posts grid-system">
     <div class="container">
         <div class="row">
@@ -90,6 +91,9 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @if (ViewBag.Role == "Staff") {
+                                                <div>@(news.NewsStatus)</div>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -206,7 +210,7 @@
     </div>
 </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
 
 
 

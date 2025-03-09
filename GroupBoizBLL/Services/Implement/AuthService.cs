@@ -34,7 +34,7 @@ namespace GroupBoizBLL.Services.Implement
                     var adminClaims = new List<Claim>
             {
                 new Claim(JWTConstants.KeyClaim.Email, "admin@FUNewsManagementSystem.org"),
-                new Claim(JWTConstants.KeyClaim.userId, "-1"),  // Đảm bảo đồng nhất kiểu dữ liệu
+                new Claim(JWTConstants.KeyClaim.userId, "-1"),
                 new Claim(JWTConstants.KeyClaim.fullName, "Admin"),
                 new Claim(ClaimTypes.Role, "Admin")
             };
@@ -43,7 +43,6 @@ namespace GroupBoizBLL.Services.Implement
                     var adminAccessToken = JWTProvide.GenerateAccessToken(adminClaims);
                     var adminRefreshToken = JWTProvide.GenerateRefreshToken(adminClaims);
 
-                    // Trả về Response cho Admin
                     return new ResponseDTO("Hello Admin", 200, true, new TokenDTO
                     {
                         AccessToken = adminAccessToken,
@@ -51,18 +50,23 @@ namespace GroupBoizBLL.Services.Implement
                     });
                 }
 
-                // Kiếm người dùng
+                // Kiếm người dùng trong DB
                 var user = await _unitOfWork.AccountRepo.FindByEmailAsync(loginDTO.AccountEmail);
                 if (user == null)
                 {
                     return new ResponseDTO("User not found", 404, false);
                 }
 
-
-                ////  Nếu tài khoản bị khóa, không cho đăng nhập
+                // Nếu tài khoản bị khóa, không cho đăng nhập
                 if (!user.IsEnable)
                 {
                     return new ResponseDTO("Your account has been blocked. Please contact admin.", 403, false);
+                }
+
+                // **So sánh trực tiếp mật khẩu nhập vào với mật khẩu trong DB**
+                if (loginDTO.AccountPassword != user.AccountPassword)
+                {
+                    return new ResponseDTO("Incorrect password", 401, false);
                 }
 
                 // Kiểm tra refreshToken hiện tại của người dùng
@@ -70,14 +74,14 @@ namespace GroupBoizBLL.Services.Implement
                 if (existingRefreshToken != null)
                 {
                     existingRefreshToken.IsRevoked = true;
-                    await _unitOfWork.TokenRepo.UpdateAsync(existingRefreshToken); // Cập nhật trạng thái token
+                    await _unitOfWork.TokenRepo.UpdateAsync(existingRefreshToken);
                 }
 
                 // Tạo claims cho người dùng
                 var userClaims = new List<Claim>
         {
             new Claim(JWTConstants.KeyClaim.Email, user.AccountEmail),
-            new Claim(JWTConstants.KeyClaim.userId, user.AccountId.ToString()), // Đảm bảo kiểu dữ liệu đồng nhất
+            new Claim(JWTConstants.KeyClaim.userId, user.AccountId.ToString()),
             new Claim(JWTConstants.KeyClaim.fullName, user.AccountName),
             new Claim(ClaimTypes.Role, user.AccountRole switch
             {
@@ -100,12 +104,9 @@ namespace GroupBoizBLL.Services.Implement
                     CreatedAt = DateTime.UtcNow
                 };
 
-                await _unitOfWork.TokenRepo.AddAsync(newRefreshToken);  // Thêm `await` để tránh lỗi async
-
-                // Lưu thay đổi vào DB
+                await _unitOfWork.TokenRepo.AddAsync(newRefreshToken);
                 await _unitOfWork.SaveChangeAsync();
 
-                // Trả về response theo role
                 return new ResponseDTO($"Hello {userClaims.First(c => c.Type == ClaimTypes.Role).Value}", 200, true, new TokenDTO
                 {
                     AccessToken = accessToken,
@@ -117,6 +118,7 @@ namespace GroupBoizBLL.Services.Implement
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
+
 
 
         public async Task<ResponseDTO> LogoutAsync()
@@ -161,6 +163,43 @@ namespace GroupBoizBLL.Services.Implement
             throw new NotImplementedException();
         }
 
-        
+        public async Task<ResponseDTO> Register(RegisterDTO registerDTO)
+        {
+            try
+            {
+                // Kiểm tra xem email đã tồn tại chưa
+                var existingUser = await _unitOfWork.AccountRepo.FindByEmailAsync(registerDTO.AccountEmail);
+                if (existingUser != null)
+                {
+                    return new ResponseDTO("Email already exists", 400, false);
+                }
+
+                // Lấy AccountId lớn nhất + 1
+                short maxId = await _unitOfWork.AccountRepo.GetMaxAccountIdAsync();
+                short newAccountId = (short)(maxId + 1); // Tăng giá trị lớn nhất lên 1
+
+                // Chuyển DTO thành Entity SystemAccount
+                var newUser = new SystemAccount
+                {
+                    AccountId = newAccountId, // Gán AccountId mới
+                    AccountEmail = registerDTO.AccountEmail,
+                    AccountName = registerDTO.AccountName,
+                    AccountPassword = registerDTO.AccountPassword, // Cần hash mật khẩu sau này
+                    AccountRole = 2, // Mặc định là Lecturer
+                    IsEnable = true
+                };
+
+                // Lưu vào DB
+                await _unitOfWork.AccountRepo.AddAsync(newUser);
+                await _unitOfWork.SaveChangeAsync();
+
+                return new ResponseDTO("Registration successful", 201, true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
+
     }
 }

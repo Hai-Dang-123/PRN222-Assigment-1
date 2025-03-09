@@ -34,26 +34,53 @@
     </div>
 </div>
 
-<script>
-document.getElementById('saveProfile').addEventListener('click', function () {
-    const account = {
-        AccountId: document.getElementById('accountId').value,
-        AccountName: document.getElementById('accountName').value,
-        AccountEmail: document.getElementById('accountEmail').value,
-        AccountRole: document.getElementById('accountRole').value,
-        AccountPassword: document.getElementById('accountPassword').value
-    };
+<!-- Thêm thư viện SweetAlert2 (nếu chưa có) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    fetch("/Profile/Update", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(account)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        location.reload();
-    })
-    .catch(error => alert('Error updating profile!'));
-});
+<script>
+    document.getElementById('saveProfile').addEventListener('click', async function () {
+        const account = {
+            AccountId: document.getElementById('accountId').value,
+            AccountName: document.getElementById('accountName').value,
+            AccountEmail: document.getElementById('accountEmail').value,
+            AccountRole: document.getElementById('accountRole').value,
+            AccountPassword: document.getElementById('accountPassword').value
+        };
+
+        try {
+            const response = await fetch("/Profile/Update", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(account)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Profile Updated!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'System Error!',
+                text: 'Error updating profile!',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
 </script>
+

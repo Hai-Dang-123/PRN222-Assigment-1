@@ -21,10 +21,11 @@
                 <h2 class="form-title">Sign In</h2>
 
                 <!-- Hiển thị thông báo lỗi nếu có -->
-                @if (!string.IsNullOrEmpty(ViewBag.Message))
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
                 {
-                    <div class="alert alert-danger mt-2">@ViewBag.Message</div>
+                    <div class="alert alert-danger mt-2">@ViewBag.ErrorMessage</div>
                 }
+
 
                 <!-- Form đăng nhập -->
                 <form method="post" class="register-form" id="login-form">
@@ -55,4 +56,12 @@
             </div>
         </div>
     </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
 </section>
+
+

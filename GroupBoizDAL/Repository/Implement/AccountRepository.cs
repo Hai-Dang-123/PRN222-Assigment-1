@@ -83,5 +83,17 @@ namespace GroupBoizDAL.Repository.Implement
             }
 
         }
+        public async Task<short> GetMaxShortValue()
+        {
+            var maxValue = await _context.SystemAccount // Chỉnh lại bảng phù hợp với model của bạn
+                                         
+                                         .Select(a => a.AccountId)   // Chuyển thành kiểu short
+                                         .DefaultIfEmpty((short)0)         // Nếu không có giá trị thì trả về 0
+                                         .MaxAsync();                      // Lấy giá trị lớn nhất
+
+            return maxValue;
+        }
+
+
     }
 }

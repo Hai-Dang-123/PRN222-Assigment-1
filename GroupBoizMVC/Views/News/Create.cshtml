@@ -8,10 +8,12 @@
 <h2>Create New Article</h2>
 
 <!-- Hiển thị thông báo lỗi nếu có -->
-@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+@if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    <div class="alert alert-danger mt-2">@ViewBag.ErrorMessage</div>
+    <div class="alert alert-danger mt-2">@ViewBag.Message</div>
 }
+
+
 
 
 
