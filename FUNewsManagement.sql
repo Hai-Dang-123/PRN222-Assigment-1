@@ -92,6 +92,7 @@ CREATE TABLE [dbo].[Tag](
 	[TagID] [int] NOT NULL,
 	[TagName] [nvarchar](50) NULL,
 	[Note] [nvarchar](400) NULL,
+	[IsActive] [bit] NOT NULL DEFAULT 1,
  CONSTRAINT [PK_HashTag] PRIMARY KEY CLUSTERED 
 (
 	[TagID] ASC
@@ -100,14 +101,14 @@ CREATE TABLE [dbo].[Tag](
 GO
 
 CREATE TABLE RefreshToken (
-    RefreshTokenId SMALLINT IDENTITY(1,1) PRIMARY KEY,  -- Khóa chính tự động tăng
-    AccountId SMALLINT NOT NULL,                         -- Khóa ngoại tham chiếu đến tài khoản người dùng
-    RefreshTokenKey NVARCHAR(1000) NOT NULL,             -- Giá trị refresh token (độ dài tối đa)
-    IsRevoked BIT NOT NULL DEFAULT 0,                   -- Trạng thái thu hồi token (mặc định là false)
-    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),      -- Thời gian tạo token (mặc định lấy thời gian hiện tại)
+    RefreshTokenId SMALLINT IDENTITY(1,1) PRIMARY KEY,  -- Primary key, auto-incrementing
+    AccountId SMALLINT NOT NULL,                        -- Foreign key referencing user account
+    RefreshTokenKey NVARCHAR(1000) NOT NULL,            -- Refresh token value (max length)
+    IsRevoked BIT NOT NULL DEFAULT 0,                   -- Token revocation status (default false)
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),      -- Token creation time (default current time)
 
     CONSTRAINT FK_RefreshToken_Account FOREIGN KEY (AccountId)
-    REFERENCES SystemAccount(AccountID) ON DELETE CASCADE  -- Ràng buộc khóa ngoại, nếu xóa tài khoản thì xóa luôn token
+    REFERENCES SystemAccount(AccountID) ON DELETE CASCADE  -- Foreign key constraint, cascade delete
 );
 GO
 
@@ -265,7 +266,7 @@ WHERE NewsArticleID = '5';
 GO
 
 ALTER TABLE [FUNewsManagement].[dbo].[SystemAccount]
-ADD [IsEnable] BIT NOT NULL DEFAULT 1; -- Kiểu BIT đại diện cho BOOL trong SQL Server
+ADD [IsEnable] BIT NOT NULL DEFAULT 1; -- BIT type represents BOOL in SQL Server
 GO
 
 ALTER TABLE [dbo].[Category]  WITH CHECK ADD  CONSTRAINT [FK_Category_Category] FOREIGN KEY([ParentCategoryID])
