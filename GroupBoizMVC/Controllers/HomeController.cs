@@ -31,7 +31,7 @@ namespace GroupBoizMVC.Controllers
             // Gọi phương thức GetAll từ CategoryService để lấy dữ liệu
             var categoryResponse = await _categoryService.GetAll();
             var tagResponse = await _tagService.GetAllTags();
-            var newsResponse = await _newsArticleService.GetAllNewsWithTag();
+            var newsResponse = await _newsArticleService.GetAllNewsActiveWithTag();
             var userRole = _userUtility.GetRoleFromToken(); // Lấy role từ Claims
 
             if (categoryResponse.IsSuccess && tagResponse.IsSuccess && newsResponse.IsSuccess )

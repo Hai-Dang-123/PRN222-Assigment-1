@@ -9,9 +9,10 @@ namespace GroupBoizDAL.Repository.Interface
 {
     public interface INewsArticleRepository : IGenericRepository<NewsArticle>
     {
-        Task<List<NewsArticle>> GetAllWithTagAsync();
+        Task<List<NewsArticle>> GetAllActiveWithTagAsync();
         Task<NewsArticle?> GetNewArticleByIdWithTagAsync(string id);
         //Task DeleteNewsAsync(NewsArticle newsArticle);
+        Task<List<NewsArticle>> GetAllWithTagAsync();
 
         Task<List<NewsArticle>> SearchByTitleAsync(string title);
         Task<List<NewsArticle>> GetByCategoryAsync(int categoryId);
@@ -19,5 +20,6 @@ namespace GroupBoizDAL.Repository.Interface
         Task<List<NewsArticle>> GetByTagAsync(int tagId);
         Task CreateNewsArticle(NewsArticle newsArticle, List<int> selectedTags);
         Task<string> GetMaxNewsArticleId();
+        Task UpdateStatusAsync(string id, bool status);
     }
 }

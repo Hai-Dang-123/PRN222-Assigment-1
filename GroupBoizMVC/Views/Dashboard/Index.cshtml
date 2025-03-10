@@ -1,8 +1,9 @@
-﻿@model List<GroupBoizDAL.Entities.NewsArticle>
+﻿@model List<GroupBoizCommon.DTO.NewsArticleDTO>
 
 @{
     ViewData["Title"] = "Article Statistics Report";
-    Layout = "_MinimalLayout";
+
+    // Layout = "_MinimalLayout";
 }
 
 <link href="~/vendor/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet">
@@ -11,59 +12,6 @@
 <link rel="stylesheet" href="~/assets/css/fontawesome.css" asp-append-version="true">
 <link rel="stylesheet" href="~/assets/css/templatemo-stand-blog.css" asp-append-version="true">
 <link rel="stylesheet" href="~/assets/css/owl.css" asp-append-version="true">
-
-@* <h2 class="mb-3">Article Statistics Report</h2> *@
-
-@* <!-- Date Range Selection Form --> *@
-@* <form method="get"> *@
-@*     <div class="row mb-3"> *@
-@*         <div class="col-md-4"> *@
-@*             <label for="startDate" class="form-label">From Date:</label> *@
-@*             <input type="date" id="startDate" name="startDate" class="form-control" *@
-@*                    value="@ViewData["StartDate"]" required> *@
-@*         </div> *@
-@*         <div class="col-md-4"> *@
-@*             <label for="endDate" class="form-label">To Date:</label> *@
-@*             <input type="date" id="endDate" name="endDate" class="form-control" *@
-@*                    value="@ViewData["EndDate"]" required> *@
-@*         </div> *@
-@*         <div class="col-md-4 d-flex align-items-end"> *@
-@*             <button type="submit" class="btn btn-primary">View Report</button> *@
-@*         </div> *@
-@*     </div> *@
-@* </form> *@>
-
-@* <!-- Table Displaying Article List --> *@
-@* @if (Model != null && Model.Any()) *@
-@* { *@
-@*     <table class="table table-bordered table-striped"> *@
-@*         <thead class="table-dark"> *@
-@*             <tr> *@
-@*                 <th>ID</th> *@
-@*                 <th>Title</th> *@
-@*                 <th>Creation Date</th> *@
-@*                 <th>Source</th> *@
-@*                 <th>Status</th> *@
-@*             </tr> *@
-@*         </thead> *@
-@*         <tbody> *@
-@*             @foreach (var news in Model) *@
-@*             { *@
-@*                 <tr> *@
-@*                     <td>@news.NewsArticleId</td> *@
-@*                     <td>@news.NewsTitle</td> *@
-@*                     <td>@(news.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td> *@
-@*                     <td>@news.NewsSource</td> *@
-@*                     <td>@(news.NewsStatus == true ? "Approved" : "Not Approved")</td> *@
-@*                 </tr> *@
-@*             } *@
-@*         </tbody> *@
-@*     </table> *@
-@* } *@
-@* else *@
-@* { *@
-@*     <p class="text-danger">No articles found in this time range.</p> *@
-@* } *@
 
 <h2 class="mb-4 text-center">Article Statistics Report</h2>
 
@@ -129,6 +77,81 @@ else
         <i class="fas fa-exclamation-circle me-2"></i>No articles found in this time range.
     </div>
 }
+
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <h5 class="text-center">Article Report by Author & Category</h5>
+        <canvas id="newsAuthorCategoryChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var articles = @Html.Raw(Json.Serialize(Model));
+
+        // Kiểm tra dữ liệu trên console
+        console.log(articles);
+
+        // Nhóm bài viết theo Author
+        var authorCounts = {};
+        // Nhóm bài viết theo Category
+        var categoryCounts = {};
+
+        articles.forEach(a => {
+            let author = a.createBy || "Author";  // Tác giả
+            let category = a.categoryName || "Category";  // Danh mục
+
+            authorCounts[author] = (authorCounts[author] || 0) + 1;
+            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        });
+
+        // Lấy danh sách tất cả các tác giả và danh mục
+        var authors = Object.keys(authorCounts);
+        var categories = Object.keys(categoryCounts);
+
+        // Giá trị của từng nhóm
+        var authorValues = authors.map(author => authorCounts[author]);
+        var categoryValues = categories.map(category => categoryCounts[category]);
+
+        var ctx = document.getElementById('newsAuthorCategoryChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Authors', 'Categories'],
+                datasets: [
+                    {
+                        label: 'Number of Articles by Authors',
+                        data: [authorValues.reduce((a, b) => a + b, 0), 0], // Cột "Authors" có tổng số bài viết của các tác giả
+                        backgroundColor: '#007bff',
+                        borderColor: '#0056b3',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Number of Articles by Categories',
+                        data: [0, categoryValues.reduce((a, b) => a + b, 0)], // Cột "Categories" có tổng số bài viết theo danh mục
+                        backgroundColor: '#28a745',
+                        borderColor: '#1e7e34',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 
 <!-- Add Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

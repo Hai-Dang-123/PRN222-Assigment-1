@@ -45,6 +45,22 @@
     </div>
 </section>
 
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+
 @if (ViewBag.Role == "Staff")
 {
     <div class="mb-3">
@@ -75,7 +91,6 @@
                                             <ul class="post-info">
                                                 <li>@(news.CreateBy ?? "Admin")</li> <!-- ✅ Fix lỗi -->
                                                 <li>@news.CreatedDate</li>
-                                                
                                             </ul>
                                             @* <p>@news.NewsContent</p> *@
                                             <div class="post-options">
@@ -91,8 +106,19 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if (ViewBag.Role == "Staff") {
-                                                <div>@(news.NewsStatus)</div>
+                                            @if (ViewBag.Role == "Staff")
+                                            {
+                                                <div style="
+                                                font-size: 20px;
+                                                font-weight: bold;
+                                                padding: 8px 16px;
+                                                border-radius: 5px;
+                                                text-align: center;
+                                                color: white;
+                                                background-color: @(news.NewsStatus.HasValue ? (news.NewsStatus.Value ? "#28a745" : "#dc3545") : "#dc3545");">
+                                                                                                @(news.NewsStatus.HasValue ? (news.NewsStatus.Value ? "Active" : "Inactive") : "Inactive")
+                                                </div>
+
                                             }
                                         </div>
                                     </div>
@@ -103,6 +129,7 @@
                         {
                             <p>No news articles available.</p>
                         }
+
                     </div>
                 </div>
             </div>
@@ -209,6 +236,8 @@
         </div>
     </div>
 </section>
+
+
 
 
 

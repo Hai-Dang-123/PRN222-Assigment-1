@@ -100,5 +100,24 @@ namespace GroupBoizMVC.Controllers
 
             return StatusCode(500, new { success = false, message = "Failed to delete news." });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus([FromBody] ArticleStatusDTO request)
+        {
+            var response = await _newsArticleService.UpdateStatus(request.ArticleId, request.Status);
+
+            if (response.IsSuccess)
+            {
+                // Return success with a message, instead of redirecting
+                return Json(new { success = true, message = "Status updated successfully!" });
+
+            }
+            else
+            {
+                return Json(new { success = false, message = response.Message });
+            }
+        }
+
+
     }
-    }
+}

@@ -34,30 +34,47 @@ namespace GroupBoizMVC.Controllers
             // Gọi phương thức GetAll từ CategoryService để lấy dữ liệu
             var categoryResponse = await _categoryService.GetAll();
             var tagResponse = await _tagService.GetAllTags();
-            var newsResponse = await _newsArticleService.GetAllNewsWithTag();
-            //var userRole = User.FindFirstValue(ClaimTypes.Role); // Lấy role từ Claims
-            var role = _userUtility.GetRoleFromToken();
-            var userId = _userUtility.GetUserIDFromToken();
+            var newsForStaff = await _newsArticleService.GetAllNewsWithTag();
+            var newsForLecturer = await _newsArticleService.GetAllNewsActiveWithTag();
+
+            var role = _userUtility.GetRoleFromToken();  // Lấy role từ token
+            var userId = _userUtility.GetUserIDFromToken();  // Lấy user ID từ token
+
             Console.WriteLine(userId);
             Console.WriteLine(role);
 
-            if (categoryResponse.IsSuccess && tagResponse.IsSuccess && newsResponse.IsSuccess)
+            // Kiểm tra các phản hồi từ các service
+            if (categoryResponse.IsSuccess && tagResponse.IsSuccess && newsForLecturer.IsSuccess && newsForStaff.IsSuccess)
             {
                 ViewBag.Category = categoryResponse.Result;  // Truyền categories vào view
                 ViewBag.Tag = tagResponse.Result;  // Truyền tags vào view
-                ViewBag.News = newsResponse.Result;
-                //ViewBag.UserRole = userRole;
                 ViewBag.Role = role;
 
-                return View(); // Trả về view chính
+                // Tùy thuộc vào vai trò của người dùng, phân loại tin tức
+                if (role == "Staff")
+                {
+                    ViewBag.News = newsForStaff.Result;  // Dành cho Staff
+                }
+                else if (role == "Lecturer")
+                {
+                    ViewBag.News = newsForLecturer.Result;  // Dành cho Lecturer
+                }
+                else
+                {
+                    ViewBag.News = new List<NewsArticleDTO>();  // Tránh null nếu không phải Staff hoặc Lecturer
+                }
+
+                return View();  // Trả về view chính
             }
             else
             {
-                ViewBag.ErrorMessage = categoryResponse.Message ?? tagResponse.Message;
-                ViewBag.TopThreeNews = new List<GroupBoizDAL.Entities.NewsArticle>();  // Tránh null reference
+                // Truyền thông báo lỗi nếu có bất kỳ response nào không thành công
+                ViewBag.ErrorMessage = categoryResponse.Message ?? tagResponse.Message ?? "An error occurred.";
+                ViewBag.TopThreeNews = new List<NewsArticleDTO>();  // Tránh null reference
                 return View();
             }
         }
+
         // 📌 ByCategory - Lọc bài viết theo danh mục
         public async Task<IActionResult> ByCategory(int id)
         {
@@ -133,10 +150,11 @@ namespace GroupBoizMVC.Controllers
 
             if (response.IsSuccess)
             {
+                ViewBag.SuccessMessage = response.Message;
                 // 🔥 Khi bài viết mới được tạo, gửi tín hiệu cho tất cả client reload trang
                 await _hubContext.Clients.All.SendAsync("ReloadPage");
 
-                return RedirectToAction("Index");
+                
             }
 
             ViewBag.ErrorMessage = response.Message;

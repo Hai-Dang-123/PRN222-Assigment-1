@@ -19,12 +19,32 @@ namespace GroupBoizDAL.Repository.Implement
             _context = context;
         }
 
-        public async Task<List<NewsArticle>> GetAllWithTagAsync()
+        public async Task<List<NewsArticle>> GetAllActiveWithTagAsync()
         {
             try
             {
                 var result = await _context.NewsArticle
                     .Where(n => n.NewsStatus == true)  // Lọc bài viết có NewsStatus là true
+                    .Include(n => n.Tags)              // Nạp bảng Tags
+                    .Include(n => n.CreatedBy)         // Nạp bảng CreatedBy (User)
+                    .ToListAsync();
+
+               
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"🔥 ERROR: {ex.Message}");
+                throw; // Ném lỗi ra để xem StackTrace
+            }
+        }
+        public async Task<List<NewsArticle>> GetAllWithTagAsync()
+        {
+            try
+            {
+                var result = await _context.NewsArticle
+                    
                     .Include(n => n.Tags)              // Nạp bảng Tags
                     .Include(n => n.CreatedBy)         // Nạp bảng CreatedBy (User)
                     .ToListAsync();
@@ -38,7 +58,7 @@ namespace GroupBoizDAL.Repository.Implement
             }
         }
 
-        
+
 
         public async Task<NewsArticle?> GetNewArticleByIdWithTagAsync(string id)
         {
@@ -113,6 +133,17 @@ namespace GroupBoizDAL.Repository.Implement
             return maxId;
         }
 
+        // Phương thức cập nhật status
+        public async Task UpdateStatusAsync(string id, bool status)
+        {
+            var article = await _context.NewsArticle.FindAsync(id);
 
+            if (article != null)
+            {
+                article.NewsStatus = status;
+                _context.NewsArticle.Update(article);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

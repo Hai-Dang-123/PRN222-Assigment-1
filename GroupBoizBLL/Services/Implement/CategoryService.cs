@@ -113,6 +113,15 @@ namespace GroupBoizBLL.Services.Implement
                     return new ResponseDTO("Category not found", 404, false);
                 }
 
+                // Kiểm tra xem danh mục có được sử dụng trong bất kỳ bài viết tin tức nào không
+                var newsArticles =  _unitOfWork.NewsArticleRepo.GetAll();
+                bool isCategoryInUse = newsArticles.Any(na => na.CategoryId == categoryId);
+
+                if (isCategoryInUse)
+                {
+                    return new ResponseDTO("Category cannot be deleted because it is used in one or more news articles.", 400, false);
+                }
+
                 _unitOfWork.CategoryRepo.Delete(category);
                 await _unitOfWork.SaveAsync();
 

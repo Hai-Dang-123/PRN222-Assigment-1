@@ -27,4 +27,8 @@
     <ProjectReference Include="..\GroupBoizDAL\GroupBoizDAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RazorPage\" />
+  </ItemGroup>
+
 </Project>

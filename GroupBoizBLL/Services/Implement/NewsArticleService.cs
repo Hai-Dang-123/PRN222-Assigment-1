@@ -9,6 +9,7 @@ using GroupBoizCommon.DTO;
 using GroupBoizDAL.Entities;
 using GroupBoizDAL.UnitOfWork;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupBoizBLL.Services.Implement
 {
@@ -23,11 +24,11 @@ namespace GroupBoizBLL.Services.Implement
             _hubContext = hubContext;
         }
 
-        public async Task<ResponseDTO> GetAllNewsWithTag()
+        public async Task<ResponseDTO> GetAllNewsActiveWithTag()
         {
             try
             {
-                var newsList = await _unitOfWork.NewsArticleRepo.GetAllWithTagAsync();
+                var newsList = await _unitOfWork.NewsArticleRepo.GetAllActiveWithTagAsync();
 
                 if (newsList == null || !newsList.Any())
                 {
@@ -64,7 +65,48 @@ namespace GroupBoizBLL.Services.Implement
             }
         }
 
-        
+        public async Task<ResponseDTO> GetAllNewsWithTag()
+        {
+            try
+            {
+                var newsList = await _unitOfWork.NewsArticleRepo.GetAllWithTagAsync();
+
+                if (newsList == null || !newsList.Any())
+                {
+                    return new ResponseDTO("No news found", 404, false);
+                }
+
+
+                // Mapping dữ liệu từ Entity -> DTO
+                var newsDtoList = newsList.Select(news => new NewsArticleDTO
+                {
+                    NewsArticleId = news.NewsArticleId,
+                    NewsTitle = news.NewsTitle,
+                    Headline = news.Headline,
+                    CreatedDate = news.CreatedDate,
+                    NewsContent = news.NewsContent,
+                    NewsSource = news.NewsSource,
+                    CategoryId = news.CategoryId,
+                    CategoryName = news.Category?.CategoryName ?? "Uncategorized",
+                    NewsStatus = news.NewsStatus,
+                    CreatedById = news.CreatedById,
+                    CreateBy = news.CreatedBy?.AccountName ?? "Admin",
+                    UpdatedById = news.UpdatedById,
+
+                    ModifiedDate = news.ModifiedDate,
+                    ImageUrl = news.ImageUrl,
+                    Tag = news.Tags?.Select(t => t.TagName).ToList() ?? new List<string>()  // ✅ Mapping danh sách Tags
+                }).ToList();
+
+                return new ResponseDTO("News found successfully", 200, true, newsDtoList);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
+
+
 
         public async Task<ResponseDTO> GetNewsById(string NewsArticleId)
         {
@@ -321,31 +363,27 @@ namespace GroupBoizBLL.Services.Implement
         {
             try
             {
-                // Lấy danh sách tin tức từ cơ sở dữ liệu
                 var newsList = await _unitOfWork.NewsArticleRepo.GetAllWithTagAsync();
 
-                // Kiểm tra nếu không có tin tức nào
                 if (newsList == null || !newsList.Any())
                 {
                     return new ResponseDTO("No news found", 404, false);
                 }
 
-                // Lọc theo khoảng thời gian
-                var filteredNews = new List<NewsArticle>();
-                foreach (var news in newsList)
-                {
-                    if ((!startDate.HasValue || news.CreatedDate >= startDate.Value) &&
-                        (!endDate.HasValue || news.CreatedDate <= endDate.Value))
+                var filteredNews = newsList
+                    .Where(news => (!startDate.HasValue || news.CreatedDate >= startDate.Value) &&
+                                   (!endDate.HasValue || news.CreatedDate <= endDate.Value))
+                    .OrderByDescending(news => news.CreatedDate ?? DateTime.MinValue)
+                    .Select(news => new NewsArticleDTO // Chuyển đổi tại đây
                     {
-                        filteredNews.Add(news);
-                    }
-                }
+                        NewsArticleId = news.NewsArticleId,
+                        NewsTitle = news.NewsTitle,
+                        CreatedDate = news.CreatedDate,
+                        NewsSource = news.NewsSource,
+                        NewsStatus = news.NewsStatus
+                    })
+                    .ToList();
 
-                // Sắp xếp theo CreatedDate giảm dần
-                filteredNews.Sort((a, b) => (b.CreatedDate ?? DateTime.MinValue)
-                            .CompareTo(a.CreatedDate ?? DateTime.MinValue));
-
-                // Kiểm tra nếu danh sách sau lọc trống
                 if (!filteredNews.Any())
                 {
                     return new ResponseDTO("No news found in the given period", 404, false);
@@ -398,7 +436,7 @@ namespace GroupBoizBLL.Services.Implement
                     CategoryId = newsDto.CategoryId,
                     CreatedById = newsDto.CreatedById,
                     CreatedBy = createBy,
-                    NewsStatus = true,
+                    NewsStatus = newsDto.NewsStatus,
                     ModifiedDate = newsDto.ModifiedDate,
                     ImageUrl = newsDto.ImageUrl
                 };
@@ -429,6 +467,25 @@ namespace GroupBoizBLL.Services.Implement
             }
         }
 
+        public async Task<ResponseDTO> UpdateStatus(string articleId, bool status)
+        {
+            
+            var article = await _unitOfWork.NewsArticleRepo.GetNewArticleByIdWithTagAsync(articleId);
+
+            if (article == null)
+            {
+                return new ResponseDTO("News not found", 404, false);
+            }
+
+           
+            await _unitOfWork.NewsArticleRepo.UpdateStatusAsync(articleId, status);
+
+            
+            await _unitOfWork.SaveChangeAsync();
+
+         
+            return new ResponseDTO($"Article status has been updated to {(status ? "Active" : "Blocked")}.", 200, true); // Thành công
+        }
 
     }
 }

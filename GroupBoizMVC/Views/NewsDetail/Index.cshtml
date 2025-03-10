@@ -125,6 +125,17 @@
                                                             <button class="btn btn-danger" id="delete-button">Delete</button>
                                                         }
 
+                                                        @if (ViewBag.News.NewsStatus)  
+                                                        {
+                                                            <button class="btn btn-danger" id="block-button" data-id="@ViewBag.News.NewsArticleId" onclick="changeStatus('@ViewBag.News.NewsArticleId', false)">Block</button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-success" id="enable-button" data-id="@ViewBag.News.NewsArticleId" onclick="changeStatus('@ViewBag.News.NewsArticleId', true)">Enable</button>
+                                                        }
+
+
+
 
                                                     }
                                                     <button class="btn btn-success d-none" id="save-button">Save</button>
@@ -465,5 +476,70 @@
             });
         }
     });
+        function changeStatus(articleId, status) {
+        fetch('/NewsDetail/UpdateStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                articleId: articleId,
+                status: status
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Status Updated!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Redirect to the Index action of NewsController after successful update
+                    window.location.href = '/News/Index'; // Modify to your desired redirect URL
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Error: ' + data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'An Error Occurred!',
+                text: 'An error occurred while updating the article status.',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+
+
+
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/allHub")
+            .build();
+
+        connection.start()
+            .then(() => console.log("✅ Kết nối SignalR thành công!"))
+            .catch(err => console.error("❌ Lỗi kết nối SignalR:", err));
+
+        // 🔥 Khi có bài viết mới, tự động reload trang
+        connection.on("ReloadPage", function () {
+            console.log("🔄 Bài viết mới đã được tạo, reload trang...");
+            window.location.reload(); // 🟢 Tự động reload
+        });
+    });
+
+</script>

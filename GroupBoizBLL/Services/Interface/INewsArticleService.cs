@@ -10,6 +10,7 @@ namespace GroupBoizBLL.Services.Interface
 {
     public interface INewsArticleService
     {
+        Task<ResponseDTO> GetAllNewsActiveWithTag();
         Task<ResponseDTO> GetAllNewsWithTag();
         Task<ResponseDTO> GetNewsById(string NewsArticleId);
         Task<ResponseDTO> UpdateNewsArticle(NewsArticleDTO updatedNews);
@@ -19,6 +20,7 @@ namespace GroupBoizBLL.Services.Interface
         Task<ResponseDTO> GetByTagAsync(int tagId);
         Task<ResponseDTO> GetNewsByPeriod(DateTime? startDate, DateTime? endDate);
         Task<ResponseDTO> CreateNewsArticle(NewsArticleDTO newsDto);
+        Task<ResponseDTO> UpdateStatus(string articleId, bool status);
 
     }
 }
