@@ -12,7 +12,6 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
--- Create Category table
 CREATE TABLE [dbo].[Category](
 	[CategoryID] [smallint] IDENTITY(1,1) NOT NULL,
 	[CategoryName] [nvarchar](100) NOT NULL,
@@ -26,7 +25,11 @@ CREATE TABLE [dbo].[Category](
 ) ON [PRIMARY]
 GO
 
--- Create NewsArticle table
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TABLE [dbo].[NewsArticle](
 	[NewsArticleID] [nvarchar](20) NOT NULL,
 	[NewsTitle] [nvarchar](400) NULL,
@@ -46,7 +49,11 @@ CREATE TABLE [dbo].[NewsArticle](
 ) ON [PRIMARY]
 GO
 
--- Create NewsTag table
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TABLE [dbo].[NewsTag](
 	[NewsArticleID] [nvarchar](20) NOT NULL,
 	[TagID] [int] NOT NULL,
@@ -58,7 +65,11 @@ CREATE TABLE [dbo].[NewsTag](
 ) ON [PRIMARY]
 GO
 
--- Create SystemAccount table
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TABLE [dbo].[SystemAccount](
 	[AccountID] [smallint] NOT NULL,
 	[AccountName] [nvarchar](100) NULL,
@@ -72,34 +83,37 @@ CREATE TABLE [dbo].[SystemAccount](
 ) ON [PRIMARY]
 GO
 
--- Create Tag table with IsActive column
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TABLE [dbo].[Tag](
 	[TagID] [int] NOT NULL,
 	[TagName] [nvarchar](50) NULL,
 	[Note] [nvarchar](400) NULL,
-	[IsActive] [bit] NULL,
- CONSTRAINT [PK_Tag] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_HashTag] PRIMARY KEY CLUSTERED 
 (
 	[TagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
--- Create RefreshToken table
 CREATE TABLE RefreshToken (
-    RefreshTokenId SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    AccountId SMALLINT NOT NULL,
-    RefreshTokenKey NVARCHAR(1000) NOT NULL,
-    IsRevoked BIT NOT NULL DEFAULT 0,
-    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    RefreshTokenId SMALLINT IDENTITY(1,1) PRIMARY KEY,  -- Khóa chính tự động tăng
+    AccountId SMALLINT NOT NULL,                         -- Khóa ngoại tham chiếu đến tài khoản người dùng
+    RefreshTokenKey NVARCHAR(1000) NOT NULL,             -- Giá trị refresh token (độ dài tối đa)
+    IsRevoked BIT NOT NULL DEFAULT 0,                   -- Trạng thái thu hồi token (mặc định là false)
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),      -- Thời gian tạo token (mặc định lấy thời gian hiện tại)
+
     CONSTRAINT FK_RefreshToken_Account FOREIGN KEY (AccountId)
-    REFERENCES SystemAccount(AccountID) ON DELETE CASCADE
+    REFERENCES SystemAccount(AccountID) ON DELETE CASCADE  -- Ràng buộc khóa ngoại, nếu xóa tài khoản thì xóa luôn token
 );
 GO
 
--- Insert into Category
 SET IDENTITY_INSERT [dbo].[Category] ON 
 GO
+
 INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (1, N'Academic news', N'This category can include articles about research findings, faculty appointments and promotions, and other academic-related announcements.', 1, 1)
 GO
 INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (2, N'Student Affairs', N'This category can include articles about student activities, events, and initiatives, such as student clubs, organizations and sports.', 2, 1)
@@ -108,12 +122,11 @@ INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [Pa
 GO
 INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (4, N'Alumni News', N'This category can include articles about the achievements and accomplishments of former students and alumni, such as graduations, job promotions and career successes.', 4, 1)
 GO
-INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (5, N'Capstone Project News', N'This category is typically a comprehensive and detailed report created as part of an academic or professional capstone project.', 5, 0)
+INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (5, N'Capstone Project News', N'This category is typically a comprehensive and detailed report created as part of an academic or professional capstone project. ', 5, 0)
 GO
 SET IDENTITY_INSERT [dbo].[Category] OFF
 GO
 
--- Insert into NewsArticle
 INSERT [dbo].[NewsArticle] ([NewsArticleID], [NewsTitle], [Headline], [CreatedDate], [NewsContent], [NewsSource], [CategoryID], [NewsStatus], [CreatedByID], [UpdatedByID], [ModifiedDate]) VALUES (N'1', N'University FU Celebrates Success of Alumni in Various Fields', N'University FU Celebrates Success of Alumni in Various Fields', CAST(N'2024-05-05T00:00:00.000' AS DateTime), N'University FU recently commemorated the achievements of its esteemed alumni who have excelled in a multitude of fields, showcasing the impact of the institution''s education on their professional journeys.
 
 Diverse Success Stories: From successful entrepreneurs to renowned artists, University X''s alumni have made significant strides in various industries, reflecting the versatility of the education provided.
@@ -142,7 +155,8 @@ Faculty Promotions: Several esteemed faculty members have been promoted to key l
 
 The academic programs within the department have undergone enhancements to incorporate the latest developments and equip students with practical skills and knowledge relevant to current industry demands.
 
-These initiatives are poised to position the Software Engineering Department as a hub of innovation and academic rigor, attracting top talent and fostering groundbreaking research and learning experiences.', N'N/A', 1, 1, 2, 2, CAST(N'2024-05-05T00:00:00.000' AS DateTime))
+These initiatives are poised to position the Software Engineering Department as a hub of innovation and academic rigor, attracting top talent and fostering groundbreaking research and learning experiences.
+', N'N/A', 1, 1, 2, 2, CAST(N'2024-05-05T00:00:00.000' AS DateTime))
 GO
 INSERT [dbo].[NewsArticle] ([NewsArticleID], [NewsTitle], [Headline], [CreatedDate], [NewsContent], [NewsSource], [CategoryID], [NewsStatus], [CreatedByID], [UpdatedByID], [ModifiedDate]) VALUES (N'4', N'Renowned Scholar Appointed as Head of AI Department at FU', N'Renowned Scholar Appointed as Head of AI Department at FU', CAST(N'2024-05-05T00:00:00.000' AS DateTime), N'FU proudly announces the appointment of David Nitzevet, a distinguished scholar in Machine Learning, to the prestigious position of Head of AI Department, underscoring the institution''s commitment to academic excellence and leadership.
 
@@ -150,7 +164,8 @@ David Nitzevet brings a wealth of experience and expertise to the role, with a n
 
 The appointment is expected to foster collaborations and initiatives that will enrich the academic and research landscape of the university and beyond.
 
-The addition of David Nitzevet to the AI Department faculty elevates the institution''s academic standing and promises to inspire students, scholars, and professionals in Machine Learning. The appointment reaffirms the university''s dedication to recruiting top-tier talent and nurturing an environment where academic distinction thrives.', N'N/A', 1, 1, 2, 2, CAST(N'2024-05-05T00:00:00.000' AS DateTime))
+The addition of David Nitzevet to the AI Department faculty elevates the institution''s academic standing and promises to inspire students, scholars, and professionals in Machine Learning. The appointment reaffirms the university''s dedication to recruiting top-tier talent and nurturing an environment where academic distinction thrives.
+', N'N/A', 1, 1, 2, 2, CAST(N'2024-05-05T00:00:00.000' AS DateTime))
 GO
 INSERT [dbo].[NewsArticle] ([NewsArticleID], [NewsTitle], [Headline], [CreatedDate], [NewsContent], [NewsSource], [CategoryID], [NewsStatus], [CreatedByID], [UpdatedByID], [ModifiedDate]) VALUES (N'5', N'New Research Findings Shed Light on STEM', N'New Research Findings Shed Light on STEM', CAST(N'2024-05-05T00:00:00.000' AS DateTime), N'Groundbreaking research conducted by the Research Department of FU has unveiled significant findings in the field of STEM, offering fresh insights that could revolutionize current understanding and practices.
 
@@ -159,7 +174,6 @@ The success of this research is attributed to the collaborative efforts of a mul
 The research findings stand as a testament to the institution''s dedication to impactful research and its contribution to the global knowledge base in STEM.', N'N/A', 1, 1, 2, 2, CAST(N'2024-05-05T00:00:00.000' AS DateTime))
 GO
 
--- Insert into NewsTag
 INSERT [dbo].[NewsTag] ([NewsArticleID], [TagID]) VALUES (N'1', 5)
 GO
 INSERT [dbo].[NewsTag] ([NewsArticleID], [TagID]) VALUES (N'1', 7)
@@ -197,7 +211,6 @@ GO
 INSERT [dbo].[NewsTag] ([NewsArticleID], [TagID]) VALUES (N'5', 6)
 GO
 
--- Insert into SystemAccount
 INSERT [dbo].[SystemAccount] ([AccountID], [AccountName], [AccountEmail], [AccountRole], [AccountPassword]) VALUES (1, N'Emma William', N'EmmaWilliam@FUNewsManagement.org', 2, N'@1')
 GO
 INSERT [dbo].[SystemAccount] ([AccountID], [AccountName], [AccountEmail], [AccountRole], [AccountPassword]) VALUES (2, N'Olivia James', N'OliviaJames@FUNewsManagement.org', 2, N'@1')
@@ -209,27 +222,25 @@ GO
 INSERT [dbo].[SystemAccount] ([AccountID], [AccountName], [AccountEmail], [AccountRole], [AccountPassword]) VALUES (5, N'Steve Paris', N'SteveParis@FUNewsManagement.org', 1, N'@1')
 GO
 
--- Insert into Tag with IsActive column
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (1, N'Education', N'Education Note', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (1, N'Education', N'Education Note')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (2, N'Technology', N'Technology Note', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (2, N'Technology', N'Technology Note')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (3, N'Research', N'Research Note', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (3, N'Research', N'Research Note')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (4, N'Innovation', N'Innovation Note', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (4, N'Innovation', N'Innovation Note')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (5, N'Campus Life', N'Campus Life Note', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (5, N'Campus Life', N'Campus Life Note')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (6, N'Faculty', N'Faculty Achievements', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (6, N'Faculty', N'Faculty Achievements')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (7, N'Alumni ', N'Alumni News', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (7, N'Alumni ', N'Alumni News')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (8, N'Events', N'University Events', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (8, N'Events', N'University Events')
 GO
-INSERT [dbo].[Tag] ([TagID], [TagName], [Note], [IsActive]) VALUES (9, N'Resources', N'Campus Resources', 1)
+INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (9, N'Resources', N'Campus Resources')
 GO
 
--- Add ImageUrl to NewsArticle
 ALTER TABLE NewsArticle ADD ImageUrl NVARCHAR(500) NULL;
 GO
 UPDATE NewsArticle 
@@ -253,12 +264,10 @@ SET ImageUrl = '/assets/images/banner-item-05.jpg'
 WHERE NewsArticleID = '5';
 GO
 
--- Add IsEnable to SystemAccount
 ALTER TABLE [FUNewsManagement].[dbo].[SystemAccount]
-ADD [IsEnable] BIT NOT NULL DEFAULT 1;
+ADD [IsEnable] BIT NOT NULL DEFAULT 1; -- Kiểu BIT đại diện cho BOOL trong SQL Server
 GO
 
--- Add constraints
 ALTER TABLE [dbo].[Category]  WITH CHECK ADD  CONSTRAINT [FK_Category_Category] FOREIGN KEY([ParentCategoryID])
 REFERENCES [dbo].[Category] ([CategoryID])
 GO
@@ -288,8 +297,7 @@ REFERENCES [dbo].[Tag] ([TagID])
 GO
 ALTER TABLE [dbo].[NewsTag] CHECK CONSTRAINT [FK_NewsTag_Tag]
 GO
-
 USE [master]
 GO
-ALTER DATABASE [FUNewsManagement] SET READ_WRITE 
+ALTER DATABASE [FUNewsManagement] SET  READ_WRITE 
 GO
