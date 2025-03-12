@@ -58,5 +58,16 @@ namespace GroupBoizMVC.Pages.Category
         {
             public short CategoryId { get; set; }
         }
+        public async Task<IActionResult> OnPostUpdateStatusAsync([FromBody] UpdateStatusModel model)
+        {
+            var response = await _categoryService.UpdateCategoryStatus(model.CategoryId, model.IsActive);
+            return new JsonResult(response);
+        }
+
+        public class UpdateStatusModel
+        {
+            public short CategoryId { get; set; }
+            public bool IsActive { get; set; }
+        }
     }
 }

@@ -132,5 +132,24 @@ namespace GroupBoizBLL.Services.Implement
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
+        public async Task<ResponseDTO> UpdateCategoryStatus(short categoryId, bool isActive)
+        {
+            try
+            {
+                var category = await _unitOfWork.CategoryRepo.GetByIdAsync(categoryId);
+                if (category == null)
+                    return new ResponseDTO("Category not found", 404, false);
+
+                category.IsActive = isActive;
+                _unitOfWork.CategoryRepo.Update(category);
+                await _unitOfWork.SaveAsync();
+
+                return new ResponseDTO("Category status updated successfully", 200, true);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDTO($"Error: {ex.Message}", 500, false);
+            }
+        }
     }
 }

@@ -30,7 +30,15 @@
                 <td>@category.CategoryId</td>
                 <td>@category.CategoryName</td>
                 <td>@category.CategoryDesciption</td>
-                <td>@(category.IsActive ?? false ? "Yes" : "No")</td>
+                <td>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input toggle-switch" type="checkbox" role="switch"
+                               id="switch-@category.CategoryId"
+                        @(category.IsActive ?? false ? "checked" : "")
+                               data-category-id="@category.CategoryId" />
+                        <label class="form-check-label" for="switch-@category.CategoryId"></label>
+                    </div>
+                </td>
                 <td>
                     <button class="btn btn-warning" onclick="openEditModal(@category.CategoryId, '@category.CategoryName', '@category.CategoryDesciption', @(category.IsActive.ToString().ToLower()))">Edit</button>
                     <button class="btn btn-danger" onclick="deleteCategory(@category.CategoryId)">Delete</button>
@@ -203,4 +211,66 @@
             });
         }
     }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Function to update category status via AJAX
+    async function updateCategoryStatus(categoryId, isActive) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        try {
+            const response = await fetch('/Category?handler=UpdateStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ categoryId: categoryId, isActive: isActive })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload(); // Reload to ensure UI consistency
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+                // Revert switch state on failure
+                const switchElement = document.querySelector(`input[data-category-id="${categoryId}"]`);
+                switchElement.checked = !isActive;
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'System Error!',
+                text: 'Error updating category status!',
+                confirmButtonText: 'OK'
+            });
+            // Revert switch state on failure
+            const switchElement = document.querySelector(`input[data-category-id="${categoryId}"]`);
+            switchElement.checked = !isActive;
+        }
+    }
+
+    // Add event listeners to all toggle switches
+    document.querySelectorAll('.toggle-switch').forEach(function(switchElement) {
+        switchElement.addEventListener('change', function() {
+            const categoryId = this.dataset.categoryId;
+            const isActive = this.checked;
+            updateCategoryStatus(categoryId, isActive);
+        });
+    });
 </script>

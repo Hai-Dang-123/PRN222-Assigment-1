@@ -14,5 +14,6 @@ namespace GroupBoizBLL.Services.Interface
         Task<ResponseDTO> Create(CategoryDTO categoryDto);
         Task<ResponseDTO> UpdateCategory(CategoryDTO categoryDto);
         Task<ResponseDTO> Delete(short categoryId);
+        Task<ResponseDTO> UpdateCategoryStatus(short categoryId, bool isActive);
     }
 }
