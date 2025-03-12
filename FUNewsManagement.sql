@@ -1,119 +1,120 @@
 ﻿USE [master]
 GO
 
+-- Create the database
 CREATE DATABASE [FUNewsManagement]
 GO
 
 USE [FUNewsManagement]
 GO
 
+-- Create Category table
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 CREATE TABLE [dbo].[Category](
-	[CategoryID] [smallint] IDENTITY(1,1) NOT NULL,
-	[CategoryName] [nvarchar](100) NOT NULL,
-	[CategoryDesciption] [nvarchar](250) NOT NULL,
-	[ParentCategoryID] [smallint] NULL,
-	[IsActive] [bit] NULL,
+    [CategoryID] [smallint] IDENTITY(1,1) NOT NULL,
+    [CategoryName] [nvarchar](100) NOT NULL,
+    [CategoryDesciption] [nvarchar](250) NOT NULL,
+    [ParentCategoryID] [smallint] NULL,
+    [IsActive] [bit] NULL,
  CONSTRAINT [PK_Category] PRIMARY KEY CLUSTERED 
 (
-	[CategoryID] ASC
+    [CategoryID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
+-- Create NewsArticle table
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 CREATE TABLE [dbo].[NewsArticle](
-	[NewsArticleID] [nvarchar](20) NOT NULL,
-	[NewsTitle] [nvarchar](400) NULL,
-	[Headline] [nvarchar](150) NOT NULL,
-	[CreatedDate] [datetime] NULL,
-	[NewsContent] [nvarchar](4000) NULL,
-	[NewsSource] [nvarchar](400) NULL,
-	[CategoryID] [smallint] NULL,
-	[NewsStatus] [bit] NULL,
-	[CreatedByID] [smallint] NULL,
-	[UpdatedByID] [smallint] NULL,
-	[ModifiedDate] [datetime] NULL,
+    [NewsArticleID] [nvarchar](20) NOT NULL,
+    [NewsTitle] [nvarchar](400) NULL,
+    [Headline] [nvarchar](150) NOT NULL,
+    [CreatedDate] [datetime] NULL,
+    [NewsContent] [nvarchar](4000) NULL,
+    [NewsSource] [nvarchar](400) NULL,
+    [CategoryID] [smallint] NULL,
+    [NewsStatus] [bit] NULL,
+    [CreatedByID] [smallint] NULL,
+    [UpdatedByID] [smallint] NULL,
+    [ModifiedDate] [datetime] NULL,
  CONSTRAINT [PK_NewsArticle] PRIMARY KEY CLUSTERED 
 (
-	[NewsArticleID] ASC
+    [NewsArticleID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
+-- Create NewsTag table
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 CREATE TABLE [dbo].[NewsTag](
-	[NewsArticleID] [nvarchar](20) NOT NULL,
-	[TagID] [int] NOT NULL,
+    [NewsArticleID] [nvarchar](20) NOT NULL,
+    [TagID] [int] NOT NULL,
  CONSTRAINT [PK_NewsTag] PRIMARY KEY CLUSTERED 
 (
-	[NewsArticleID] ASC,
-	[TagID] ASC
+    [NewsArticleID] ASC,
+    [TagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
+-- Create SystemAccount table
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 CREATE TABLE [dbo].[SystemAccount](
-	[AccountID] [smallint] NOT NULL,
-	[AccountName] [nvarchar](100) NULL,
-	[AccountEmail] [nvarchar](70) NULL,
-	[AccountRole] [int] NULL,
-	[AccountPassword] [nvarchar](70) NULL,
+    [AccountID] [smallint] NOT NULL,
+    [AccountName] [nvarchar](100) NULL,
+    [AccountEmail] [nvarchar](70) NULL,
+    [AccountRole] [int] NULL,
+    [AccountPassword] [nvarchar](70) NULL,
  CONSTRAINT [PK_SystemAccount] PRIMARY KEY CLUSTERED 
 (
-	[AccountID] ASC
+    [AccountID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
+-- Create Tag table
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 CREATE TABLE [dbo].[Tag](
-	[TagID] [int] NOT NULL,
-	[TagName] [nvarchar](50) NULL,
-	[Note] [nvarchar](400) NULL,
+    [TagID] [int] NOT NULL,
+    [TagName] [nvarchar](50) NULL,
+    [Note] [nvarchar](400) NULL,
  CONSTRAINT [PK_HashTag] PRIMARY KEY CLUSTERED 
 (
-	[TagID] ASC
+    [TagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE RefreshToken (
-    RefreshTokenId SMALLINT IDENTITY(1,1) PRIMARY KEY,  -- Khóa chính tự động tăng
-    AccountId SMALLINT NOT NULL,                         -- Khóa ngoại tham chiếu đến tài khoản người dùng
-    RefreshTokenKey NVARCHAR(1000) NOT NULL,             -- Giá trị refresh token (độ dài tối đa)
-    IsRevoked BIT NOT NULL DEFAULT 0,                   -- Trạng thái thu hồi token (mặc định là false)
-    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),      -- Thời gian tạo token (mặc định lấy thời gian hiện tại)
-
-    CONSTRAINT FK_RefreshToken_Account FOREIGN KEY (AccountId)
-    REFERENCES SystemAccount(AccountID) ON DELETE CASCADE  -- Ràng buộc khóa ngoại, nếu xóa tài khoản thì xóa luôn token
+-- Create RefreshToken table
+CREATE TABLE [dbo].[RefreshToken] (
+    [RefreshTokenId] SMALLINT IDENTITY(1,1) PRIMARY KEY,
+    [AccountId] SMALLINT NOT NULL,
+    [RefreshTokenKey] NVARCHAR(1000) NOT NULL,
+    [IsRevoked] BIT NOT NULL DEFAULT 0,
+    [CreatedAt] DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT [FK_RefreshToken_Account] FOREIGN KEY ([AccountId])
+    REFERENCES [dbo].[SystemAccount]([AccountID]) ON DELETE CASCADE
 );
 GO
 
+-- Insert sample data into Category table
 SET IDENTITY_INSERT [dbo].[Category] ON 
 GO
-
 INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (1, N'Academic news', N'This category can include articles about research findings, faculty appointments and promotions, and other academic-related announcements.', 1, 1)
 GO
 INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (2, N'Student Affairs', N'This category can include articles about student activities, events, and initiatives, such as student clubs, organizations and sports.', 2, 1)
@@ -122,11 +123,12 @@ INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [Pa
 GO
 INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (4, N'Alumni News', N'This category can include articles about the achievements and accomplishments of former students and alumni, such as graduations, job promotions and career successes.', 4, 1)
 GO
-INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (5, N'Capstone Project News', N'This category is typically a comprehensive and detailed report created as part of an academic or professional capstone project. ', 5, 0)
+INSERT [dbo].[Category] ([CategoryID], [CategoryName], [CategoryDesciption], [ParentCategoryID], [IsActive]) VALUES (5, N'Capstone Project News', N'This category is typically a comprehensive and detailed report created as part of an academic or professional capstone project.', 5, 0)
 GO
 SET IDENTITY_INSERT [dbo].[Category] OFF
 GO
 
+-- Insert sample data into NewsArticle table
 INSERT [dbo].[NewsArticle] ([NewsArticleID], [NewsTitle], [Headline], [CreatedDate], [NewsContent], [NewsSource], [CategoryID], [NewsStatus], [CreatedByID], [UpdatedByID], [ModifiedDate]) VALUES (N'1', N'University FU Celebrates Success of Alumni in Various Fields', N'University FU Celebrates Success of Alumni in Various Fields', CAST(N'2024-05-05T00:00:00.000' AS DateTime), N'University FU recently commemorated the achievements of its esteemed alumni who have excelled in a multitude of fields, showcasing the impact of the institution''s education on their professional journeys.
 
 Diverse Success Stories: From successful entrepreneurs to renowned artists, University X''s alumni have made significant strides in various industries, reflecting the versatility of the education provided.
@@ -174,6 +176,7 @@ The success of this research is attributed to the collaborative efforts of a mul
 The research findings stand as a testament to the institution''s dedication to impactful research and its contribution to the global knowledge base in STEM.', N'N/A', 1, 1, 2, 2, CAST(N'2024-05-05T00:00:00.000' AS DateTime))
 GO
 
+-- Insert sample data into NewsTag table
 INSERT [dbo].[NewsTag] ([NewsArticleID], [TagID]) VALUES (N'1', 5)
 GO
 INSERT [dbo].[NewsTag] ([NewsArticleID], [TagID]) VALUES (N'1', 7)
@@ -211,6 +214,7 @@ GO
 INSERT [dbo].[NewsTag] ([NewsArticleID], [TagID]) VALUES (N'5', 6)
 GO
 
+-- Insert sample data into SystemAccount table
 INSERT [dbo].[SystemAccount] ([AccountID], [AccountName], [AccountEmail], [AccountRole], [AccountPassword]) VALUES (1, N'Emma William', N'EmmaWilliam@FUNewsManagement.org', 2, N'@1')
 GO
 INSERT [dbo].[SystemAccount] ([AccountID], [AccountName], [AccountEmail], [AccountRole], [AccountPassword]) VALUES (2, N'Olivia James', N'OliviaJames@FUNewsManagement.org', 2, N'@1')
@@ -222,6 +226,7 @@ GO
 INSERT [dbo].[SystemAccount] ([AccountID], [AccountName], [AccountEmail], [AccountRole], [AccountPassword]) VALUES (5, N'Steve Paris', N'SteveParis@FUNewsManagement.org', 1, N'@1')
 GO
 
+-- Insert sample data into Tag table
 INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (1, N'Education', N'Education Note')
 GO
 INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (2, N'Technology', N'Technology Note')
@@ -241,63 +246,74 @@ GO
 INSERT [dbo].[Tag] ([TagID], [TagName], [Note]) VALUES (9, N'Resources', N'Campus Resources')
 GO
 
-ALTER TABLE NewsArticle ADD ImageUrl NVARCHAR(500) NULL;
-GO
-UPDATE NewsArticle 
-SET ImageUrl = '/assets/images/banner-item-01.jpg' 
-WHERE NewsArticleID = '1';
-GO
-UPDATE NewsArticle 
-SET ImageUrl = '/assets/images/banner-item-02.jpg' 
-WHERE NewsArticleID = '2';
-GO
-UPDATE NewsArticle 
-SET ImageUrl = '/assets/images/banner-item-03.jpg' 
-WHERE NewsArticleID = '3';
-GO
-UPDATE NewsArticle 
-SET ImageUrl = '/assets/images/banner-item-04.jpg' 
-WHERE NewsArticleID = '4';
-GO
-UPDATE NewsArticle 
-SET ImageUrl = '/assets/images/banner-item-05.jpg' 
-WHERE NewsArticleID = '5';
+-- Add ImageUrl column to NewsArticle table
+ALTER TABLE [dbo].[NewsArticle] ADD [ImageUrl] NVARCHAR(500) NULL;
 GO
 
-ALTER TABLE [FUNewsManagement].[dbo].[SystemAccount]
-ADD [IsEnable] BIT NOT NULL DEFAULT 1; -- Kiểu BIT đại diện cho BOOL trong SQL Server
+-- Update ImageUrl for existing NewsArticle records
+UPDATE [dbo].[NewsArticle] 
+SET [ImageUrl] = '/assets/images/banner-item-01.jpg' 
+WHERE [NewsArticleID] = '1';
+GO
+UPDATE [dbo].[NewsArticle] 
+SET [ImageUrl] = '/assets/images/banner-item-02.jpg' 
+WHERE [NewsArticleID] = '2';
+GO
+UPDATE [dbo].[NewsArticle] 
+SET [ImageUrl] = '/assets/images/banner-item-03.jpg' 
+WHERE [NewsArticleID] = '3';
+GO
+UPDATE [dbo].[NewsArticle] 
+SET [ImageUrl] = '/assets/images/banner-item-04.jpg' 
+WHERE [NewsArticleID] = '4';
+GO
+UPDATE [dbo].[NewsArticle] 
+SET [ImageUrl] = '/assets/images/banner-item-05.jpg' 
+WHERE [NewsArticleID] = '5';
 GO
 
+-- Add IsEnable column to SystemAccount table
+ALTER TABLE [dbo].[SystemAccount]
+ADD [IsEnable] BIT NOT NULL DEFAULT 1;
+GO
+
+-- Add foreign key constraints
 ALTER TABLE [dbo].[Category]  WITH CHECK ADD  CONSTRAINT [FK_Category_Category] FOREIGN KEY([ParentCategoryID])
 REFERENCES [dbo].[Category] ([CategoryID])
 GO
 ALTER TABLE [dbo].[Category] CHECK CONSTRAINT [FK_Category_Category]
 GO
+
 ALTER TABLE [dbo].[NewsArticle]  WITH CHECK ADD  CONSTRAINT [FK_NewsArticle_Category] FOREIGN KEY([CategoryID])
 REFERENCES [dbo].[Category] ([CategoryID])
-ON UPDATE CASCADE
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[NewsArticle] CHECK CONSTRAINT [FK_NewsArticle_Category]
 GO
+
 ALTER TABLE [dbo].[NewsArticle]  WITH CHECK ADD  CONSTRAINT [FK_NewsArticle_SystemAccount] FOREIGN KEY([CreatedByID])
 REFERENCES [dbo].[SystemAccount] ([AccountID])
-ON UPDATE CASCADE
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[NewsArticle] CHECK CONSTRAINT [FK_NewsArticle_SystemAccount]
 GO
+
 ALTER TABLE [dbo].[NewsTag]  WITH CHECK ADD  CONSTRAINT [FK_NewsTag_NewsArticle] FOREIGN KEY([NewsArticleID])
 REFERENCES [dbo].[NewsArticle] ([NewsArticleID])
+ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[NewsTag] CHECK CONSTRAINT [FK_NewsTag_NewsArticle]
 GO
+
 ALTER TABLE [dbo].[NewsTag]  WITH CHECK ADD  CONSTRAINT [FK_NewsTag_Tag] FOREIGN KEY([TagID])
 REFERENCES [dbo].[Tag] ([TagID])
+ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[NewsTag] CHECK CONSTRAINT [FK_NewsTag_Tag]
 GO
+
+-- Set the database to read-write mode
 USE [master]
 GO
-ALTER DATABASE [FUNewsManagement] SET  READ_WRITE 
+ALTER DATABASE [FUNewsManagement] SET READ_WRITE 
 GO

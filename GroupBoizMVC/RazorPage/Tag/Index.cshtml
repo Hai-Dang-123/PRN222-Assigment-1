@@ -6,9 +6,11 @@
     ViewData["Title"] = "Tag Management";
 }
 
+@Html.AntiForgeryToken() <!-- Generate anti-forgery token -->
+
 <h2>Tag Management</h2>
 
-<!-- Button mở modal thêm Tag -->
+<!-- Button to open modal for adding a new tag -->
 <button class="btn btn-primary" onclick="openTagModal()">Add Tag</button>
 
 <table class="table table-bordered mt-3">
@@ -36,7 +38,7 @@
     </tbody>
 </table>
 
-<!-- Modal thêm/sửa Tag -->
+<!-- Modal for adding/editing tags -->
 <div id="tagModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -63,7 +65,7 @@
     </div>
 </div>
 
-<!-- Thêm thư viện SweetAlert2 -->
+<!-- SweetAlert2 library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -95,9 +97,15 @@
         const url = tag.TagId === 0 ? "/Tag/Index?handler=Create" : "/Tag/Index?handler=Update";
 
         try {
+            // Get the anti-forgery token
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
             const response = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token // Include the token
+                },
                 body: JSON.stringify(tag)
             });
 
@@ -141,10 +149,16 @@
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
+                    // Get the anti-forgery token
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
                     const response = await fetch('/Tag/Index?handler=Delete', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ tagId })
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': token // Include the token
+                        },
+                        body: JSON.stringify({ tagId }) // Send as { "tagId": <id> }
                     });
 
                     const data = await response.json();

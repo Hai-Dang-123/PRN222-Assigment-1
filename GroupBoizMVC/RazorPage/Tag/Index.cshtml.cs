@@ -13,6 +13,7 @@ namespace GroupBoizMVC.RazorPage.Tag
         {
             _tagService = tagService;
         }
+
         public List<TagDTO> Tags { get; set; } = new List<TagDTO>();
 
         public async Task OnGet()
@@ -20,16 +21,17 @@ namespace GroupBoizMVC.RazorPage.Tag
             var response = await _tagService.GetAllTags();
             if (response.IsSuccess)
             {
-                Tags = response.Result as List<TagDTO> ?? new List<TagDTO>(); 
+                Tags = response.Result as List<TagDTO> ?? new List<TagDTO>();
             }
         }
+
         public async Task<JsonResult> OnPostCreate([FromBody] TagDTO tag)
         {
             if (tag == null || string.IsNullOrWhiteSpace(tag.TagName))
                 return new JsonResult(new { success = false, message = "Tag name cannot be empty!" });
 
             var response = await _tagService.CreateAsync(tag);
-            return new JsonResult(new { success = response.IsSuccess, message = response.IsSuccess ? "Tag created successfully!" : response.Message });
+            return new JsonResult(new { success = response.IsSuccess, message = response.Message });
         }
 
         public async Task<JsonResult> OnPostUpdate([FromBody] TagDTO tag)
@@ -38,13 +40,18 @@ namespace GroupBoizMVC.RazorPage.Tag
                 return new JsonResult(new { success = false, message = "Invalid tag data!" });
 
             var response = await _tagService.UpdateTag(tag);
-            return new JsonResult(new { success = response.IsSuccess, message = response.IsSuccess ? "Tag updated successfully!" : response.Message });
+            return new JsonResult(new { success = response.IsSuccess, message = response.Message });
         }
 
-        public async Task<JsonResult> OnPostDelete([FromBody] int tagId)
+        public async Task<JsonResult> OnPostDelete([FromBody] DeleteTagRequest request)
         {
-            var response = await _tagService.Delete(tagId);
-            return new JsonResult(new { success = response.IsSuccess, message = response.IsSuccess ? "Tag deleted successfully!" : response.Message });
+            var response = await _tagService.Delete(request.TagId);
+            return new JsonResult(new { success = response.IsSuccess, message = response.Message });
         }
+    }
+
+    public class DeleteTagRequest
+    {
+        public int TagId { get; set; }
     }
 }
