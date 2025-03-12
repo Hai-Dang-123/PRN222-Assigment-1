@@ -1,0 +1,129 @@
+﻿@page
+@model GroupBoizMVC.Pages.Home.IndexModel
+@using GroupBoizCommon.DTO
+@{
+    Layout = "/RazorPage/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="main-banner header-text">
+    <div class="container-fluid">
+        <div class="owl-banner owl-carousel">
+            @if (Model.NewsArticles != null && Model.NewsArticles.Any())
+            {
+                @foreach (var news in Model.NewsArticles.Take(5))
+                {
+                    <div class="item">
+                        <img src="@news.ImageUrl" alt="@news.NewsTitle">
+                        <div class="item-content">
+                            <div class="main-content">
+                                <div class="meta-category">
+                                    <span>@(news.CategoryName ?? "Uncategorized")</span>
+                                </div>
+                                <a asp-page="/News/Detail" asp-route-id="@news.NewsArticleId">
+                                    <h4>@news.NewsTitle</h4>
+                                </a>
+                                <ul class="post-info">
+                                    <li><a href="#">@(news.CreateBy ?? "Admin")</a></li>
+                                    <li><a href="#">@news.CreatedDate?.ToString("MMMM dd, yyyy")</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Blog Posts Section -->
+<section class="blog-posts">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="all-blog-posts">
+                    <div class="row">
+                        @if (Model.NewsArticles.Any())
+                        {
+                            @foreach (var news in Model.NewsArticles.Take(2))
+                            {
+                                <div class="col-lg-12">
+                                    <div class="blog-post">
+                                        <div class="blog-thumb">
+                                            <img src="@news.ImageUrl" alt="Blog image">
+                                        </div>
+                                        <div class="down-content">
+                                            <span>@(news.CategoryName ?? "Uncategorized")</span>
+                                            <a asp-page="/News/Detail" asp-route-id="@news.NewsArticleId">
+                                                <h4>@news.NewsTitle</h4>
+                                            </a>
+                                            <ul class="post-info">
+                                                <li><a href="#">@(news.CreateBy ?? "Admin")</a></li>
+                                                <li><a href="#">@news.CreatedDate?.ToString("MMMM dd, yyyy")</a></li>
+                                            </ul>
+                                            <p>@news.NewsContent</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        <div class="col-lg-12">
+                            <div class="main-button">
+                                <a asp-page="/News/Index">View All Posts</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="sidebar">
+                    <!-- Categories -->
+                    <div class="sidebar-item categories">
+                        <div class="sidebar-heading">
+                            <h2>Categories</h2>
+                        </div>
+                        <div class="content">
+                            <ul>
+                                @if (Model.Categories.Any())
+                                {
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <li><a asp-page="/News/ByCategory" asp-route-id="@category.CategoryId">- @category.CategoryName</a></li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li>No categories found.</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="sidebar-item tags">
+                        <div class="sidebar-heading">
+                            <h2>Tag Clouds</h2>
+                        </div>
+                        <div class="content">
+                            <ul>
+                                @if (Model.Tags.Any())
+                                {
+                                    @foreach (var tag in Model.Tags)
+                                    {
+                                        <li><a asp-page="/News/ByTag" asp-route-id="@tag.TagId">@tag.TagName</a></li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li>No tags found.</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Sidebar -->
+        </div>
+    </div>
+</section>

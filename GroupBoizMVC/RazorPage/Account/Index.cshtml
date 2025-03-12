@@ -1,0 +1,89 @@
+﻿@page
+@model GroupBoizMVC.Pages.Account.IndexModel
+@{
+    Layout = "/RazorPage/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Account Management Page";
+}
+
+<section class="account-management">
+    <div class="container">
+        <h2 class="tm-margin-b-30">Manage Account</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Accounts)
+                {
+                    <tr>
+                        <td>@user.AccountId</td>
+                        <td>@user.AccountName</td>
+                        <td>@user.AccountEmail</td>
+                        <td>@user.AccountRole</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="openEditModal(@user.AccountId, '@user.AccountName', '@user.AccountEmail', '@user.AccountRole')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteAccount(@user.AccountId)">Delete</button>
+
+                            @if (user.IsEnable)
+                            {
+                                <button class="btn btn-danger btn-sm" onclick="toggleAccountStatus(@user.AccountId, false)">Block</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success btn-sm" onclick="toggleAccountStatus(@user.AccountId, true)">Enable</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    async function deleteAccount(accountId) {
+        try {
+            const response = await fetch(`/Account/Index?handler=DeleteAccount&id=${accountId}`, {
+                method: "POST"
+            });
+
+            if (response.ok) {
+                Swal.fire({ icon: 'success', title: 'Deleted!', confirmButtonText: 'OK' }).then(() => location.reload());
+            } else {
+                const errorMsg = await response.text();
+                Swal.fire({ icon: 'error', title: 'Delete Failed!', text: errorMsg, confirmButtonText: 'OK' });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'System Error!', text: error.message, confirmButtonText: 'OK' });
+        }
+    }
+
+    async function toggleAccountStatus(accountId, isEnable) {
+        const requestData = { AccountId: accountId, IsEnable: isEnable };
+
+        try {
+            const response = await fetch(`/Account/Index?handler=ToggleAccountStatus`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestData)
+            });
+
+            if (response.ok) {
+                Swal.fire({ icon: 'success', title: 'Status Updated!', confirmButtonText: 'OK' }).then(() => location.reload());
+            } else {
+                const errorMsg = await response.text();
+                Swal.fire({ icon: 'error', title: 'Update Failed!', text: errorMsg, confirmButtonText: 'OK' });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'System Error!', text: error.message, confirmButtonText: 'OK' });
+        }
+    }
+</script>

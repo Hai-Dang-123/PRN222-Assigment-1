@@ -1,0 +1,158 @@
+﻿@page
+@model GroupBoizMVC.RazorPage.News.IndexModel
+@using GroupBoizCommon.DTO
+
+@{
+    Layout = "/RazorPage/Shared/_Layout.cshtml";
+    ViewData["Title"] = "News Management Page";
+}
+
+<!-- Page Content -->
+<!-- Banner Starts Here -->
+<div class="heading-page header-text">
+    <section class="page-heading">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-content">
+                        <h4>Recent Posts</h4>
+                        <h2>Our Recent Blog Entries</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Banner Ends Here -->
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+@if (Model.Role == "Staff")
+{
+    <div class="mb-3">
+        <a href="/News/Create" class="btn btn-primary">Create New Post</a>
+    </div>
+}
+
+<section class="blog-posts grid-system">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="all-blog-posts">
+                    <div class="row">
+                        @if (Model.News != null && Model.News.Any())
+                        {
+                            @foreach (var news in Model.News)
+                            {
+                                <div class="col-lg-6">
+                                    <div class="blog-post">
+                                        <div class="blog-thumb">
+                                            <img src="@news.ImageUrl" alt="">
+                                        </div>
+                                        <div class="down-content">
+                                            <span>@(news.CategoryName ?? "Uncategorized")</span>
+                                            @* <a href="/NewsDetail/Index/@news.NewsArticleId"><h4>@news.NewsTitle</h4></a> *@
+                                            <a asp-page="/NewsDetail/Index" asp-route-id="@news.NewsArticleId">
+                                                <h4>@news.NewsTitle</h4>
+                                            </a>
+
+                                            <ul class="post-info">
+                                                <li>@(news.CreateBy ?? "Admin")</li>
+                                                <li>@news.CreatedDate</li>
+                                            </ul>
+                                            <div class="post-options">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <ul class="post-tags">
+                                                            <li><i class="fa fa-tags"></i></li>
+                                                            @foreach (var tag in news.Tag)
+                                                            {
+                                                                <li>@tag,</li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if (Model.Role == "Staff")
+                                            {
+                                                <div style="
+                                                font-size: 20px;
+                                                font-weight: bold;
+                                                padding: 8px 16px;
+                                                border-radius: 5px;
+                                                text-align: center;
+                                                color: white;
+                                                background-color: @(news.NewsStatus.HasValue ? (news.NewsStatus.Value ? "#28a745" : "#dc3545") : "#dc3545");">
+                                                    @(news.NewsStatus.HasValue ? (news.NewsStatus.Value ? "Active" : "Inactive") : "Inactive")
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No news articles available.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="sidebar">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="sidebar-item search">
+                                <form id="search_form" method="GET" action="/Search">
+                                    <input type="text" name="q" class="searchText" placeholder="Type to search..." autocomplete="on">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="sidebar-item categories">
+                                <div class="sidebar-heading">
+                                    <h2>Categories</h2>
+                                </div>
+                                <div class="content">
+                                    <ul>
+                                        @foreach (var category in Model.Categories)
+                                        {
+                                            <li><a href="/News/ByCategory/@category.CategoryId">- @category.CategoryName</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="sidebar-item tags">
+                                <div class="sidebar-heading">
+                                    <h2>Tag Clouds</h2>
+                                </div>
+                                <div class="content">
+                                    <ul>
+                                        @foreach (var tag in Model.Tags)
+                                        {
+                                            <li><a href="/News/ByTag/@tag.TagId">@tag.TagName</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

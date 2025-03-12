@@ -1,0 +1,255 @@
+﻿@page "{id?}"
+@model GroupBoizMVC.RazorPage.NewsDetail.IndexModel
+
+@{
+    Layout = "/RazorPage/Shared/_Layout.cshtml";
+    ViewData["Title"] = "News Management Details Page";
+}
+
+<!-- Thêm thư viện SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Page Content -->
+<div class="heading-page header-text">
+    <section class="page-heading">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-content">
+                        <h4>Post Details</h4>
+                        <h2>Single Blog Post</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section class="blog-posts grid-system">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="all-blog-posts">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="blog-post">
+                                @if (Model.News != null)
+                                {
+                                    <div class="blog-thumb">
+                                        <img id="news-image" src="@(Model.News.ImageUrl ?? "assets/images/default-image.jpg")" alt="News Image">
+                                    </div>
+
+                                    <div class="down-content">
+                                        <span id="news-category">@(Model.News.CategoryName ?? "No Category")</span>
+
+                                        <input type="hidden" id="news-id" value="@Model.News.NewsArticleId" />
+                                        <h4 id="news-title">@Model.News.NewsTitle</h4>
+                                        <p id="news-content">@Model.News.NewsContent</p>
+
+                                        <ul id="news-tags" class="post-tags">
+                                            <li><i class="fa fa-tags"></i></li>
+                                            @if (Model.News.Tag != null)
+                                            {
+                                                @foreach (var tag in Model.News.Tag)
+                                                {
+                                                    <li class="tag-item">@tag</li>
+                                                }
+                                            }
+                                        </ul>
+
+
+                                        <div id="tag-selector" class="d-none">
+                                            @foreach (var tag in Model.AllTags)
+                                            {
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input tag-checkbox" id="tag-@tag.TagId" value="@tag.TagId">
+                                                    <label class="form-check-label" for="tag-@tag.TagId">@tag.TagName</label>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <div class="post-options">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    @if (Model.Role == "Staff")
+                                                    {
+                                                        <button class="btn btn-warning" id="edit-button">Edit</button>
+                                                        <button class="btn btn-danger" id="delete-button">Delete</button>
+                                                    }
+
+                                                    @if (Model.News.NewsStatus.GetValueOrDefault(false))
+                                                    {
+                                                        <button class="btn btn-danger" id="block-button" onclick="changeStatus('@Model.News.NewsArticleId', false)">Block</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="btn btn-success" id="enable-button" onclick="changeStatus('@Model.News.NewsArticleId', true)">Enable</button>
+                                                    }
+
+
+                                                    <button class="btn btn-success d-none" id="save-button">Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p>No news article found.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="sidebar">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="sidebar-item search">
+                                <form id="search_form" method="GET" action="/Search">
+                                    <input type="text" name="q" class="searchText" placeholder="Type to search..." autocomplete="on">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="sidebar-item categories">
+                                <div class="sidebar-heading">
+                                    <h2>Categories</h2>
+                                </div>
+                                <div class="content">
+                                    <ul>
+                                        @foreach (var category in Model.AllCategories)
+                                        {
+                                            <li><a href="/News/ByCategory/@category.CategoryId">- @category.CategoryName</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="sidebar-item tags">
+                                <div class="sidebar-heading">
+                                    <h2>Tag Clouds</h2>
+                                </div>
+                                <div class="content">
+                                    <ul>
+                                        @foreach (var tag in Model.AllTags)
+                                        {
+                                            <li><a href="/News/ByTag/@tag.TagId">@tag.TagName</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const editButton = document.getElementById('edit-button');
+        const saveButton = document.getElementById('save-button');
+        const deleteButton = document.getElementById('delete-button');
+        const newsTitle = document.getElementById('news-title');
+        const newsContent = document.getElementById('news-content');
+        const newsTagsUl = document.getElementById('news-tags');
+        const tagSelector = document.getElementById('tag-selector');
+
+        if (editButton) {
+            editButton.addEventListener('click', function () {
+                newsTitle.contentEditable = true;
+                newsContent.contentEditable = true;
+                newsTagsUl.classList.add('d-none');
+                tagSelector.classList.remove('d-none');
+
+                saveButton.classList.remove('d-none');
+                editButton.classList.add('d-none');
+            });
+        }
+
+        if (saveButton) {
+            saveButton.addEventListener('click', async function () {
+                newsTitle.contentEditable = false;
+                newsContent.contentEditable = false;
+
+                let selectedTagIds = [];
+                document.querySelectorAll('.tag-checkbox:checked').forEach(checkbox => {
+                    selectedTagIds.push(parseInt(checkbox.value)); // Chuyển về số
+                });
+
+                const articleId = document.getElementById('news-id').value;
+
+                const updatedNews = {
+                    NewsArticleId: articleId,
+                    NewsTitle: newsTitle.innerText.trim(),
+                    NewsContent: newsContent.innerText.trim(),
+                    TagIds: selectedTagIds
+                };
+
+                // ✅ Kiểm tra dữ liệu trước khi gửi
+                console.log("📤 Sending Data (Before Fetch):", JSON.stringify(updatedNews, null, 2));
+
+                // 🚨 Kiểm tra nếu ID bị null hoặc undefined
+                if (!updatedNews.NewsArticleId) {
+                    console.error("❌ Error: NewsArticleId is missing!");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed!',
+                        text: 'Error: NewsArticleId is missing!',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/NewsDetail?handler=UpdateNews', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(updatedNews)
+    });
+
+
+
+                    console.log("📥 Response Status:", response.status);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error("❌ Server Response Text:", errorText); // Log lỗi chi tiết
+                        throw new Error(errorText || 'Invalid response from server');
+                    }
+
+                    const data = await response.json();
+                    console.log("✅ Success Response:", data);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: data.message,
+                        confirmButtonText: 'OK'
+                    });
+
+                } catch (error) {
+                    console.error("❌ Fetch Error:", error);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed!',
+                        text: 'Error updating news: ' + error.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        }
+    });
+
+</script>

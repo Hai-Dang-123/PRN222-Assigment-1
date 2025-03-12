@@ -1,0 +1,185 @@
+﻿@page
+@model GroupBoizMVC.Pages.Category.IndexModel
+@{
+    Layout = "/RazorPage/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Category Management";
+}
+
+<h2>Category Management</h2>
+
+<!-- Button to open modal -->
+<button class="btn btn-primary" onclick="openCreateModal()">Add Category</button>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model.Categories)
+        {
+            <tr>
+                <td>@category.CategoryId</td>
+                <td>@category.CategoryName</td>
+                <td>@category.CategoryDesciption</td>
+                <td>@(category.IsActive ?? false ? "Yes" : "No")</td>
+                <td>
+                    <button class="btn btn-warning" onclick="openEditModal(@category.CategoryId, '@category.CategoryName', '@category.CategoryDesciption', @(category.IsActive.ToString().ToLower()))">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteCategory(@category.CategoryId)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal for Add/Edit -->
+<div id="categoryModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="categoryId">
+                <div class="mb-3">
+                    <label>Name</label>
+                    <input type="text" id="categoryName" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Description</label>
+                    <input type="text" id="categoryDesc" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Active</label>
+                    <input type="checkbox" id="categoryActive">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="saveCategory">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function openCreateModal() {
+        document.getElementById('categoryId').value = "";
+        document.getElementById('categoryName').value = "";
+        document.getElementById('categoryDesc').value = "";
+        document.getElementById('categoryActive').checked = false;
+        new bootstrap.Modal(document.getElementById('categoryModal')).show();
+    }
+
+    function openEditModal(id, name, desc, active) {
+        document.getElementById('categoryId').value = id;
+        document.getElementById('categoryName').value = name;
+        document.getElementById('categoryDesc').value = desc;
+        document.getElementById('categoryActive').checked = (active === "true");
+        new bootstrap.Modal(document.getElementById('categoryModal')).show();
+    }
+
+    document.getElementById('saveCategory').addEventListener('click', async function () {
+        const category = {
+            CategoryId: document.getElementById('categoryId').value || 0,
+            CategoryName: document.getElementById('categoryName').value,
+            CategoryDesciption: document.getElementById('categoryDesc').value,
+            IsActive: document.getElementById('categoryActive').checked
+        };
+
+        const url = category.CategoryId == 0 ? "/Category/Create" : "/Category/Update";
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(category)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'System Error!',
+                text: 'Error saving category!',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+
+    async function deleteCategory(categoryId) {
+        const confirmation = await Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'You won’t be able to undo this action!',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (!confirmation.isConfirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/Category/Delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(categoryId)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Delete Failed!',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'System Error!',
+                text: 'Error deleting category!',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+</script>

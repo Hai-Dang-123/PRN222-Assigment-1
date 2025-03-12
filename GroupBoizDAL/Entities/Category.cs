@@ -21,6 +21,7 @@ namespace GroupBoizDAL.Entities
         public bool? IsActive { get; set; }
 
         [InverseProperty("ParentCategory")]
+
         public virtual ICollection<Category> InverseParentCategory { get; set; } = new List<Category>();
 
         [InverseProperty("Category")]

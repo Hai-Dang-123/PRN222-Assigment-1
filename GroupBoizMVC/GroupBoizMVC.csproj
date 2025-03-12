@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,10 +26,6 @@
     <ProjectReference Include="..\GroupBoizBLL\GroupBoizBLL.csproj" />
     <ProjectReference Include="..\GroupBoizCommon\GroupBoizCommon.csproj" />
     <ProjectReference Include="..\GroupBoizDAL\GroupBoizDAL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="RazorPage\" />
   </ItemGroup>
 
 </Project>

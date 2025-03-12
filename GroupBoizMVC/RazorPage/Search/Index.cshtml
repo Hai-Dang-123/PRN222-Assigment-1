@@ -1,0 +1,139 @@
+﻿@page
+@model GroupBoizMVC.RazorPage.Search.IndexModel
+@using GroupBoizCommon.DTO
+
+@{
+    Layout = "/RazorPage/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Search Results";
+}
+
+<div class="heading-page header-text">
+    <section class="page-heading">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-content">
+                        <h4>Search Results</h4>
+                        <h2>Articles matching your search</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section class="blog-posts grid-system">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="all-blog-posts">
+                    <div class="row">
+                        @if (Model.NewsArticles.Any())
+                        {
+                            @foreach (var news in Model.NewsArticles)
+                            {
+                                <div class="col-lg-6">
+                                    <div class="blog-post">
+                                        <div class="blog-thumb">
+                                            <img src="@news.ImageUrl" alt="">
+                                        </div>
+                                        <div class="down-content">
+                                            <span>@(news.CategoryName ?? "Uncategorized")</span>
+                                            <a href="/newsDetail/index/@news.NewsArticleId"><h4>@news.NewsTitle</h4></a>
+                                            <ul class="post-info">
+                                                <li><a href="#">@(news.CreateBy ?? "Admin")</a></li>
+                                                <li><a href="#">@news.CreatedDate</a></li>
+                                            </ul>
+                                            <div class="post-options">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <ul class="post-tags">
+                                                            <li><i class="fa fa-tags"></i></li>
+                                                            @foreach (var tag in news.Tag)
+                                                            {
+                                                                <li><a href="#">@tag</a>,</li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No news articles available.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="sidebar">
+                    <div class="row">
+                        <!-- Search -->
+                        <div class="col-lg-12">
+                            <div class="sidebar-item search">
+                                <form method="GET">
+                                    <input type="text" asp-for="Query" class="searchText" placeholder="Type to search..." autocomplete="on">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="col-lg-12">
+                            <div class="sidebar-item categories">
+                                <div class="sidebar-heading">
+                                    <h2>Categories</h2>
+                                </div>
+                                <div class="content">
+                                    <ul>
+                                        @if (Model.Categories.Any())
+                                        {
+                                            @foreach (var category in Model.Categories)
+                                            {
+                                                <li><a href="/News/ByCategory/@category.CategoryId">- @category.CategoryName</a></li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <li>No categories found.</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="col-lg-12">
+                            <div class="sidebar-item tags">
+                                <div class="sidebar-heading">
+                                    <h2>Tag Clouds</h2>
+                                </div>
+                                <div class="content">
+                                    <ul>
+                                        @if (Model.Tags.Any())
+                                        {
+                                            @foreach (var tag in Model.Tags)
+                                            {
+                                                <li><a href="/News/ByTag/@tag.TagId">@tag.TagName</a></li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <li>No tags found.</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- row -->
+                </div> <!-- sidebar -->
+            </div> <!-- col-lg-4 -->
+        </div>
+    </div>
+</section>

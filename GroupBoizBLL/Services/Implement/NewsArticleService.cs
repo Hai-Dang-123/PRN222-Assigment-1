@@ -108,11 +108,30 @@ namespace GroupBoizBLL.Services.Implement
 
 
 
+        //public async Task<ResponseDTO> GetNewsById(string NewsArticleId)
+        //{
+        //    try
+        //    {
+
+        //        var news = await _unitOfWork.NewsArticleRepo.GetNewArticleByIdWithTagAsync(NewsArticleId);
+
+        //        // Kiểm tra nếu không tìm thấy bài viết
+        //        if (news == null)
+        //        {
+        //            return new ResponseDTO("News not found", 404, false);
+        //        }
+        //        Console.WriteLine(news);
+        //        return new ResponseDTO("News found successfully", 200, true, news);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new ResponseDTO($"Error: {ex.Message}", 500, false);
+        //    }
+        //}
         public async Task<ResponseDTO> GetNewsById(string NewsArticleId)
         {
             try
             {
-                
                 var news = await _unitOfWork.NewsArticleRepo.GetNewArticleByIdWithTagAsync(NewsArticleId);
 
                 // Kiểm tra nếu không tìm thấy bài viết
@@ -120,14 +139,39 @@ namespace GroupBoizBLL.Services.Implement
                 {
                     return new ResponseDTO("News not found", 404, false);
                 }
-                Console.WriteLine(news);
-                return new ResponseDTO("News found successfully", 200, true, news);
+
+                // ✅ Chuyển đổi sang DTO để tránh lỗi vòng lặp JSON
+                var newsDto = new NewsArticleDTO
+                {
+                    NewsArticleId = news.NewsArticleId,
+                    NewsTitle = news.NewsTitle,
+                    Headline = news.Headline,
+                    CreatedDate = news.CreatedDate,
+                    NewsContent = news.NewsContent,
+                    NewsSource = news.NewsSource,
+                    CategoryId = news.CategoryId,
+                    CategoryName = news.Category?.CategoryName, // Lấy tên Category nếu có
+                    NewsStatus = news.NewsStatus,
+                    CreatedById = news.CreatedById,
+                    CreateBy = news.CreatedBy?.AccountName, // Giả sử CreatedBy có Username
+                    UpdatedById = news.UpdatedById,
+                    UpdateBy = news.CreatedBy?.AccountName, // Giả sử UpdatedBy có Username
+                    ModifiedDate = news.ModifiedDate,
+                    ImageUrl = news.ImageUrl,
+                    Tag = news.Tags?.Select(t => t.TagName).ToList(), // Lấy danh sách tên thẻ
+                    TagId = news.Tags?.Select(t => t.TagId).ToList() ?? new List<int>() // Lấy danh sách ID thẻ
+                };
+
+                Console.WriteLine($"✅ News Loaded: {newsDto.NewsTitle ?? "No title"}");
+
+                return new ResponseDTO("News found successfully", 200, true, newsDto);
             }
             catch (Exception ex)
             {
                 return new ResponseDTO($"Error: {ex.Message}", 500, false);
             }
         }
+
 
 
         // ✅ Thêm phương thức cập nhật tin tức

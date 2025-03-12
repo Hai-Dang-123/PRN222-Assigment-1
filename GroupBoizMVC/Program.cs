@@ -14,6 +14,13 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
+
+builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
+{
+    options.RootDirectory = "/RazorPage"; // 🟢 Chỉ định thư mục Razor Pages
+});
+
+
 // 🟢 Đăng ký các dịch vụ
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITagService, TagService>();
@@ -85,13 +92,24 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers(); // Đảm bảo API hỗ trợ DELETE
     endpoints.MapHub<AllHub>("/allHub");
+    endpoints.MapRazorPages();
+
+    // 🟢 Chuyển hướng trang chủ ("/") đến Razor Page Home/Index
+    endpoints.MapGet("/", async context =>
+    {
+        context.Response.Redirect("/Home/Index"); // 🟢 Không cần ghi /RazorPage vì đã cấu hình RootDirectory
+    });
 });
 
-// 🟢 Map routes
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+//// 🟢 Map routes
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages(); // 🟢 Đảm bảo Razor Pages được ánh xạ đúng
+
+
 
 app.Run(); // ✅ Chỉ gọi Run 1 lần!

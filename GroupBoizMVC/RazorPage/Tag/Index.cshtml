@@ -1,0 +1,180 @@
+﻿@page
+@model GroupBoizMVC.RazorPage.Tag.IndexModel
+@using GroupBoizCommon.DTO
+
+@{
+    ViewData["Title"] = "Tag Management";
+}
+
+<h2>Tag Management</h2>
+
+<!-- Button mở modal thêm Tag -->
+<button class="btn btn-primary" onclick="openTagModal()">Add Tag</button>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Note</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tag in Model.Tags)
+        {
+            <tr>
+                <td>@tag.TagId</td>
+                <td>@tag.TagName</td>
+                <td>@tag.Note</td>
+                <td>
+                    <button class="btn btn-warning" onclick="openTagModal(@tag.TagId, '@tag.TagName', '@tag.Note')">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteTag(@tag.TagId)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal thêm/sửa Tag -->
+<div id="tagModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tagModalTitle">Add Tag</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="tagId">
+                <div class="mb-3">
+                    <label>Name</label>
+                    <input type="text" id="tagName" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Note</label>
+                    <input type="text" id="tagNote" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="saveTag">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thêm thư viện SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function openTagModal(id = 0, name = '', note = '') {
+        document.getElementById('tagId').value = id;
+        document.getElementById('tagName').value = name;
+        document.getElementById('tagNote').value = note;
+        document.getElementById('tagModalTitle').innerText = id ? 'Edit Tag' : 'Add Tag';
+        new bootstrap.Modal(document.getElementById('tagModal')).show();
+    }
+
+    document.getElementById('saveTag').addEventListener('click', async function () {
+        const tag = {
+            TagId: parseInt(document.getElementById('tagId').value) || 0,
+            TagName: document.getElementById('tagName').value.trim(),
+            Note: document.getElementById('tagNote').value.trim()
+        };
+
+        if (!tag.TagName) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error',
+                text: 'Tag name cannot be empty!',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        const url = tag.TagId === 0 ? "/Tag/Index?handler=Create" : "/Tag/Index?handler=Update";
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(tag)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'System Error',
+                text: 'Error saving tag!',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+
+    function deleteTag(tagId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action cannot be undone!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch('/Tag/Index?handler=Delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tagId })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: data.message,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'System Error',
+                        text: 'Error deleting tag!',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        });
+    }
+</script>

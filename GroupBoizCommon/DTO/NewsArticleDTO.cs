@@ -46,7 +46,7 @@ namespace GroupBoizCommon.DTO
 
 
         public List<string>? Tag { get; set; }
-        public List<int> TagId { get; set; }
+        public List<int> TagId { get; set; } = new();
         
     }
 }

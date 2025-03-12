@@ -1,0 +1,88 @@
+﻿@page
+@model GroupBoizMVC.Pages.News.CreateModel
+@using GroupBoizCommon.DTO
+
+@{
+    Layout = "/RazorPage/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create News";
+}
+
+<h2>Create New Article</h2>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<form method="post">
+    <input type="hidden" asp-for="News.NewsArticleId" value="1" />
+
+    <input type="hidden" asp-for="News.CreatedById" value="1" />
+    <div class="form-group">
+        <label asp-for="News.NewsTitle">Title</label>
+        <input asp-for="News.NewsTitle" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="News.Headline">Headline</label>
+        <input asp-for="News.Headline" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="News.NewsContent">Content</label>
+        <textarea asp-for="News.NewsContent" class="form-control" rows="5" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="News.NewsSource">Source</label>
+        <input asp-for="News.NewsSource" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Category</label>
+        <select asp-for="News.CategoryId" class="form-control">
+            @foreach (var category in Model.Categories as List<CategoryDTO>)
+            {
+                <option value="@category.CategoryId">@category.CategoryName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Tags</label>
+        <div>
+            @foreach (var tag in Model.Tags)
+            {
+                <label>
+                    <input type="checkbox" name="SelectedTags" value="@tag.TagId"
+                    @(Model.SelectedTags.Contains(tag.TagId) ? "checked" : "") />
+                    @tag.TagName
+                </label>
+                <br />
+            }
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label>News Status</label><br />
+        <label>
+            <input type="radio" asp-for="News.NewsStatus" value="true" /> Active
+        </label>
+        <label>
+            <input type="radio" asp-for="News.NewsStatus" value="false" /> Inactive
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>Image URL</label>
+        <input asp-for="News.ImageUrl" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
