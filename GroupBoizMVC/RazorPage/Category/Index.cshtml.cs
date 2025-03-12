@@ -1,6 +1,7 @@
 using GroupBoizBLL.Hubs;
 using GroupBoizBLL.Services.Interface;
 using GroupBoizCommon.DTO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
@@ -21,13 +22,41 @@ namespace GroupBoizMVC.Pages.Category
             _hubContext = hubContext;
         }
 
+        // Load all categories when the page is accessed
         public async Task OnGet()
         {
             var response = await _categoryService.GetAll();
             if (response.IsSuccess)
             {
-                Categories =(List<CategoryDTO>) response.Result;
+                Categories = (List<CategoryDTO>)response.Result;
             }
+        }
+
+        // Handle category creation
+        public async Task<IActionResult> OnPostCreateAsync([FromBody] CategoryDTO categoryDto)
+        {
+            var response = await _categoryService.Create(categoryDto);
+            return new JsonResult(response);
+        }
+
+        // Handle category updates
+        public async Task<IActionResult> OnPostUpdateAsync([FromBody] CategoryDTO categoryDto)
+        {
+            var response = await _categoryService.UpdateCategory(categoryDto);
+            return new JsonResult(response);
+        }
+
+        // Handle category deletion
+        public async Task<IActionResult> OnPostDeleteAsync([FromBody] DeleteModel model)
+        {
+            var response = await _categoryService.Delete(model.CategoryId);
+            return new JsonResult(response);
+        }
+
+        // Model for binding the delete request payload
+        public class DeleteModel
+        {
+            public short CategoryId { get; set; }
         }
     }
 }

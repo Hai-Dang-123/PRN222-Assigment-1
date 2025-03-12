@@ -5,11 +5,14 @@
     ViewData["Title"] = "Category Management";
 }
 
+@Html.AntiForgeryToken()  <!-- Generates the anti-forgery token for POST requests -->
+
 <h2>Category Management</h2>
 
-<!-- Button to open modal -->
+<!-- Button to open the create modal -->
 <button class="btn btn-primary" onclick="openCreateModal()">Add Category</button>
 
+<!-- Category table -->
 <table class="table table-bordered mt-3">
     <thead>
         <tr>
@@ -37,7 +40,7 @@
     </tbody>
 </table>
 
-<!-- Modal for Add/Edit -->
+<!-- Modal for adding or editing a category -->
 <div id="categoryModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -68,9 +71,11 @@
     </div>
 </div>
 
+<!-- SweetAlert2 for user feedback -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    // Open modal for creating a new category
     function openCreateModal() {
         document.getElementById('categoryId').value = "";
         document.getElementById('categoryName').value = "";
@@ -79,6 +84,7 @@
         new bootstrap.Modal(document.getElementById('categoryModal')).show();
     }
 
+    // Open modal for editing an existing category
     function openEditModal(id, name, desc, active) {
         document.getElementById('categoryId').value = id;
         document.getElementById('categoryName').value = name;
@@ -87,6 +93,7 @@
         new bootstrap.Modal(document.getElementById('categoryModal')).show();
     }
 
+    // Save category (create or update)
     document.getElementById('saveCategory').addEventListener('click', async function () {
         const category = {
             CategoryId: document.getElementById('categoryId').value || 0,
@@ -95,12 +102,19 @@
             IsActive: document.getElementById('categoryActive').checked
         };
 
-        const url = category.CategoryId == 0 ? "/Category/Create" : "/Category/Update";
+        // Retrieve the anti-forgery token
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        // Determine the URL based on whether it's a create or update operation
+        const url = category.CategoryId == 0 ? "/Category?handler=Create" : "/Category?handler=Update";
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token  // Include the token in the headers
+                },
                 body: JSON.stringify(category)
             });
 
@@ -133,6 +147,7 @@
         }
     });
 
+    // Delete category with confirmation
     async function deleteCategory(categoryId) {
         const confirmation = await Swal.fire({
             icon: 'warning',
@@ -147,11 +162,17 @@
             return;
         }
 
+        // Retrieve the anti-forgery token
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
         try {
-            const response = await fetch('/Category/Delete', {
+            const response = await fetch('/Category?handler=Delete', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(categoryId)
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token  // Include the token in the headers
+                },
+                body: JSON.stringify({ categoryId: categoryId })  // Send categoryId as a JSON object
             });
 
             const data = await response.json();
